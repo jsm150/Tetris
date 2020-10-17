@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Tetris
@@ -8,21 +10,16 @@ namespace Tetris
     {
         Form1 form;
         Random random = new Random();
+        List<int> clearLineList = new List<int>();
         int[,] tetrisBorad = new int[20, 10];
+        int[,] block;
         const int width = 10;
         const int height = 20;
         const float sizeX = 30; const float sizeY = 30;
-        int[,] block;
         int currentX = 0;
         int currentY = -1;
         int blockState = 0;
-
-        enum Color
-        {
-            Black = 0,
-            Red = 1,
-            White = 2
-        }
+        int rotationNum = 0;
 
         public void TetrisInit(Form1 f) // 테트리스 판 그리기
         {
@@ -37,10 +34,20 @@ namespace Tetris
                     }
             }
         }
+        public async Task LoopDownAsync()
+        {
+            while (true)
+            {
+                await Task.Delay(150);
+                MoveDown();
+            }
+        }
+
         public void NewBlock()
         {
-            blockState = random.Next(1, 2);
+            blockState = random.Next(1, 8);
             currentY = -1;
+            rotationNum = 0;
         }
 
         public void BlockCreate()
@@ -48,44 +55,177 @@ namespace Tetris
             switch (blockState)
             {
                 case 1:
-                    block = new int[4, 4]
+                    // ####
+                    if (rotationNum % 2 == 0)
                     {
-                        { 1, 1, 0, 0 },
-                        { 0, 0, 0, 0 },
-                        { 0, 0, 0, 0 },
-                        { 0, 0, 0, 0 }
+                        block = new int[4, 4]
+                        {
+                            { 1, 1, 1, 1 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }
+                        };
+                    }
+                    else
+                    {
+                        block = new int[4, 4]
+                        {
+                            { 0, 0, 1, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 0 }
+                        };
+                    }
+                    if (rotationNum == 0)
+                        currentX = random.Next(0, 11 - block.GetLength(0));
+                    break;
+                // ##
+                // ##
+                case 2:
+                    block = new int[2, 2]
+                    {
+                        { 1, 1 }, { 1, 1 }
                     };
-                    currentX = random.Next(0, 11 - block.GetLength(0));
+                    if (rotationNum == 0)
+                        currentX = random.Next(0, 11 - block.GetLength(0));
+                    break;
+                // ##
+                //  ##
+                case 3:
+                    if (rotationNum % 2 == 0)
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 1, 1, 0 }, { 0, 1, 1 }, { 0, 0, 0 }
+                        };
+                    }
+                    else
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 0, 0, 1 }, { 0, 1, 1 }, { 0, 1, 0 }
+                        };
+                    }
+                    if (rotationNum == 0)
+                        currentX = random.Next(0, 11 - block.GetLength(0));
+                    break;
+                case 4:
+                    // #
+                    // ###
+                    if (rotationNum % 4 == 0)
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 1, 0, 0 }, { 1, 1, 1 }, { 0, 0, 0 }
+                        };
+                    }
+                    else if (rotationNum % 4 == 1)
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 0, 1, 1 }, { 0, 1, 0 }, { 0, 1, 0 }
+                        };
+                    }
+                    else if (rotationNum % 4 == 2)
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 0, 0, 0 }, { 1, 1, 1 }, { 0, 0, 1 }
+                        };
+                    }
+                    else if (rotationNum % 4 == 3)
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 0, 1, 0 }, { 0, 1, 0 }, { 1, 1, 0 }
+                        };
+                    }
+                    if (rotationNum == 0)
+                        currentX = random.Next(0, 11 - block.GetLength(0));
+                    break;
+                case 5:
+                    //  #
+                    // ###
+                    if (rotationNum % 4 == 0)
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 0, 1, 0 }, { 1, 1, 1 }, { 0, 0, 0 }
+                        };
+                    }
+                    else if (rotationNum % 4 == 1)
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 0, 1, 0 }, { 0, 1, 1 }, { 0, 1, 0 }
+                        };
+                    }
+                    else if (rotationNum % 4 == 2)
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 0, 0, 0 }, { 1, 1, 1 }, { 0, 1, 0 }
+                        };
+                    }
+                    else if (rotationNum % 4 == 3)
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 0, 1, 0 }, { 1, 1, 0 }, { 0, 1, 0 }
+                        };
+                    }
+                    if (rotationNum == 0)
+                        currentX = random.Next(0, 11 - block.GetLength(0));
+                    break;
+                case 6:
+                    //   #
+                    // ###
+                    if (rotationNum % 4 == 0)
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 0, 0, 1 }, { 1, 1, 1 }, { 0, 0, 0 }
+                        };
+                    }
+                    else if (rotationNum % 4 == 1)
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 0, 1, 0 }, { 0, 1, 0 }, { 0, 1, 1 }
+                        };
+                    }
+                    else if (rotationNum % 4 == 2)
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 0, 0, 0 }, { 1, 1, 1 }, { 1, 0, 0 }
+                        };
+                    }
+                    else if (rotationNum % 4 == 3)
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 1, 1, 0 }, { 0, 1, 0 }, { 0, 1, 0 }
+                        };
+                    }
+                    if (rotationNum == 0)
+                        currentX = random.Next(0, 11 - block.GetLength(0));
+                    break;
+                case 7:
+                    //  ##
+                    // ##
+                    if (rotationNum % 2 == 0)
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 0, 1, 1 }, { 1, 1, 0 }, { 0, 0, 0 }
+                        };
+                    }
+                    else
+                    {
+                        block = new int[3, 3]
+                        {
+                            { 0, 1, 0 }, { 0, 1, 1 }, { 0, 0, 1 }
+                        };
+                    }
+                    if (rotationNum == 0)
+                        currentX = random.Next(0, 11 - block.GetLength(0));
                     break;
             }
-        }
-
-        bool IsCheak() // 블럭 이동이 가능한지 체크, 게임오버 체크
-        {
-            int size = block.GetLength(0);
-
-            for (int y = 0; y < size; y++)
-                for (int x = 0; x < size; x++)
-                {
-                    if (block[y, x] == 1)
-                    {
-                        if (currentY + y >= height || currentX + x >= width)
-                            return false;
-                        if (currentX + x < 0 || currentY + y < 0)
-                            return false;
-                        if (tetrisBorad[y + currentY, x + currentX] == 2)
-                        {
-                            if (y + currentY == 0)
-                            {
-                                MessageBox.Show("Game Over!");
-                                form.Close();
-                            }
-                            return false;
-                        }
-                    }
-
-                }
-            return true;
         }
 
         void DrawColer(int y, int x)
@@ -108,6 +248,34 @@ namespace Tetris
                 }
             }
         }
+        bool IsCheak() // 블럭 이동이 가능한지 체크, 게임오버 체크
+        {
+            int size = block.GetLength(0);
+
+            for (int y = 0; y < size; y++)
+                for (int x = 0; x < size; x++)
+                {
+                    if (block[y, x] == 1)
+                    {
+                        if (currentY + y >= height || currentX + x >= width)
+                            return false;
+                        if (currentX + x < 0 || currentY + y < 0)
+                            return false;
+                        if (tetrisBorad[y + currentY, x + currentX] == 2)
+                        {
+                            if (currentY == 0)
+                            {
+                                MessageBox.Show("Game Over!");
+                                form.Close();
+                            }
+                            return false;
+                        }
+                    }
+
+                }
+            return true;
+        }
+
         void RemoveRedBlock()
         {
             for (int y = 0; y < height; y++)
@@ -117,43 +285,17 @@ namespace Tetris
                     if (tetrisBorad[y, x] == 1)
                     {
                         tetrisBorad[y, x] = 0;
-                    }
-                }
-            }
-            DrawBlock(Color.Black);
-        }
-
-        void DrawBlock(Color color)
-        {
-            for (int y = 0; y < height; y++)
-                for (int x = 0; x < width; x++)
-                    if (tetrisBorad[y, x] == (int)color)
-                    {
                         DrawColer(y, x);
                     }
-        }
-
-        int BlockBottom()
-        {
-            int size = block.GetLength(0) - 1;
-            for (int y = size; y >= 0; y--)
-            {
-                for (int x = size; x >= 0; x--)
-                {
-                    if (block[y, x] == 1)
-                    {
-                        return currentY + y;
-                    }
                 }
             }
-            return 0;
         }
-        void RemoveWhiteBlock()
+
+        void ClearLine()
         {
-            int lowLine = BlockBottom();
             int highLine = 1;
 
-            for (int y = 0; y < lowLine; y++)
+            for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
@@ -164,19 +306,26 @@ namespace Tetris
                     }
                 }
             }
-            LOOP_EXIT:;
+        LOOP_EXIT:;
 
-            for (int y = lowLine; y >= highLine; y--)
+            foreach (var i in clearLineList)
             {
-                for (int x = 0; x < width; x++)
+                if (i > 0)
                 {
-                    if (tetrisBorad[y - 1, x] == 2)
-                        tetrisBorad[y, x] = 2;
-                    else
-                        tetrisBorad[y, x] = 0;
-                    DrawColer(y, x);
+                    for (int y = i; y >= highLine; y--)
+                    {
+                        for (int x = 0; x < width; x++)
+                        {
+                            if (tetrisBorad[y - 1, x] == 2)
+                                tetrisBorad[y, x] = 2;
+                            else
+                                tetrisBorad[y, x] = 0;
+                            DrawColer(y, x);
+                        }
+                    }
                 }
             }
+
             for (int x = 0; x < width; x++)
             {
                 tetrisBorad[0, x] = 0;
@@ -184,17 +333,30 @@ namespace Tetris
             }
         }
 
-        bool IsWhiteBlockCheak()
+        bool IsClearLineCheak()
         {
-            int size = block.GetLength(0) - 1;
-            int line = BlockBottom();
+            int size = block.GetLength(0);
+            clearLineList.Clear();
+            bool b = false;
 
-            for (int x = 0; x < width; x++)
+            for (int y = currentY; y < height; y++)
             {
-                if (tetrisBorad[line, x] != 2)
-                    return false;
+                if (LineCheak(y))
+                {
+                    b = true; clearLineList.Add(y);
+                }
             }
-            return true;
+            return b;
+
+            bool LineCheak(int y)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (tetrisBorad[y, x] != 2)
+                        return false;
+                }
+                return true;
+            }
         }
 
         void MoveRedBlock()
@@ -207,8 +369,26 @@ namespace Tetris
                     if (block[y, x] == 1)
                     {
                         tetrisBorad[y + currentY, x + currentX] = 1;
+                        DrawColer(y + currentY, x + currentX);
                     }
                 }
+            }
+        }
+
+
+        public void RotationBlock()
+        {
+            rotationNum++;
+            BlockCreate();
+            if (IsCheak())
+            {
+                RemoveRedBlock();
+                MoveRedBlock();
+            }
+            else
+            {
+                rotationNum--;
+                BlockCreate();
             }
         }
 
@@ -219,7 +399,6 @@ namespace Tetris
             {
                 RemoveRedBlock();
                 MoveRedBlock();
-                DrawBlock(Color.Red);
             }
             else
             {
@@ -230,12 +409,13 @@ namespace Tetris
                         if (tetrisBorad[i, j] == 1)
                         {
                             tetrisBorad[i, j] = 2;
+                            DrawColer(i, j);
                         }
                 }
-                if (IsWhiteBlockCheak())
-                    RemoveWhiteBlock();
-                else
-                    DrawBlock(Color.White);
+                if (IsClearLineCheak())
+                {
+                    ClearLine();
+                }
                 NewBlock(); BlockCreate();
             }
         }
@@ -248,7 +428,6 @@ namespace Tetris
             {
                 RemoveRedBlock();
                 MoveRedBlock();
-                DrawBlock(Color.Red);
             }
             else
                 currentX--;
@@ -261,7 +440,6 @@ namespace Tetris
             {
                 RemoveRedBlock();
                 MoveRedBlock();
-                DrawBlock(Color.Red);
             }
             else
                 currentX++;
