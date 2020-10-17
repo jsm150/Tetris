@@ -1,4 +1,6 @@
-﻿namespace Tetris
+﻿using System;
+
+namespace Tetris
 {
     partial class Form1
     {
@@ -15,7 +17,7 @@
         {
             if (disposing && (components != null))
             {
-                components.Dispose();
+                components.Dispose(); 
             }
             base.Dispose(disposing);
         }
@@ -28,22 +30,40 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.btn_GameStart = new System.Windows.Forms.Button();
             this.SuspendLayout();
+            // 
+            // btn_GameStart
+            // 
+            this.btn_GameStart.Location = new System.Drawing.Point(253, 12);
+            this.btn_GameStart.Name = "btn_GameStart";
+            this.btn_GameStart.Size = new System.Drawing.Size(99, 35);
+            this.btn_GameStart.TabIndex = 0;
+            this.btn_GameStart.TabStop = false;
+            this.btn_GameStart.Text = "Game Start!";
+            this.btn_GameStart.UseVisualStyleBackColor = true;
+            this.btn_GameStart.Click += new System.EventHandler(this.btn_GameStart_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(453, 492);
+            this.ClientSize = new System.Drawing.Size(364, 691);
+            this.Controls.Add(this.btn_GameStart);
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private System.Windows.Forms.Button btn_GameStart;
     }
 }
 
