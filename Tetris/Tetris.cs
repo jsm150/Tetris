@@ -21,7 +21,9 @@ namespace Tetris
         int blockState = 0;
         int rotationNum = 0;
         int delay = 450;
-        int score = 0;
+        public bool GameStop { get; private set; } = false;
+        public int Score { get; private set; } = 0;
+        
 
         public Tetris(Form1 f)
         {
@@ -41,6 +43,8 @@ namespace Tetris
             {
                 await Task.Delay(delay);
                 MoveDown(l);
+                if (GameStop)
+                    break;
             }
         }
 
@@ -60,7 +64,7 @@ namespace Tetris
                     if (rotationNum % 2 == 0)
                         block = new int[4, 4] { { 1, 1, 1, 1 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
                     else
-                        block = new int[4, 4]{ { 0, 0, 1, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 0 } };
+                        block = new int[4, 4] { { 0, 0, 1, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 0 } };
                     if (rotationNum == 0)
                         currentX = random.Next(0, 11 - block.GetLength(0));
                     break;
@@ -74,8 +78,8 @@ namespace Tetris
                 // ##
                 //  ##
                 case 3:
-                    if (rotationNum % 2 == 0) 
-                        block = new int[3, 3]{ { 1, 1, 0 }, { 0, 1, 1 }, { 0, 0, 0 } };
+                    if (rotationNum % 2 == 0)
+                        block = new int[3, 3] { { 1, 1, 0 }, { 0, 1, 1 }, { 0, 0, 0 } };
                     else
                     {
                         block = new int[3, 3]
@@ -248,8 +252,7 @@ namespace Tetris
                         {
                             if (currentY == 0)
                             {
-                                MessageBox.Show($"Game Over!\nScore: {score}");
-                                form.Close();
+                                GameStop = true;
                             }
                             return false;
                         }
@@ -392,15 +395,17 @@ namespace Tetris
                 currentY++;
                 if (IsCheak())
                 {
-                    score += 5;
+                    Score += 5;
                     RemoveRedBlock();
                     MoveRedBlock();
                 }
                 else
                 {
+                    if (GameStop)
+                        return;
                     DelayAdjustment();
                     currentY--;
-                    score += 50;
+                    Score += 50;
                     for (int i = 0; i < height; i++)
                     {
                         for (int j = 0; j < width; j++)
@@ -412,12 +417,12 @@ namespace Tetris
                     }
                     if (IsClearLineCheak())
                     {
-                        score += 500 * clearLineList.Count;
+                        Score += 500 * clearLineList.Count;
                         ClearLine();
                     }
                     NewBlock(); BlockCreate();
                 }
-                label.Text = score.ToString();
+                label.Text = Score.ToString();
             }
         }
 
