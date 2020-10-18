@@ -31,6 +31,8 @@ namespace Tetris
         private void InitializeComponent()
         {
             this.btn_GameStart = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lbl_Score = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btn_GameStart
@@ -44,12 +46,33 @@ namespace Tetris
             this.btn_GameStart.UseVisualStyleBackColor = true;
             this.btn_GameStart.Click += new System.EventHandler(this.btn_GameStart_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label1.Location = new System.Drawing.Point(33, 23);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(48, 12);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Score:";
+            // 
+            // lbl_Score
+            // 
+            this.lbl_Score.AutoSize = true;
+            this.lbl_Score.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_Score.Location = new System.Drawing.Point(87, 23);
+            this.lbl_Score.Name = "lbl_Score";
+            this.lbl_Score.Size = new System.Drawing.Size(0, 12);
+            this.lbl_Score.TabIndex = 2;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(364, 691);
+            this.Controls.Add(this.lbl_Score);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.btn_GameStart);
             this.KeyPreview = true;
             this.MaximizeBox = false;
@@ -58,12 +81,15 @@ namespace Tetris
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.Button btn_GameStart;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lbl_Score;
     }
 }
 

@@ -16,6 +16,7 @@ namespace Tetris
         private void Form1_Load(object sender, EventArgs e)
         {
             StartPosition = FormStartPosition.CenterScreen;
+            
         }
 
         private async void btn_GameStart_Click(object sender, EventArgs e)
@@ -25,7 +26,7 @@ namespace Tetris
             tetris.BlockCreate();
             btn_GameStart.Click -= new EventHandler(btn_GameStart_Click);
             btn_GameStart.Enabled = false;
-            await tetris.LoopDownAsync();
+            await tetris.LoopDownAsync(lbl_Score);
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -37,7 +38,7 @@ namespace Tetris
             if (e.KeyCode == Keys.Right)
                 tetris.MoveRight();
             if (e.KeyCode == Keys.Down)
-                tetris.MoveDown();
+                tetris.MoveDown(lbl_Score);
             if (e.KeyCode == Keys.Up)
                 tetris.RotationBlock();
 

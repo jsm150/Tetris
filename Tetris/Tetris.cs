@@ -20,6 +20,8 @@ namespace Tetris
         int currentY = -1;
         int blockState = 0;
         int rotationNum = 0;
+        int delay = 450;
+        int score = 0;
 
         public void TetrisInit(Form1 f) // 테트리스 판 그리기
         {
@@ -34,12 +36,12 @@ namespace Tetris
                     }
             }
         }
-        public async Task LoopDownAsync()
+        public async Task LoopDownAsync(Label l)
         {
             while (true)
             {
-                await Task.Delay(150);
-                MoveDown();
+                await Task.Delay(delay);
+                MoveDown(l);
             }
         }
 
@@ -57,42 +59,24 @@ namespace Tetris
                 case 1:
                     // ####
                     if (rotationNum % 2 == 0)
-                    {
-                        block = new int[4, 4]
-                        {
-                            { 1, 1, 1, 1 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }
-                        };
-                    }
+                        block = new int[4, 4] { { 1, 1, 1, 1 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
                     else
-                    {
-                        block = new int[4, 4]
-                        {
-                            { 0, 0, 1, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 0 }
-                        };
-                    }
+                        block = new int[4, 4]{ { 0, 0, 1, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 0 } };
                     if (rotationNum == 0)
                         currentX = random.Next(0, 11 - block.GetLength(0));
                     break;
                 // ##
                 // ##
                 case 2:
-                    block = new int[2, 2]
-                    {
-                        { 1, 1 }, { 1, 1 }
-                    };
+                    block = new int[2, 2] { { 1, 1 }, { 1, 1 } };
                     if (rotationNum == 0)
                         currentX = random.Next(0, 11 - block.GetLength(0));
                     break;
                 // ##
                 //  ##
                 case 3:
-                    if (rotationNum % 2 == 0)
-                    {
-                        block = new int[3, 3]
-                        {
-                            { 1, 1, 0 }, { 0, 1, 1 }, { 0, 0, 0 }
-                        };
-                    }
+                    if (rotationNum % 2 == 0) 
+                        block = new int[3, 3]{ { 1, 1, 0 }, { 0, 1, 1 }, { 0, 0, 0 } };
                     else
                     {
                         block = new int[3, 3]
@@ -265,7 +249,7 @@ namespace Tetris
                         {
                             if (currentY == 0)
                             {
-                                MessageBox.Show("Game Over!");
+                                MessageBox.Show($"Game Over!\nScore: {score}");
                                 form.Close();
                             }
                             return false;
@@ -392,17 +376,30 @@ namespace Tetris
             }
         }
 
-        public void MoveDown()
+        void DelayAdjustment()
+        {
+            if (delay > 250)
+                delay -= 8;
+            else if (delay > 200)
+                delay -= 3;
+            else if (delay > 100)
+                delay -= 1;
+        }
+
+        public void MoveDown(Label label)
         {
             currentY++;
             if (IsCheak())
             {
+                score += 5;
                 RemoveRedBlock();
                 MoveRedBlock();
             }
             else
             {
+                DelayAdjustment();
                 currentY--;
+                score += 50;
                 for (int i = 0; i < height; i++)
                 {
                     for (int j = 0; j < width; j++)
@@ -414,10 +411,12 @@ namespace Tetris
                 }
                 if (IsClearLineCheak())
                 {
+                    score += 500 * clearLineList.Count;
                     ClearLine();
                 }
                 NewBlock(); BlockCreate();
             }
+            label.Text = score.ToString();
         }
 
         public void MoveRight()
