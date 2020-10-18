@@ -387,35 +387,38 @@ namespace Tetris
 
         public void MoveDown(Label label)
         {
-            currentY++;
-            if (IsCheak())
+            lock (this)
             {
-                score += 5;
-                RemoveRedBlock();
-                MoveRedBlock();
-            }
-            else
-            {
-                DelayAdjustment();
-                currentY--;
-                score += 50;
-                for (int i = 0; i < height; i++)
+                currentY++;
+                if (IsCheak())
                 {
-                    for (int j = 0; j < width; j++)
-                        if (tetrisBorad[i, j] == 1)
-                        {
-                            tetrisBorad[i, j] = 2;
-                            DrawColer(i, j);
-                        }
+                    score += 5;
+                    RemoveRedBlock();
+                    MoveRedBlock();
                 }
-                if (IsClearLineCheak())
+                else
                 {
-                    score += 500 * clearLineList.Count;
-                    ClearLine();
+                    DelayAdjustment();
+                    currentY--;
+                    score += 50;
+                    for (int i = 0; i < height; i++)
+                    {
+                        for (int j = 0; j < width; j++)
+                            if (tetrisBorad[i, j] == 1)
+                            {
+                                tetrisBorad[i, j] = 2;
+                                DrawColer(i, j);
+                            }
+                    }
+                    if (IsClearLineCheak())
+                    {
+                        score += 500 * clearLineList.Count;
+                        ClearLine();
+                    }
+                    NewBlock(); BlockCreate();
                 }
-                NewBlock(); BlockCreate();
+                label.Text = score.ToString();
             }
-            label.Text = score.ToString();
         }
 
         public void MoveRight()
