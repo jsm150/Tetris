@@ -30,9 +30,11 @@ namespace Tetris
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.btn_GameStart = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lbl_Score = new System.Windows.Forms.Label();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // btn_GameStart
@@ -65,6 +67,11 @@ namespace Tetris
             this.lbl_Score.Size = new System.Drawing.Size(0, 12);
             this.lbl_Score.TabIndex = 2;
             // 
+            // timer1
+            // 
+            this.timer1.Interval = 80000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -89,6 +96,7 @@ namespace Tetris
         private System.Windows.Forms.Button btn_GameStart;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lbl_Score;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 
