@@ -1,24 +1,26 @@
 ﻿using System;
-using System.Media;
 using System.Windows.Forms;
+using WMPLib;
 
 namespace Tetris
 {
     public partial class Form1 : Form
     {
         Tetris tetris;
-        SoundPlayer player = new SoundPlayer();
+        WindowsMediaPlayer mediaPlayer = new WindowsMediaPlayer();
         public Form1()
         {
-            player.SoundLocation = "Tetris_BGM.wav";
+            mediaPlayer.URL = "Tetris_BGM.mp3";
+            mediaPlayer.settings.volume = 10;
+            mediaPlayer.controls.stop();
             InitializeComponent();
         }
 
         private async void btn_GameStart_Click(object sender, EventArgs e)
         {
-            tetris = new Tetris(this);
-            player.Play();
             timer1.Enabled = true;
+            mediaPlayer.controls.play();
+            tetris = new Tetris(this);
             btn_GameStart.Enabled = false;
             await tetris.LoopDownAsync(lbl_Score);
             GameEnd();
@@ -26,8 +28,8 @@ namespace Tetris
 
         void GameEnd()
         {
-            player.Stop();
             timer1.Enabled = false;
+            mediaPlayer.controls.stop();
             MessageBox.Show($"Game Over!\nScore: {tetris.Score}");
             btn_GameStart.Enabled = true;
             tetris = null;
@@ -53,7 +55,8 @@ namespace Tetris
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            player.Play();
+            mediaPlayer.controls.play();
         }
+
     }
 }

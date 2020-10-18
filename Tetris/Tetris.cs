@@ -222,7 +222,7 @@ namespace Tetris
                 switch (tetrisBorad[y, x])
                 {
                     case 1:
-                        g.FillRectangle(Brushes.Red, (x + 1) * sizeX, (y + 2) * sizeY, sizeX, sizeY); g.FillRectangle(Brushes.Red, (x + 1) * sizeX, (y + 2) * sizeY, sizeX, sizeY);
+                        g.FillRectangle(Brushes.Red, (x + 1) * sizeX, (y + 2) * sizeY, sizeX, sizeY);
                         g.DrawRectangle(new Pen(Brushes.Black), (x + 1) * sizeX, (y + 2) * sizeY, sizeX, sizeY);
                         break;
                     case 2:
