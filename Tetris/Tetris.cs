@@ -23,18 +23,17 @@ namespace Tetris
         int delay = 450;
         int score = 0;
 
-        public void TetrisInit(Form1 f) // 테트리스 판 그리기
+        public Tetris(Form1 f)
         {
             form = f;
-            // 시작위치 : x = 30, y = 60
-            using (Graphics g = form.CreateGraphics())
+            for (int y = 0; y < height; y++)
             {
-                for (int i = 2; i <= tetrisBorad.GetLength(0) + 1; i++)
-                    for (int j = 1; j <= tetrisBorad.GetLength(1); j++)
-                    {
-                        g.FillRectangle(Brushes.Black, j * sizeX, i * sizeY, sizeX, sizeY);
-                    }
+                for (int x = 0; x < width; x++)
+                {
+                    DrawColer(y, x);
+                }
             }
+            NewBlock(); BlockCreate();
         }
         public async Task LoopDownAsync(Label l)
         {

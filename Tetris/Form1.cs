@@ -7,23 +7,15 @@ namespace Tetris
 {
     public partial class Form1 : Form
     {
-        Tetris tetris = new Tetris();
+        Tetris tetris;
         public Form1()
         {
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            StartPosition = FormStartPosition.CenterScreen;
-            
-        }
-
         private async void btn_GameStart_Click(object sender, EventArgs e)
         {
-            tetris.TetrisInit(this);
-            tetris.NewBlock();
-            tetris.BlockCreate();
+            tetris = new Tetris(this);
             btn_GameStart.Click -= new EventHandler(btn_GameStart_Click);
             btn_GameStart.Enabled = false;
             await tetris.LoopDownAsync(lbl_Score);
