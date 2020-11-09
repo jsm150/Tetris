@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -9,11 +8,13 @@ namespace Tetris
 {
     class Tetris
     {
+        private static object _locker = new object();
         private readonly int _offsetX;
         private readonly int _offsetY;
         private const int WIDTH = 10;
         private const int HEIGHT = 20;
-        private const float SIZE_X = 30; const float SIZE_Y = 30;
+        private const float SIZE_X = 30;
+        private const float SIZE_Y = 30;
         private Form1 _form;
         private Random _random = new Random();
         private List<int> _clearLineList = new List<int>();
@@ -21,18 +22,20 @@ namespace Tetris
         private int[,] _block;
         private int _currentX = 0;
         private int _currentY = -1;
-        private int _blockState = 0;
+        private int _blockNum = 0;
         private int _rotationNum = 0;
+        private Label _label;
         public int Delay { get; private set; } = 450;
-        public bool CanGameRun { get; private set; } = true;
+        public bool CanGameRun { get; set; } = true;
         public int Score { get; private set; } = 0;
-        
 
-        public Tetris(Form1 f, int offsetX)
+
+        public Tetris(Form1 f, int offsetX, Label label)
         {
             _offsetX = offsetX;
             _offsetY = 2;
             _form = f;
+            _label = label;
             for (int y = 0; y < HEIGHT; y++)
             {
                 for (int x = 0; x < WIDTH; x++)
@@ -42,12 +45,12 @@ namespace Tetris
             }
             NewBlock(); BlockCreate();
         }
-        public void LoopDownAsync(Label l)
+        public async Task LoopDownAsync()
         {
             while (true)
             {
-                Thread.Sleep(Delay);
-                MoveDown(l);
+                await Task.Delay(Delay);
+                MoveDown();
                 if (!CanGameRun)
                     break;
             }
@@ -55,14 +58,14 @@ namespace Tetris
 
         public void NewBlock()
         {
-            _blockState = _random.Next(1, 8);
+            _blockNum = _random.Next(1, 8);
             _currentY = -1;
             _rotationNum = 0;
         }
 
         public void BlockCreate()
         {
-            switch (_blockState)
+            switch (_blockNum)
             {
                 case 1:
                     // ####
@@ -330,7 +333,7 @@ namespace Tetris
             }
         }
 
-        bool IsClearLineCheak()
+        bool CanClearLine()
         {
             int size = _block.GetLength(0);
             _clearLineList.Clear();
@@ -376,7 +379,7 @@ namespace Tetris
         private void BlockPreview()
         {
             var size = _block.GetLength(0);
-            for (int currentY = _currentY; currentY < HEIGHT + 1; currentY++)
+            for (int currentY = _currentY; currentY <= HEIGHT; currentY++)
             {
                 for (int y = size - 1; y >= 0; y--)
                 {
@@ -455,9 +458,35 @@ namespace Tetris
                 Delay -= 1;
         }
 
-        public void MoveDown(Label label)
+        public void HardDown()
         {
-            lock (this)
+            var size = _block.GetLength(0);
+            for (int currentY = _currentY; currentY <= HEIGHT; currentY++)
+            {
+                for (int y = size - 1; y >= 0; y--)
+                {
+                    for (int x = 0; x < size; x++)
+                    {
+                        if (_block[y, x] != 1)
+                            continue;
+                        if (y + currentY < 0)
+                            continue;
+                        if ((y + currentY == HEIGHT) || (_tetrisBorad[y + currentY, x + _currentX] == 2))
+                        {
+                            _currentY = currentY - 1;
+                            RemoveRedBlock();
+                            MoveRedBlock();
+                            goto LOOP_EXIT;
+                        }
+                    }
+                }
+            }
+        LOOP_EXIT:;
+        }
+
+        public void MoveDown()
+        {
+            lock (_locker)
             {
                 _currentY++;
                 if (IsCheak())
@@ -484,14 +513,14 @@ namespace Tetris
                                 DrawColer(i, j);
                             }
                     }
-                    if (IsClearLineCheak())
+                    if (CanClearLine())
                     {
                         Score += 500 * _clearLineList.Count;
                         ClearLine();
                     }
                     NewBlock(); BlockCreate();
                 }
-                label.Text = Score.ToString();
+                _label.Text = Score.ToString();
             }
         }
 

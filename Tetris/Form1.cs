@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WMPLib;
@@ -9,8 +9,9 @@ namespace Tetris
 {
     public partial class Form1 : Form
     {
-        Tetris tetrisPlayer1;
-        Tetris tetrisPlayer2;
+        private Tetris tetrisPlayer1;
+        private Tetris tetrisPlayer2;
+        private List<Tetris> _tetrisContainer = new List<Tetris>();
         WindowsMediaPlayer mediaPlayer = new WindowsMediaPlayer();
         public Form1()
         {
@@ -24,94 +25,130 @@ namespace Tetris
         private async void btn_GameStart_Click(object sender, EventArgs e)
         {
             Size = new System.Drawing.Size(380, 730);
+            tetrisPlayer1 = new Tetris(this, 1, lbl_Score);
+            _tetrisContainer.Add(tetrisPlayer1);
+            StartSetting();
+            await _tetrisContainer[0].LoopDownAsync();
+            GameEnd();
+        }
+
+        private void StartSetting()
+        {
             timer1.Enabled = true;
             mediaPlayer.controls.play();
-            tetrisPlayer2 = new Tetris(this, 1);
             btn_GameStart.Enabled = false;
             btn_1vs1.Enabled = false;
-            await Task.Run(() => tetrisPlayer2.LoopDownAsync(lbl_Score));
-            GameEnd();
         }
 
         void GameEnd()
         {
+            var multiplayer = (_tetrisContainer.Count > 1) ? true : false;
+            for (int i = 0; i < _tetrisContainer.Count; i++)
+            {
+                _tetrisContainer[i].CanGameRun = false;
+                _tetrisContainer[i] = null;
+            }
+            _tetrisContainer.Clear();
             lbl_BestScore.Text = lbl_Score.Text;
             lbl_2pBestScore.Text = lbl_2pScore.Text;
             timer1.Enabled = false;
             mediaPlayer.controls.stop();
-            MessageBox.Show($"Game Over!\nScore: {tetrisPlayer1.Score}");
             btn_GameStart.Enabled = true;
             btn_1vs1.Enabled = true;
-            tetrisPlayer1 = null;
-            tetrisPlayer2 = null;
+            if (multiplayer)
+            {
+                var p1win = (int.Parse(lbl_Score.Text) > int.Parse(lbl_2pScore.Text)) ? true : false;
+                if (p1win)
+                    MessageBox.Show("플레이어1 승리!", $"Score: {lbl_Score.Text}");
+                else
+                    MessageBox.Show("플레이어2 승리!", $"Score: {lbl_2pScore.Text}");
+            }
+            else
+            {
+                MessageBox.Show($"Game Over!", $"Score: {lbl_Score.Text}");
+            }
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
                 Close();
-            if (tetrisPlayer2 != null)
+            if (_tetrisContainer[1] != null)
             {
                 if (e.KeyCode == Keys.Left)
-                    tetrisPlayer2.MoveLeft();
+                    _tetrisContainer[1].MoveLeft();
                 if (e.KeyCode == Keys.Right)
-                    tetrisPlayer2.MoveRight();
+                    _tetrisContainer[1].MoveRight();
                 if (e.KeyCode == Keys.Down)
-                    tetrisPlayer2.MoveDown(lbl_2pScore);
+                    _tetrisContainer[1].MoveDown();
                 if (e.KeyCode == Keys.Up)
-                    tetrisPlayer2.RotationBlock();
+                    _tetrisContainer[1].RotationBlock();
+                if (e.KeyCode == Keys.NumPad0)
+                {
+                    _tetrisContainer[1].HardDown();
+                    e.SuppressKeyPress = true;
+                }
+
             }
-            if (tetrisPlayer1 != null)
+            if (_tetrisContainer[0] != null)
             {
                 if (e.KeyCode == Keys.A)
-                    tetrisPlayer1.MoveLeft();
+                {
+                    _tetrisContainer[0].MoveLeft();
+                    e.SuppressKeyPress = true;
+                }
                 if (e.KeyCode == Keys.D)
-                    tetrisPlayer1.MoveRight();
+                {
+                    _tetrisContainer[0].MoveRight();
+                    e.SuppressKeyPress = true;
+                }
                 if (e.KeyCode == Keys.S)
-                    tetrisPlayer1.MoveDown(lbl_Score);
+                {
+                    _tetrisContainer[0].MoveDown();
+                    e.SuppressKeyPress = true;
+                }
                 if (e.KeyCode == Keys.W)
-                    tetrisPlayer1.RotationBlock();
+                {
+                    _tetrisContainer[0].RotationBlock();
+                    e.SuppressKeyPress = true;
+                }
+                if (e.KeyCode == Keys.E)
+                {
+                    _tetrisContainer[0].HardDown();
+                    e.SuppressKeyPress = true;
+                }
             }
 
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            if (mediaPlayer.URL == "")
+                timer1.Enabled = false;
             mediaPlayer.controls.play();
         }
 
-        private void btn_1vs1_Click(object sender, EventArgs e)
+        private async Task AllLoopDownAsync()
+        {
+            List<Task> tasks = new List<Task>();
+            foreach (var item in _tetrisContainer)
+            {
+                var t = item.LoopDownAsync();
+                tasks.Add(t);
+            }
+            await Task.WhenAny(tasks.ToArray());
+        }
+
+        private async void btn_1vs1_Click(object sender, EventArgs e)
         {
             Size = new System.Drawing.Size(700, 730);
-            timer1.Enabled = true;
-            mediaPlayer.controls.play();
-            tetrisPlayer1 = new Tetris(this, 1);
-            tetrisPlayer2 = new Tetris(this, 12);
-            btn_GameStart.Enabled = false;
-            btn_1vs1.Enabled = false;
-            Task.Run(() =>
-            {
-                while (true)
-                {
-                    Thread.Sleep(tetrisPlayer1.Delay);
-                    tetrisPlayer1?.MoveDown(lbl_Score);
-                    if (!tetrisPlayer1.CanGameRun)
-                        break;
-                }
-                GameEnd();
-
-            });
-            Task.Run(() =>
-            {
-                while (true)
-                {
-                    Thread.Sleep(tetrisPlayer2.Delay);
-                    tetrisPlayer2?.MoveDown(lbl_2pScore);
-                    if (!tetrisPlayer2.CanGameRun)
-                        break;
-                }
-                GameEnd();
-            });
+            StartSetting();
+            tetrisPlayer1 = new Tetris(this, 1, lbl_Score);
+            tetrisPlayer2 = new Tetris(this, 12, lbl_2pScore);
+            _tetrisContainer.Add(tetrisPlayer1);
+            _tetrisContainer.Add(tetrisPlayer2);
+            await AllLoopDownAsync();
+            GameEnd();
         }
     }
 }
