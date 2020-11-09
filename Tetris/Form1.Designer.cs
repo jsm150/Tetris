@@ -35,6 +35,10 @@ namespace Tetris
             this.label1 = new System.Windows.Forms.Label();
             this.lbl_Score = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.label2 = new System.Windows.Forms.Label();
+            this.lbl_BestScore = new System.Windows.Forms.Label();
+            this.btn_1vs1 = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btn_GameStart
@@ -72,12 +76,55 @@ namespace Tetris
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label2.Location = new System.Drawing.Point(33, 45);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(77, 12);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "BestScore:";
+            // 
+            // lbl_BestScore
+            // 
+            this.lbl_BestScore.AutoSize = true;
+            this.lbl_BestScore.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_BestScore.Location = new System.Drawing.Point(116, 45);
+            this.lbl_BestScore.Name = "lbl_BestScore";
+            this.lbl_BestScore.Size = new System.Drawing.Size(0, 12);
+            this.lbl_BestScore.TabIndex = 4;
+            // 
+            // btn_1vs1
+            // 
+            this.btn_1vs1.Location = new System.Drawing.Point(196, 12);
+            this.btn_1vs1.Name = "btn_1vs1";
+            this.btn_1vs1.Size = new System.Drawing.Size(51, 35);
+            this.btn_1vs1.TabIndex = 5;
+            this.btn_1vs1.TabStop = false;
+            this.btn_1vs1.Text = "1 vs 1";
+            this.btn_1vs1.UseVisualStyleBackColor = true;
+            this.btn_1vs1.Click += new System.EventHandler(this.btn_1vs1_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(499, 45);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(38, 12);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "label3";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(364, 691);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.btn_1vs1);
+            this.Controls.Add(this.lbl_BestScore);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.lbl_Score);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btn_GameStart);
@@ -97,6 +144,10 @@ namespace Tetris
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lbl_Score;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lbl_BestScore;
+        private System.Windows.Forms.Button btn_1vs1;
+        private System.Windows.Forms.Label label3;
     }
 }
 

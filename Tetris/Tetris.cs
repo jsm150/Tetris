@@ -8,6 +8,8 @@ namespace Tetris
 {
     class Tetris
     {
+        private readonly int _offsetX;
+        private readonly int _offsetY;
         private const int WIDTH = 10;
         private const int HEIGHT = 20;
         private const float SIZE_X = 30; const float SIZE_Y = 30;
@@ -25,8 +27,10 @@ namespace Tetris
         public int Score { get; private set; } = 0;
         
 
-        public Tetris(Form1 f)
+        public Tetris(Form1 f, int offsetX)
         {
+            _offsetX = offsetX;
+            _offsetY = 2;
             _form = f;
             for (int y = 0; y < HEIGHT; y++)
             {
@@ -219,22 +223,24 @@ namespace Tetris
         {
             using (Graphics g = _form.CreateGraphics())
             {
+                var offsetX = x + _offsetX;
+                var offsetY = y + _offsetY;
                 switch (_tetrisBorad[y, x])
                 {
                     case 1:
-                        g.FillRectangle(Brushes.Red, (x + 1) * SIZE_X, (y + 2) * SIZE_Y, SIZE_X, SIZE_Y);
-                        g.DrawRectangle(new Pen(Brushes.Black), (x + 1) * SIZE_X, (y + 2) * SIZE_Y, SIZE_X, SIZE_Y);
+                        g.FillRectangle(Brushes.Red, offsetX * SIZE_X, offsetY * SIZE_Y, SIZE_X, SIZE_Y);
+                        g.DrawRectangle(new Pen(Brushes.Black), offsetX * SIZE_X, offsetY * SIZE_Y, SIZE_X, SIZE_Y);
                         break;
                     case 2:
-                        g.FillRectangle(Brushes.White, (x + 1) * SIZE_X, (y + 2) * SIZE_Y, SIZE_X, SIZE_Y);
-                        g.DrawRectangle(new Pen(Brushes.Black), (x + 1) * SIZE_X, (y + 2) * SIZE_Y, SIZE_X, SIZE_Y);
+                        g.FillRectangle(Brushes.White, offsetX * SIZE_X, offsetY * SIZE_Y, SIZE_X, SIZE_Y);
+                        g.DrawRectangle(new Pen(Brushes.Black), offsetX * SIZE_X, offsetY * SIZE_Y, SIZE_X, SIZE_Y);
                         break;
                     case 3:
-                        g.FillRectangle(Brushes.Gray, (x + 1) * SIZE_X, (y + 2) * SIZE_Y, SIZE_X, SIZE_Y);
-                        g.DrawRectangle(new Pen(Brushes.Black), (x + 1) * SIZE_X, (y + 2) * SIZE_Y, SIZE_X, SIZE_Y);
+                        g.FillRectangle(Brushes.Gray, offsetX * SIZE_X, offsetY * SIZE_Y, SIZE_X, SIZE_Y);
+                        g.DrawRectangle(new Pen(Brushes.Black), offsetX * SIZE_X, offsetY * SIZE_Y, SIZE_X, SIZE_Y);
                         break;
                     default:
-                        g.FillRectangle(Brushes.Black, (x + 1) * SIZE_X, (y + 2) * SIZE_Y, SIZE_X, SIZE_Y);
+                        g.FillRectangle(Brushes.Black, offsetX * SIZE_X, offsetY * SIZE_Y, SIZE_X, SIZE_Y);
                         break;
                 }
             }
@@ -369,7 +375,7 @@ namespace Tetris
         private void BlockPreview()
         {
             var size = _block.GetLength(0);
-            for (int currentY = _currentY; currentY < HEIGHT; currentY++)
+            for (int currentY = _currentY; currentY < HEIGHT + 1; currentY++)
             {
                 for (int y = size - 1; y >= 0; y--)
                 {
