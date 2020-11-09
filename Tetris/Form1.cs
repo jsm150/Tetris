@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Windows;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using WMPLib;
 
@@ -22,39 +23,53 @@ namespace Tetris
 
         private async void btn_GameStart_Click(object sender, EventArgs e)
         {
+            Size = new System.Drawing.Size(380, 730);
             timer1.Enabled = true;
             mediaPlayer.controls.play();
-            tetrisPlayer1 = new Tetris(this, 1);
+            tetrisPlayer2 = new Tetris(this, 1);
             btn_GameStart.Enabled = false;
             btn_1vs1.Enabled = false;
-            await tetrisPlayer1.LoopDownAsync(lbl_Score);
+            await Task.Run(() => tetrisPlayer2.LoopDownAsync(lbl_Score));
             GameEnd();
         }
 
         void GameEnd()
         {
             lbl_BestScore.Text = lbl_Score.Text;
+            lbl_2pBestScore.Text = lbl_2pScore.Text;
             timer1.Enabled = false;
             mediaPlayer.controls.stop();
             MessageBox.Show($"Game Over!\nScore: {tetrisPlayer1.Score}");
             btn_GameStart.Enabled = true;
             btn_1vs1.Enabled = true;
             tetrisPlayer1 = null;
+            tetrisPlayer2 = null;
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
                 Close();
-            if (tetrisPlayer1 != null)
+            if (tetrisPlayer2 != null)
             {
                 if (e.KeyCode == Keys.Left)
-                    tetrisPlayer1.MoveLeft();
+                    tetrisPlayer2.MoveLeft();
                 if (e.KeyCode == Keys.Right)
-                    tetrisPlayer1.MoveRight();
+                    tetrisPlayer2.MoveRight();
                 if (e.KeyCode == Keys.Down)
-                    tetrisPlayer1.MoveDown(lbl_Score);
+                    tetrisPlayer2.MoveDown(lbl_Score);
                 if (e.KeyCode == Keys.Up)
+                    tetrisPlayer2.RotationBlock();
+            }
+            if (tetrisPlayer1 != null)
+            {
+                if (e.KeyCode == Keys.A)
+                    tetrisPlayer1.MoveLeft();
+                if (e.KeyCode == Keys.D)
+                    tetrisPlayer1.MoveRight();
+                if (e.KeyCode == Keys.S)
+                    tetrisPlayer1.MoveDown(lbl_Score);
+                if (e.KeyCode == Keys.W)
                     tetrisPlayer1.RotationBlock();
             }
 
@@ -65,17 +80,38 @@ namespace Tetris
             mediaPlayer.controls.play();
         }
 
-        private async void btn_1vs1_Click(object sender, EventArgs e)
+        private void btn_1vs1_Click(object sender, EventArgs e)
         {
-            Size = new System.Drawing.Size(760, 730);
+            Size = new System.Drawing.Size(700, 730);
             timer1.Enabled = true;
             mediaPlayer.controls.play();
             tetrisPlayer1 = new Tetris(this, 1);
             tetrisPlayer2 = new Tetris(this, 12);
             btn_GameStart.Enabled = false;
             btn_1vs1.Enabled = false;
-            await tetrisPlayer1.LoopDownAsync(lbl_Score);
-            GameEnd();
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    Thread.Sleep(tetrisPlayer1.Delay);
+                    tetrisPlayer1?.MoveDown(lbl_Score);
+                    if (!tetrisPlayer1.CanGameRun)
+                        break;
+                }
+                GameEnd();
+
+            });
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    Thread.Sleep(tetrisPlayer2.Delay);
+                    tetrisPlayer2?.MoveDown(lbl_2pScore);
+                    if (!tetrisPlayer2.CanGameRun)
+                        break;
+                }
+                GameEnd();
+            });
         }
     }
 }

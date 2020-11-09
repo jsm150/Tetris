@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -22,8 +23,8 @@ namespace Tetris
         private int _currentY = -1;
         private int _blockState = 0;
         private int _rotationNum = 0;
-        private int _delay = 450;
-        private bool CanGameRun { get; set; } = false;
+        public int Delay { get; private set; } = 450;
+        public bool CanGameRun { get; private set; } = true;
         public int Score { get; private set; } = 0;
         
 
@@ -41,13 +42,13 @@ namespace Tetris
             }
             NewBlock(); BlockCreate();
         }
-        public async Task LoopDownAsync(Label l)
+        public void LoopDownAsync(Label l)
         {
             while (true)
             {
-                await Task.Delay(_delay);
+                Thread.Sleep(Delay);
                 MoveDown(l);
-                if (CanGameRun)
+                if (!CanGameRun)
                     break;
             }
         }
@@ -262,7 +263,7 @@ namespace Tetris
                         {
                             if (_currentY == 0)
                             {
-                                CanGameRun = true;
+                                CanGameRun = false;
                             }
                             return false;
                         }
@@ -446,12 +447,12 @@ namespace Tetris
 
         void DelayAdjustment()
         {
-            if (_delay > 250)
-                _delay -= 8;
-            else if (_delay > 200)
-                _delay -= 3;
-            else if (_delay > 100)
-                _delay -= 1;
+            if (Delay > 250)
+                Delay -= 8;
+            else if (Delay > 200)
+                Delay -= 3;
+            else if (Delay > 100)
+                Delay -= 1;
         }
 
         public void MoveDown(Label label)
@@ -469,7 +470,7 @@ namespace Tetris
                 }
                 else
                 {
-                    if (CanGameRun)
+                    if (!CanGameRun)
                         return;
                     DelayAdjustment();
                     _currentY--;

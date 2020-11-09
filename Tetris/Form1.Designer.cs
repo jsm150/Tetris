@@ -38,7 +38,10 @@ namespace Tetris
             this.label2 = new System.Windows.Forms.Label();
             this.lbl_BestScore = new System.Windows.Forms.Label();
             this.btn_1vs1 = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
+            this.lbl_2pBestScore = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.lbl_2pScore = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btn_GameStart
@@ -106,14 +109,43 @@ namespace Tetris
             this.btn_1vs1.UseVisualStyleBackColor = true;
             this.btn_1vs1.Click += new System.EventHandler(this.btn_1vs1_Click);
             // 
-            // label3
+            // lbl_2pBestScore
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(499, 45);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(38, 12);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "label3";
+            this.lbl_2pBestScore.AutoSize = true;
+            this.lbl_2pBestScore.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_2pBestScore.Location = new System.Drawing.Point(451, 45);
+            this.lbl_2pBestScore.Name = "lbl_2pBestScore";
+            this.lbl_2pBestScore.Size = new System.Drawing.Size(0, 12);
+            this.lbl_2pBestScore.TabIndex = 9;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label4.Location = new System.Drawing.Point(368, 45);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(77, 12);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "BestScore:";
+            // 
+            // lbl_2pScore
+            // 
+            this.lbl_2pScore.AutoSize = true;
+            this.lbl_2pScore.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_2pScore.Location = new System.Drawing.Point(422, 23);
+            this.lbl_2pScore.Name = "lbl_2pScore";
+            this.lbl_2pScore.Size = new System.Drawing.Size(0, 12);
+            this.lbl_2pScore.TabIndex = 7;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label6.Location = new System.Drawing.Point(368, 23);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(48, 12);
+            this.label6.TabIndex = 6;
+            this.label6.Text = "Score:";
             // 
             // Form1
             // 
@@ -121,7 +153,10 @@ namespace Tetris
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(364, 691);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.lbl_2pBestScore);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.lbl_2pScore);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.btn_1vs1);
             this.Controls.Add(this.lbl_BestScore);
             this.Controls.Add(this.label2);
@@ -147,7 +182,10 @@ namespace Tetris
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lbl_BestScore;
         private System.Windows.Forms.Button btn_1vs1;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lbl_2pBestScore;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lbl_2pScore;
+        private System.Windows.Forms.Label label6;
     }
 }
 
