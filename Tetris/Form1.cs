@@ -57,7 +57,7 @@ namespace Tetris
                 if (e.KeyCode == Keys.Right)
                     tetrisPlayer2.MoveRight();
                 if (e.KeyCode == Keys.Down)
-                    tetrisPlayer2.MoveDown(lbl_Score);
+                    tetrisPlayer2.MoveDown(lbl_2pScore);
                 if (e.KeyCode == Keys.Up)
                     tetrisPlayer2.RotationBlock();
             }
