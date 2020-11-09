@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using WMPLib;
 
@@ -10,7 +11,8 @@ namespace Tetris
         WindowsMediaPlayer mediaPlayer = new WindowsMediaPlayer();
         public Form1()
         {
-            mediaPlayer.URL = "Tetris_BGM.mp3";
+            if (File.Exists("Tetris_BGM.mp3"))
+                mediaPlayer.URL = "Tetris_BGM.mp3";
             mediaPlayer.settings.volume = 10;
             mediaPlayer.controls.stop();
             InitializeComponent();
