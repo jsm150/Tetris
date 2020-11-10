@@ -54,6 +54,9 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="KeyBoardAction\IKeyboardSetting.cs" />
+    <Compile Include="KeyBoardAction\KeyboardPlayer1.cs" />
+    <Compile Include="KeyBoardAction\KeyboardPlayer2.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tetris.cs" />

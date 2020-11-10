@@ -25,7 +25,7 @@ namespace Tetris
         private async void btn_GameStart_Click(object sender, EventArgs e)
         {
             Size = new System.Drawing.Size(380, 730);
-            tetrisPlayer1 = new Tetris(this, 1, lbl_Score);
+            tetrisPlayer1 = new Tetris(this, 1, lbl_Score, KeyboardPlayer1.GetInstence);
             _tetrisContainer.Add(tetrisPlayer1);
             StartSetting();
             await _tetrisContainer[0].LoopDownAsync();
@@ -49,8 +49,8 @@ namespace Tetris
                 _tetrisContainer[i] = null;
             }
             _tetrisContainer.Clear();
-            lbl_BestScore.Text = lbl_Score.Text;
-            lbl_2pBestScore.Text = lbl_2pScore.Text;
+            lbl_BestScore.Text = int.Parse(lbl_Score.Text) > int.Parse(lbl_BestScore.Text) ? lbl_Score.Text : lbl_BestScore.Text;
+            lbl_2pBestScore.Text = int.Parse(lbl_2pScore.Text) > int.Parse(lbl_2pBestScore.Text) ? lbl_2pScore.Text : lbl_2pBestScore.Text;
             timer1.Enabled = false;
             mediaPlayer.controls.stop();
             btn_GameStart.Enabled = true;
@@ -73,52 +73,10 @@ namespace Tetris
         {
             if (e.KeyCode == Keys.Escape)
                 Close();
-            if (_tetrisContainer[1] != null)
+            foreach (var item in _tetrisContainer)
             {
-                if (e.KeyCode == Keys.Left)
-                    _tetrisContainer[1].MoveLeft();
-                if (e.KeyCode == Keys.Right)
-                    _tetrisContainer[1].MoveRight();
-                if (e.KeyCode == Keys.Down)
-                    _tetrisContainer[1].MoveDown();
-                if (e.KeyCode == Keys.Up)
-                    _tetrisContainer[1].RotationBlock();
-                if (e.KeyCode == Keys.NumPad0)
-                {
-                    _tetrisContainer[1].HardDown();
-                    e.SuppressKeyPress = true;
-                }
-
+                item?.KeyBoardAction(e);
             }
-            if (_tetrisContainer[0] != null)
-            {
-                if (e.KeyCode == Keys.A)
-                {
-                    _tetrisContainer[0].MoveLeft();
-                    e.SuppressKeyPress = true;
-                }
-                if (e.KeyCode == Keys.D)
-                {
-                    _tetrisContainer[0].MoveRight();
-                    e.SuppressKeyPress = true;
-                }
-                if (e.KeyCode == Keys.S)
-                {
-                    _tetrisContainer[0].MoveDown();
-                    e.SuppressKeyPress = true;
-                }
-                if (e.KeyCode == Keys.W)
-                {
-                    _tetrisContainer[0].RotationBlock();
-                    e.SuppressKeyPress = true;
-                }
-                if (e.KeyCode == Keys.E)
-                {
-                    _tetrisContainer[0].HardDown();
-                    e.SuppressKeyPress = true;
-                }
-            }
-
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -143,8 +101,8 @@ namespace Tetris
         {
             Size = new System.Drawing.Size(700, 730);
             StartSetting();
-            tetrisPlayer1 = new Tetris(this, 1, lbl_Score);
-            tetrisPlayer2 = new Tetris(this, 12, lbl_2pScore);
+            tetrisPlayer1 = new Tetris(this, 1, lbl_Score, KeyboardPlayer2.GetInstence);
+            tetrisPlayer2 = new Tetris(this, 12, lbl_2pScore, KeyboardPlayer1.GetInstence);
             _tetrisContainer.Add(tetrisPlayer1);
             _tetrisContainer.Add(tetrisPlayer2);
             await AllLoopDownAsync();

@@ -71,8 +71,9 @@ namespace Tetris
             this.lbl_Score.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.lbl_Score.Location = new System.Drawing.Point(87, 23);
             this.lbl_Score.Name = "lbl_Score";
-            this.lbl_Score.Size = new System.Drawing.Size(0, 12);
+            this.lbl_Score.Size = new System.Drawing.Size(12, 12);
             this.lbl_Score.TabIndex = 2;
+            this.lbl_Score.Text = "0";
             // 
             // timer1
             // 
@@ -95,8 +96,9 @@ namespace Tetris
             this.lbl_BestScore.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.lbl_BestScore.Location = new System.Drawing.Point(116, 45);
             this.lbl_BestScore.Name = "lbl_BestScore";
-            this.lbl_BestScore.Size = new System.Drawing.Size(0, 12);
+            this.lbl_BestScore.Size = new System.Drawing.Size(12, 12);
             this.lbl_BestScore.TabIndex = 4;
+            this.lbl_BestScore.Text = "0";
             // 
             // btn_1vs1
             // 
@@ -115,8 +117,9 @@ namespace Tetris
             this.lbl_2pBestScore.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.lbl_2pBestScore.Location = new System.Drawing.Point(451, 45);
             this.lbl_2pBestScore.Name = "lbl_2pBestScore";
-            this.lbl_2pBestScore.Size = new System.Drawing.Size(0, 12);
+            this.lbl_2pBestScore.Size = new System.Drawing.Size(12, 12);
             this.lbl_2pBestScore.TabIndex = 9;
+            this.lbl_2pBestScore.Text = "0";
             // 
             // label4
             // 
@@ -134,8 +137,9 @@ namespace Tetris
             this.lbl_2pScore.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.lbl_2pScore.Location = new System.Drawing.Point(422, 23);
             this.lbl_2pScore.Name = "lbl_2pScore";
-            this.lbl_2pScore.Size = new System.Drawing.Size(0, 12);
+            this.lbl_2pScore.Size = new System.Drawing.Size(12, 12);
             this.lbl_2pScore.TabIndex = 7;
+            this.lbl_2pScore.Text = "0";
             // 
             // label6
             // 
@@ -166,7 +170,6 @@ namespace Tetris
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.Name = "Form1";
-            this.Text = "Form1";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();

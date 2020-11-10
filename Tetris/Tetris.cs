@@ -8,6 +8,7 @@ namespace Tetris
 {
     class Tetris
     {
+        private IKeyboardSetting _keyboardSetting;
         private static object _locker = new object();
         private readonly int _offsetX;
         private readonly int _offsetY;
@@ -30,12 +31,13 @@ namespace Tetris
         public int Score { get; private set; } = 0;
 
 
-        public Tetris(Form1 f, int offsetX, Label label)
+        public Tetris(Form1 f, int offsetX, Label label, IKeyboardSetting key)
         {
             _offsetX = offsetX;
             _offsetY = 2;
             _form = f;
             _label = label;
+            _keyboardSetting = key;
             for (int y = 0; y < HEIGHT; y++)
             {
                 for (int x = 0; x < WIDTH; x++)
@@ -249,7 +251,7 @@ namespace Tetris
                 }
             }
         }
-        bool IsCheak() // 블럭 이동이 가능한지 체크, 게임오버 체크
+        bool CanMoveDown() // 블럭 이동이 가능한지 체크, 게임오버 체크
         {
             int size = _block.GetLength(0);
 
@@ -434,7 +436,7 @@ namespace Tetris
         {
             _rotationNum++;
             BlockCreate();
-            if (IsCheak())
+            if (CanMoveDown())
             {
                 RemoveRedBlock();
                 MoveRedBlock();
@@ -461,6 +463,7 @@ namespace Tetris
         public void HardDown()
         {
             var size = _block.GetLength(0);
+            var bak = _currentY;
             for (int currentY = _currentY; currentY <= HEIGHT; currentY++)
             {
                 for (int y = size - 1; y >= 0; y--)
@@ -474,8 +477,15 @@ namespace Tetris
                         if ((y + currentY == HEIGHT) || (_tetrisBorad[y + currentY, x + _currentX] == 2))
                         {
                             _currentY = currentY - 1;
-                            RemoveRedBlock();
-                            MoveRedBlock();
+                            if (CanMoveDown())
+                            {
+                                RemoveRedBlock();
+                                MoveRedBlock();
+                            }
+                            else
+                            {
+                                _currentY = bak;
+                            }
                             goto LOOP_EXIT;
                         }
                     }
@@ -484,12 +494,26 @@ namespace Tetris
         LOOP_EXIT:;
         }
 
+        public void KeyBoardAction(KeyEventArgs e)
+        {
+            if (_keyboardSetting.IsKeyDownAction(e))
+                MoveDown();
+            if (_keyboardSetting.IsKeyHardDownAction(e))
+                HardDown();
+            if (_keyboardSetting.IsKeyLeftAction(e))
+                MoveLeft();
+            if (_keyboardSetting.IsKeyRightAction(e))
+                MoveRight();
+            if (_keyboardSetting.IsKeyRotationAction(e))
+                RotationBlock();
+        }
+
         public void MoveDown()
         {
             lock (_locker)
             {
                 _currentY++;
-                if (IsCheak())
+                if (CanMoveDown())
                 {
                     Score += 5;
                     RemoveRedBlock();
@@ -503,7 +527,7 @@ namespace Tetris
                         return;
                     DelayAdjustment();
                     _currentY--;
-                    Score += 50;
+                    Score += 30;
                     for (int i = 0; i < HEIGHT; i++)
                     {
                         for (int j = 0; j < WIDTH; j++)
@@ -528,7 +552,7 @@ namespace Tetris
         {
             int size = _block.GetLength(0);
             _currentX++;
-            if (IsCheak())
+            if (CanMoveDown())
             {
                 RemoveRedBlock();
                 MoveRedBlock();
@@ -542,7 +566,7 @@ namespace Tetris
         {
             int size = _block.GetLength(0);
             _currentX--;
-            if (IsCheak())
+            if (CanMoveDown())
             {
                 RemoveRedBlock();
                 MoveRedBlock();
