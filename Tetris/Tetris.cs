@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -277,17 +278,16 @@ namespace Tetris
 
             LOOP_EXIT:
 
-            foreach (var i in _clearLineList)
-                if (i > 0)
-                    for (var y = i; y >= highLine; y--)
-                    for (var x = 0; x < WIDTH; x++)
-                    {
-                        if (_tetrisBorad[y - 1, x] == 2)
-                            _tetrisBorad[y, x] = 2;
-                        else
-                            _tetrisBorad[y, x] = 0;
-                        DrawColer(y, x);
-                    }
+            foreach (var i in _clearLineList.Where(i => i > 0))
+                for (var y = i; y >= highLine; y--)
+                for (var x = 0; x < WIDTH; x++)
+                {
+                    if (_tetrisBorad[y - 1, x] == 2)
+                        _tetrisBorad[y, x] = 2;
+                    else
+                        _tetrisBorad[y, x] = 0;
+                    DrawColer(y, x);
+                }
 
             for (var x = 0; x < WIDTH; x++)
             {
@@ -340,11 +340,10 @@ namespace Tetris
             {
                 if (_block[y, x] != 1)
                     continue;
-                if (y + currentY == HEIGHT || _tetrisBorad[y + currentY, x + _currentX] == 2)
-                {
-                    DrawBlockPreview(currentY - 1);
-                    goto LOOP_EXIT;
-                }
+                if (y + currentY != HEIGHT && _tetrisBorad[y + currentY, x + _currentX] != 2)
+                    continue;
+                DrawBlockPreview(currentY - 1);
+                goto LOOP_EXIT;
             }
 
             LOOP_EXIT: ;
@@ -413,23 +412,22 @@ namespace Tetris
                     continue;
                 if (y + currentY < 0)
                     continue;
-                if (y + currentY == HEIGHT || _tetrisBorad[y + currentY, x + _currentX] == 2)
+                if (y + currentY != HEIGHT && _tetrisBorad[y + currentY, x + _currentX] != 2)
+                    continue;
+                _currentY = currentY - 1;
+                if (CanMoveDown())
                 {
-                    _currentY = currentY - 1;
-                    if (CanMoveDown())
-                    {
-                        Score += 5 * (_currentY - bak);
-                        _label.Text = Score.ToString();
-                        RemoveRedBlock();
-                        MoveRedBlock();
-                    }
-                    else
-                    {
-                        _currentY = bak;
-                    }
-
-                    goto LOOP_EXIT;
+                    Score += 5 * (_currentY - bak);
+                    _label.Text = Score.ToString();
+                    RemoveRedBlock();
+                    MoveRedBlock();
                 }
+                else
+                {
+                    _currentY = bak;
+                }
+
+                goto LOOP_EXIT;
             }
 
             LOOP_EXIT: ;

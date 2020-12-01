@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WMPLib;
@@ -40,10 +41,10 @@ namespace Tetris
             btn_1vs1.Enabled = false;
         }
 
-        void GameEnd()
+        private void GameEnd()
         {
             var multiplayer = _tetrisContainer.Count > 1;
-            for (int i = 0; i < _tetrisContainer.Count; i++)
+            for (var i = 0; i < _tetrisContainer.Count; i++)
             {
                 _tetrisContainer[i].CanGameRun = false;
                 _tetrisContainer[i] = null;
@@ -86,17 +87,6 @@ namespace Tetris
             _mediaPlayer.controls.play();
         }
 
-        private async Task AllLoopDownAsync()
-        {
-            List<Task> tasks = new List<Task>();
-            foreach (var item in _tetrisContainer)
-            {
-                var t = item.LoopDownAsync();
-                tasks.Add(t);
-            }
-            await Task.WhenAny(tasks.ToArray());
-        }
-
         private async void btn_1vs1_Click(object sender, EventArgs e)
         {
             Size = new System.Drawing.Size(700, 730);
@@ -105,7 +95,7 @@ namespace Tetris
             _tetrisPlayer2 = new Tetris(this, 12, lbl_2pScore, KeyboardPlayer1.GetInstence);
             _tetrisContainer.Add(_tetrisPlayer1);
             _tetrisContainer.Add(_tetrisPlayer2);
-            await AllLoopDownAsync();
+            await Task.WhenAny(_tetrisContainer.Select(item => item.LoopDownAsync()).ToArray());
             GameEnd();
         }
     }
