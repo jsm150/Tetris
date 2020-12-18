@@ -378,17 +378,33 @@ namespace Tetris
             BlockCreate();
             if (CanMoveDown())
             {
-                RemoveRedBlock();
-                MoveRedBlock();
-                DeleteBlockPreview();
-                BlockPreview();
+                RotationBlockAction();
+            }
+            else if (_currentX < 0 || _currentX + _block.GetLength(0) > WIDTH)
+            {
+                var temp = _currentX;
+                _currentX = _currentX < 0 ? 0 : WIDTH - _block.GetLength(0);
+                if (CanMoveDown())
+                    RotationBlockAction();
+                else
+                    _currentX = temp;
             }
             else
             {
                 _rotationNum--;
                 BlockCreate();
             }
+
+            void RotationBlockAction()
+            {
+                RemoveRedBlock();
+                MoveRedBlock();
+                DeleteBlockPreview();
+                BlockPreview();
+            }
+
         }
+        
 
         private void DelayAdjustment()
         {
