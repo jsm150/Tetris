@@ -372,7 +372,7 @@ namespace Tetris
                 }
         }
 
-        public void RotationBlock()
+        private void RotationBlock()
         {
             _rotationNum++;
             BlockCreate();
