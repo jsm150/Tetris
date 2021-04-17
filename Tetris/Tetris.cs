@@ -24,6 +24,8 @@ namespace Tetris
         private readonly int[,] _tetrisBorad = new int[20, 10];
         private int[,] _block;
         private int _blockNum;
+        private int[] _blockNumArr = Enumerable.Range(0, 8).ToArray();
+        private int _blockNumPoint = 8;
         private int _currentX;
         private int _currentY = -1;
         private int _rotationNum;
@@ -61,7 +63,12 @@ namespace Tetris
 
         public void NewBlock()
         {
-            _blockNum = _random.Next(1, 8);
+            var num = _random.Next(1, _blockNumPoint);
+            _blockNum = _blockNumArr[num];
+            (_blockNumArr[num], _blockNumArr[_blockNumPoint - 1]) = (_blockNumArr[_blockNumPoint - 1], _blockNumArr[num]);
+            _blockNumPoint--;
+            if (_blockNumPoint <= 1)
+                _blockNumPoint = 8;
             _currentY = -1;
             _rotationNum = 0;
         }

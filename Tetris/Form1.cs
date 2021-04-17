@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,10 +11,11 @@ namespace Tetris
 {
     public partial class Form1 : Form
     {
+        private readonly WindowsMediaPlayer _mediaPlayer = new WindowsMediaPlayer();
+        private readonly List<Tetris> _tetrisContainer = new List<Tetris>();
         private Tetris _tetrisPlayer1;
         private Tetris _tetrisPlayer2;
-        private readonly List<Tetris> _tetrisContainer = new List<Tetris>();
-        private readonly WindowsMediaPlayer _mediaPlayer = new WindowsMediaPlayer();
+
         public Form1()
         {
             if (File.Exists("Tetris_BGM.mp3"))
@@ -25,7 +27,7 @@ namespace Tetris
 
         private async void btn_GameStart_Click(object sender, EventArgs e)
         {
-            Size = new System.Drawing.Size(380, 730);
+            Size = new Size(380, 730);
             _tetrisPlayer1 = new Tetris(this, 1, lbl_Score, KeyboardPlayer1.GetInstence);
             _tetrisContainer.Add(_tetrisPlayer1);
             StartSetting();
@@ -43,20 +45,25 @@ namespace Tetris
 
         private void GameEnd()
         {
-            var multiplayer = _tetrisContainer.Count > 1;
+            bool multiplayer = _tetrisContainer.Count > 1;
             for (var i = 0; i < _tetrisContainer.Count; i++)
             {
                 _tetrisContainer[i].CanGameRun = false;
                 _tetrisContainer[i] = null;
             }
+
             _tetrisContainer.Clear();
-            lbl_BestScore.Text = int.Parse(lbl_Score.Text) > int.Parse(lbl_BestScore.Text) ? lbl_Score.Text : lbl_BestScore.Text;
-            lbl_2pBestScore.Text = int.Parse(lbl_2pScore.Text) > int.Parse(lbl_2pBestScore.Text) ? lbl_2pScore.Text : lbl_2pBestScore.Text;
+            lbl_BestScore.Text = int.Parse(lbl_Score.Text) > int.Parse(lbl_BestScore.Text)
+                ? lbl_Score.Text
+                : lbl_BestScore.Text;
+            lbl_2pBestScore.Text = int.Parse(lbl_2pScore.Text) > int.Parse(lbl_2pBestScore.Text)
+                ? lbl_2pScore.Text
+                : lbl_2pBestScore.Text;
             timer1.Enabled = false;
             _mediaPlayer.controls.stop();
             btn_GameStart.Enabled = true;
             btn_1vs1.Enabled = true;
-            var p1Win = int.Parse(lbl_Score.Text) > int.Parse(lbl_2pScore.Text);
+            bool p1Win = int.Parse(lbl_Score.Text) > int.Parse(lbl_2pScore.Text);
             if (multiplayer)
             {
                 if (p1Win)
@@ -74,10 +81,7 @@ namespace Tetris
         {
             if (e.KeyCode == Keys.Escape)
                 Close();
-            foreach (var item in _tetrisContainer)
-            {
-                item?.KeyBoardAction(e);
-            }
+            foreach (Tetris item in _tetrisContainer) item?.KeyBoardAction(e);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -89,7 +93,7 @@ namespace Tetris
 
         private async void btn_1vs1_Click(object sender, EventArgs e)
         {
-            Size = new System.Drawing.Size(700, 730);
+            Size = new Size(700, 730);
             StartSetting();
             _tetrisPlayer1 = new Tetris(this, 1, lbl_Score, KeyboardPlayer2.GetInstence);
             _tetrisPlayer2 = new Tetris(this, 12, lbl_2pScore, KeyboardPlayer1.GetInstence);
