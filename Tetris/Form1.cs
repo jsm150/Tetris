@@ -18,8 +18,8 @@ namespace Tetris
 
         public Form1()
         {
-            if (File.Exists("Tetris_BGM.mp3"))
-                _mediaPlayer.URL = "Tetris_BGM.mp3";
+            if (File.Exists(@".\Sound\Tetris_BGM.mp3"))
+                _mediaPlayer.URL = @".\Sound\Tetris_BGM.mp3";
             _mediaPlayer.settings.volume = 10;
             _mediaPlayer.controls.stop();
             InitializeComponent();

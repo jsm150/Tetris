@@ -14,6 +14,7 @@ namespace Tetris
         private const float SIZE_X = 30;
         private const float SIZE_Y = 30;
         private static readonly object Locker = new object();
+        private readonly int[] _blockNumArr = Enumerable.Range(0, 8).ToArray();
         private readonly List<int> _clearLineList = new List<int>();
         private readonly Form1 _form;
         private readonly IKeyboardSetting _keyboardSetting;
@@ -24,7 +25,6 @@ namespace Tetris
         private readonly int[,] _tetrisBorad = new int[20, 10];
         private int[,] _block;
         private int _blockNum;
-        private int[] _blockNumArr = Enumerable.Range(0, 8).ToArray();
         private int _blockNumPoint = 8;
         private int _currentX;
         private int _currentY = -1;
@@ -63,13 +63,13 @@ namespace Tetris
 
         public void NewBlock()
         {
-            var num = _random.Next(1, _blockNumPoint);
+            int num = _random.Next(1, _blockNumPoint);
             _blockNum = _blockNumArr[num];
-            (_blockNumArr[num], _blockNumArr[_blockNumPoint - 1]) = (_blockNumArr[_blockNumPoint - 1], _blockNumArr[num]);
+            (_blockNumArr[num], _blockNumArr[_blockNumPoint - 1]) =
+                (_blockNumArr[_blockNumPoint - 1], _blockNumArr[num]);
             _blockNumPoint--;
             if (_blockNumPoint <= 1)
                 _blockNumPoint = 8;
-            _currentY = -1;
             _rotationNum = 0;
         }
 
@@ -80,31 +80,22 @@ namespace Tetris
                 case 1:
                     // ####
                     if (_rotationNum % 2 == 0)
-                        _block = new[,] {{1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
-                    else
                         _block = new[,] {{0, 0, 1, 0}, {0, 0, 1, 0}, {0, 0, 1, 0}, {0, 0, 1, 0}};
-                    if (_rotationNum == 0)
-                        _currentX = _random.Next(0, 11 - _block.GetLength(0));
+                    else
+                        _block = new[,] {{0, 0, 0, 0}, {1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0}};
                     break;
                 // ##
                 // ##
                 case 2:
                     _block = new[,] {{1, 1}, {1, 1}};
-                    if (_rotationNum == 0)
-                        _currentX = _random.Next(0, 11 - _block.GetLength(0));
                     break;
                 // ##
                 //  ##
                 case 3:
                     if (_rotationNum % 2 == 0)
-                        _block = new[,] {{1, 1, 0}, {0, 1, 1}, {0, 0, 0}};
+                        _block = new[,] {{0, 0, 1}, {0, 1, 1}, {0, 1, 0}};
                     else
-                        _block = new[,]
-                        {
-                            {0, 0, 1}, {0, 1, 1}, {0, 1, 0}
-                        };
-                    if (_rotationNum == 0)
-                        _currentX = _random.Next(0, 11 - _block.GetLength(0));
+                        _block = new[,] {{1, 1, 0}, {0, 1, 1}, {0, 0, 0}};
                     break;
                 case 4:
                     switch (_rotationNum % 4)
@@ -137,8 +128,6 @@ namespace Tetris
                             break;
                     }
 
-                    if (_rotationNum == 0)
-                        _currentX = _random.Next(0, 11 - _block.GetLength(0));
                     break;
                 case 5:
                     //  #
@@ -163,8 +152,6 @@ namespace Tetris
                         {
                             {0, 1, 0}, {1, 1, 0}, {0, 1, 0}
                         };
-                    if (_rotationNum == 0)
-                        _currentX = _random.Next(0, 11 - _block.GetLength(0));
                     break;
                 case 6:
                     //   #
@@ -189,8 +176,6 @@ namespace Tetris
                         {
                             {1, 1, 0}, {0, 1, 0}, {0, 1, 0}
                         };
-                    if (_rotationNum == 0)
-                        _currentX = _random.Next(0, 11 - _block.GetLength(0));
                     break;
                 case 7:
                     //  ##
@@ -205,18 +190,22 @@ namespace Tetris
                         {
                             {0, 1, 0}, {0, 1, 1}, {0, 0, 1}
                         };
-                    if (_rotationNum == 0)
-                        _currentX = _random.Next(0, 11 - _block.GetLength(0));
                     break;
+            }
+
+            if (_rotationNum == 0)
+            {
+                _currentY = 0 - _block.GetLength(0);
+                _currentX = _random.Next(0, 11 - _block.GetLength(0));
             }
         }
 
         private void DrawColer(int y, int x)
         {
-            using (var g = _form.CreateGraphics())
+            using (Graphics g = _form.CreateGraphics())
             {
-                var offsetX = x + _offsetX;
-                var offsetY = y + _offsetY;
+                int offsetX = x + _offsetX;
+                int offsetY = y + _offsetY;
                 switch (_tetrisBorad[y, x])
                 {
                     case 1:
@@ -238,21 +227,24 @@ namespace Tetris
             }
         }
 
-        private bool CanMoveDown() // 블럭 이동이 가능한지 체크, 게임오버 체크
+        private bool CanMoveBlock() // 블럭 이동이 가능한지 체크, 게임오버 체크
         {
-            var size = _block.GetLength(0);
+            int size = _block.GetLength(0);
 
             for (var y = 0; y < size; y++)
             for (var x = 0; x < size; x++)
                 if (_block[y, x] == 1)
                 {
+                    
                     if (_currentY + y >= HEIGHT || _currentX + x >= WIDTH)
                         return false;
-                    if (_currentX + x < 0 || _currentY + y < 0)
+                    if (_currentX + x < 0)
                         return false;
+                    if (_currentY + y < 0)
+                        continue;
                     if (_tetrisBorad[y + _currentY, x + _currentX] == 2)
                     {
-                        if (_currentY == 0) CanGameRun = false;
+                        if (_currentY <= 0) CanGameRun = false;
                         return false;
                     }
                 }
@@ -285,8 +277,8 @@ namespace Tetris
 
             LOOP_EXIT:
 
-            foreach (var i in _clearLineList.Where(i => i > 0))
-                for (var y = i; y >= highLine; y--)
+            foreach (int i in _clearLineList.Where(i => i > 0))
+                for (int y = i; y >= highLine; y--)
                 for (var x = 0; x < WIDTH; x++)
                 {
                     if (_tetrisBorad[y - 1, x] == 2)
@@ -308,12 +300,16 @@ namespace Tetris
             _clearLineList.Clear();
             var b = false;
 
-            for (var y = _currentY; y < HEIGHT; y++)
+            for (int y = _currentY; y < HEIGHT; y++)
+            {
+                if (y < 0)
+                    continue;
                 if (LineCheck(y))
                 {
                     _clearLineList.Add(y);
                     b = true;
                 }
+            }
 
             return b;
 
@@ -328,11 +324,13 @@ namespace Tetris
 
         private void MoveRedBlock()
         {
-            var size = _block.GetLength(0);
+            int size = _block.GetLength(0);
             for (var y = 0; y < size; y++)
             for (var x = 0; x < size; x++)
                 if (_block[y, x] == 1)
                 {
+                    if (_currentY + y < 0)
+                        continue;
                     _tetrisBorad[y + _currentY, x + _currentX] = 1;
                     DrawColer(y + _currentY, x + _currentX);
                 }
@@ -340,11 +338,13 @@ namespace Tetris
 
         private void BlockPreview()
         {
-            var size = _block.GetLength(0);
-            for (var currentY = _currentY; currentY <= HEIGHT; currentY++)
-            for (var y = size - 1; y >= 0; y--)
+            int size = _block.GetLength(0);
+            for (int currentY = _currentY; currentY <= HEIGHT; currentY++)
+            for (int y = size - 1; y >= 0; y--)
             for (var x = 0; x < size; x++)
             {
+                if (currentY + y < 0)
+                    continue;
                 if (_block[y, x] != 1)
                     continue;
                 if (y + currentY != HEIGHT && _tetrisBorad[y + currentY, x + _currentX] != 2)
@@ -358,10 +358,10 @@ namespace Tetris
 
         private void DrawBlockPreview(int currentY)
         {
-            var size = _block.GetLength(0);
+            int size = _block.GetLength(0);
             for (var y = 0; y < size; y++)
             for (var x = 0; x < size; x++)
-                if (_block[y, x] == 1 && _tetrisBorad[y + currentY, x + _currentX] == 0)
+                if (y + currentY >= 0 && _block[y, x] == 1 && _tetrisBorad[y + currentY, x + _currentX] == 0)
                 {
                     _tetrisBorad[y + currentY, x + _currentX] = 3;
                     DrawColer(y + currentY, x + _currentX);
@@ -383,15 +383,15 @@ namespace Tetris
         {
             _rotationNum++;
             BlockCreate();
-            if (CanMoveDown())
+            if (CanMoveBlock())
             {
                 RotationBlockAction();
             }
             else if (_currentX < 0 || _currentX + _block.GetLength(0) > WIDTH)
             {
-                var temp = _currentX;
+                int temp = _currentX;
                 _currentX = _currentX < 0 ? 0 : WIDTH - _block.GetLength(0);
-                if (CanMoveDown())
+                if (CanMoveBlock())
                     RotationBlockAction();
                 else
                     _currentX = temp;
@@ -409,9 +409,8 @@ namespace Tetris
                 DeleteBlockPreview();
                 BlockPreview();
             }
-
         }
-        
+
 
         private void DelayAdjustment()
         {
@@ -425,10 +424,10 @@ namespace Tetris
 
         public void HardDown()
         {
-            var size = _block.GetLength(0);
-            var bak = _currentY;
-            for (var currentY = _currentY; currentY <= HEIGHT; currentY++)
-            for (var y = size - 1; y >= 0; y--)
+            int size = _block.GetLength(0);
+            int bak = _currentY;
+            for (int currentY = _currentY; currentY <= HEIGHT; currentY++)
+            for (int y = size - 1; y >= 0; y--)
             for (var x = 0; x < size; x++)
             {
                 if (_block[y, x] != 1)
@@ -438,7 +437,7 @@ namespace Tetris
                 if (y + currentY != HEIGHT && _tetrisBorad[y + currentY, x + _currentX] != 2)
                     continue;
                 _currentY = currentY - 1;
-                if (CanMoveDown())
+                if (CanMoveBlock())
                 {
                     Score += 5 * (_currentY - bak);
                     _label.Text = Score.ToString();
@@ -454,6 +453,7 @@ namespace Tetris
             }
 
             LOOP_EXIT: ;
+            MoveDown();
         }
 
         public void KeyBoardAction(KeyEventArgs e)
@@ -475,7 +475,7 @@ namespace Tetris
             lock (Locker)
             {
                 _currentY++;
-                if (CanMoveDown())
+                if (CanMoveBlock())
                 {
                     Score += 5;
                     RemoveRedBlock();
@@ -515,7 +515,7 @@ namespace Tetris
         public void MoveRight()
         {
             _currentX++;
-            if (CanMoveDown())
+            if (CanMoveBlock())
             {
                 RemoveRedBlock();
                 MoveRedBlock();
@@ -531,7 +531,7 @@ namespace Tetris
         public void MoveLeft()
         {
             _currentX--;
-            if (CanMoveDown())
+            if (CanMoveBlock())
             {
                 RemoveRedBlock();
                 MoveRedBlock();
