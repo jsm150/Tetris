@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WMPLib;
 
@@ -12,9 +10,7 @@ namespace Tetris
     public partial class Form1 : Form
     {
         private readonly WindowsMediaPlayer _mediaPlayer = new WindowsMediaPlayer();
-        private readonly List<Tetris> _tetrisContainer = new List<Tetris>();
-        private Tetris _tetrisPlayer1;
-        private Tetris _tetrisPlayer2;
+        private readonly GameController _gameController;
 
         public Form1()
         {
@@ -22,17 +18,17 @@ namespace Tetris
                 _mediaPlayer.URL = @".\Sound\Tetris_BGM.mp3";
             _mediaPlayer.settings.volume = 10;
             _mediaPlayer.controls.stop();
+            _gameController = GameController.GetInstance;
+            _gameController.GameEndAction = GameEnd;
             InitializeComponent();
         }
 
         private async void btn_GameStart_Click(object sender, EventArgs e)
         {
-            Size = new Size(380, 730);
-            _tetrisPlayer1 = new Tetris(this, 1, lbl_Score, KeyboardPlayer1.GetInstence);
-            _tetrisContainer.Add(_tetrisPlayer1);
+            Size = new Size(380, 790);
             StartSetting();
-            await _tetrisContainer[0].LoopDownAsync();
-            GameEnd();
+            _gameController.PlayerAdd(new Tetris(this, 1, lbl_Score, KeyboardPlayer1.GetInstance, 1));
+            await _gameController.GameStart();
         }
 
         private void StartSetting()
@@ -43,45 +39,25 @@ namespace Tetris
             btn_1vs1.Enabled = false;
         }
 
-        private void GameEnd()
+        private void GameEnd(string gameAlertMsg)
         {
-            bool multiplayer = _tetrisContainer.Count > 1;
-            for (var i = 0; i < _tetrisContainer.Count; i++)
-            {
-                _tetrisContainer[i].CanGameRun = false;
-                _tetrisContainer[i] = null;
-            }
-
-            _tetrisContainer.Clear();
-            lbl_BestScore.Text = int.Parse(lbl_Score.Text) > int.Parse(lbl_BestScore.Text)
-                ? lbl_Score.Text
-                : lbl_BestScore.Text;
-            lbl_2pBestScore.Text = int.Parse(lbl_2pScore.Text) > int.Parse(lbl_2pBestScore.Text)
-                ? lbl_2pScore.Text
-                : lbl_2pBestScore.Text;
             timer1.Enabled = false;
             _mediaPlayer.controls.stop();
             btn_GameStart.Enabled = true;
             btn_1vs1.Enabled = true;
-            bool p1Win = int.Parse(lbl_Score.Text) > int.Parse(lbl_2pScore.Text);
-            if (multiplayer)
-            {
-                if (p1Win)
-                    MessageBox.Show(@"플레이어1 승리!", $@"Score: {lbl_Score.Text}");
-                else
-                    MessageBox.Show(@"플레이어2 승리!", $@"Score: {lbl_2pScore.Text}");
-            }
-            else
-            {
-                MessageBox.Show(@"Game Over!", $@"Score: {lbl_Score.Text}");
-            }
+
+            lbl_BestScore.Text = int.Parse(lbl_Score.Text) > int.Parse(lbl_BestScore.Text)
+                ? lbl_Score.Text
+                : lbl_BestScore.Text;
+
+            MessageBox.Show(gameAlertMsg);
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
                 Close();
-            foreach (Tetris item in _tetrisContainer) item?.KeyBoardAction(e);
+            _gameController.KeyBoardAction(e);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -93,14 +69,16 @@ namespace Tetris
 
         private async void btn_1vs1_Click(object sender, EventArgs e)
         {
-            Size = new Size(700, 730);
+            Size = new Size(700, 790);
             StartSetting();
-            _tetrisPlayer1 = new Tetris(this, 1, lbl_Score, KeyboardPlayer2.GetInstence);
-            _tetrisPlayer2 = new Tetris(this, 12, lbl_2pScore, KeyboardPlayer1.GetInstence);
-            _tetrisContainer.Add(_tetrisPlayer1);
-            _tetrisContainer.Add(_tetrisPlayer2);
-            await Task.WhenAny(_tetrisContainer.Select(item => item.LoopDownAsync()).ToArray());
-            GameEnd();
+            _gameController.PlayerAdd(new Tetris(this, 1, lbl_Score, KeyboardPlayer2.GetInstance, 1));
+            _gameController.PlayerAdd(new Tetris(this, 12, lbl_2pScore, KeyboardPlayer1.GetInstance, 2));
+            await _gameController.GameStart();
+        }
+
+        private void tBar_Volume_Scroll(object sender, EventArgs e)
+        {
+            _mediaPlayer.settings.volume = tBar_Volume.Value;
         }
     }
 }

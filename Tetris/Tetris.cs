@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace Tetris
 {
-    internal class Tetris
+    public class Tetris
     {
         private const int WIDTH = 10;
         private const int HEIGHT = 20;
@@ -21,7 +21,7 @@ namespace Tetris
         private readonly Label _label;
         private readonly int _offsetX;
         private readonly int _offsetY;
-        private readonly Random _random = new Random();
+        private readonly Random _random = new Random(DateTime.Now.Millisecond);
         private readonly int[,] _tetrisBorad = new int[20, 10];
         private int[,] _block;
         private int _blockNum;
@@ -31,24 +31,30 @@ namespace Tetris
         private int _rotationNum;
 
 
-        public Tetris(Form1 f, int offsetX, Label label, IKeyboardSetting key)
+        public Tetris(Form1 f, int offsetX, Label label, IKeyboardSetting key, int id)
         {
+            PlayerId = id;
             _offsetX = offsetX;
-            _offsetY = 2;
+            _offsetY = 4;
             _form = f;
             _label = label;
             _keyboardSetting = key;
+        }
+
+        public int PlayerId { get; }
+        public int Delay { get; private set; } = 450;
+        public bool CanGameRun { get; set; } = true;
+        public int Score { get; private set; }
+
+        public async Task GameStart()
+        {
             for (var y = 0; y < HEIGHT; y++)
             for (var x = 0; x < WIDTH; x++)
                 DrawColer(y, x);
             NewBlock();
             BlockCreate();
+            await LoopDownAsync();
         }
-
-        public int Delay { get; private set; } = 450;
-        public bool CanGameRun { get; set; } = true;
-        public int Score { get; private set; }
-
 
         public async Task LoopDownAsync()
         {
@@ -61,7 +67,7 @@ namespace Tetris
             }
         }
 
-        public void NewBlock()
+        private void NewBlock()
         {
             int num = _random.Next(1, _blockNumPoint);
             _blockNum = _blockNumArr[num];
@@ -73,7 +79,7 @@ namespace Tetris
             _rotationNum = 0;
         }
 
-        public void BlockCreate()
+        private void BlockCreate()
         {
             switch (_blockNum)
             {
@@ -235,7 +241,6 @@ namespace Tetris
             for (var x = 0; x < size; x++)
                 if (_block[y, x] == 1)
                 {
-                    
                     if (_currentY + y >= HEIGHT || _currentX + x >= WIDTH)
                         return false;
                     if (_currentX + x < 0)
@@ -412,7 +417,7 @@ namespace Tetris
         }
 
 
-        private void DelayAdjustment()
+        private void SetDelay()
         {
             if (Delay > 250)
                 Delay -= 5;
@@ -422,7 +427,7 @@ namespace Tetris
                 Delay -= 1;
         }
 
-        public void HardDown()
+        private void HardDown()
         {
             int size = _block.GetLength(0);
             int bak = _currentY;
@@ -452,7 +457,7 @@ namespace Tetris
                 goto LOOP_EXIT;
             }
 
-            LOOP_EXIT: ;
+            LOOP_EXIT:
             MoveDown();
         }
 
@@ -470,7 +475,7 @@ namespace Tetris
                 RotationBlock();
         }
 
-        public void MoveDown()
+        private void MoveDown()
         {
             lock (Locker)
             {
@@ -487,7 +492,7 @@ namespace Tetris
                 {
                     if (!CanGameRun)
                         return;
-                    DelayAdjustment();
+                    SetDelay();
                     _currentY--;
                     Score += 30;
                     for (var i = 0; i < HEIGHT; i++)
@@ -512,7 +517,7 @@ namespace Tetris
             }
         }
 
-        public void MoveRight()
+        private void MoveRight()
         {
             _currentX++;
             if (CanMoveBlock())
@@ -528,7 +533,7 @@ namespace Tetris
             }
         }
 
-        public void MoveLeft()
+        private void MoveLeft()
         {
             _currentX--;
             if (CanMoveBlock())

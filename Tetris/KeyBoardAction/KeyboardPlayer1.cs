@@ -2,15 +2,13 @@
 
 namespace Tetris
 {
-    class KeyboardPlayer1 : IKeyboardSetting
+    internal class KeyboardPlayer1 : IKeyboardSetting
     {
-        public static KeyboardPlayer1 keyboardPlayer1 = new KeyboardPlayer1();
-
-        public static KeyboardPlayer1 GetInstence => keyboardPlayer1;
         private KeyboardPlayer1()
         {
-
         }
+
+        public static KeyboardPlayer1 GetInstance { get; } = new KeyboardPlayer1();
 
         public bool IsKeyDownAction(KeyEventArgs e)
         {

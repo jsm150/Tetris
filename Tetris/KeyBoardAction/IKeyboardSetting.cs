@@ -9,6 +9,5 @@ namespace Tetris
         bool IsKeyRightAction(KeyEventArgs e);
         bool IsKeyRotationAction(KeyEventArgs e);
         bool IsKeyHardDownAction(KeyEventArgs e);
-
     }
 }
