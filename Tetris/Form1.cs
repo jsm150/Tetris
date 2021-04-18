@@ -25,7 +25,7 @@ namespace Tetris
 
         private async void btn_GameStart_Click(object sender, EventArgs e)
         {
-            Size = new Size(380, 790);
+            Size = new Size(380, 880);
             StartSetting();
             _gameController.PlayerAdd(new Tetris(this, 1, lbl_Score, KeyboardPlayer1.GetInstance, 1));
             await _gameController.GameStart();
@@ -69,7 +69,7 @@ namespace Tetris
 
         private async void btn_1vs1_Click(object sender, EventArgs e)
         {
-            Size = new Size(700, 790);
+            Size = new Size(700, 880);
             StartSetting();
             _gameController.PlayerAdd(new Tetris(this, 1, lbl_Score, KeyboardPlayer2.GetInstance, 1));
             _gameController.PlayerAdd(new Tetris(this, 12, lbl_2pScore, KeyboardPlayer1.GetInstance, 2));
