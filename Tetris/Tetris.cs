@@ -9,16 +9,17 @@ namespace Tetris
 {
     public class Tetris
     {
+        public event EventHandler<TetrisEventArgs> ConnectingToAI;
+        private static readonly object _locker = new object();
         private const int WIDTH = 10;
         private const int HEIGHT = 20;
-        private static readonly object Locker = new object();
+        private readonly int _offsetX;
+        private readonly int _offsetY = 7;
         private readonly int[] _blockNumArr = Enumerable.Range(0, 8).ToArray();
         private readonly List<int> _clearLineList = new List<int>();
         private readonly Form1 _form;
         private readonly IKeyboardSetting _keyboardSetting;
         private readonly Label _label;
-        private readonly int _offsetX;
-        private readonly int _offsetY = 7;
         private readonly Random _random = new Random(DateTime.Now.Millisecond);
         private readonly int[,] _tetrisBoard = new int[20, 10];
         private readonly Queue<int> _saveBlock = new Queue<int>();
@@ -28,6 +29,7 @@ namespace Tetris
         private int _currentX;
         private int _currentY = -1;
         private int _rotationNum;
+        private int _delay = 450;
 
 
         public Tetris(Form1 f, int offsetX, Label label, IKeyboardSetting key, int id)
@@ -40,7 +42,6 @@ namespace Tetris
         }
 
         public int PlayerId { get; }
-        public int Delay { get; private set; } = 450;
         public bool CanGameRun { get; set; } = true;
         public int Score { get; private set; }
 
@@ -57,7 +58,7 @@ namespace Tetris
         {
             while (true)
             {
-                await Task.Delay(Delay);
+                await Task.Delay(_delay);
                 MoveDown();
                 if (!CanGameRun)
                     break;
@@ -71,6 +72,7 @@ namespace Tetris
             _block = BlockCreate(_blockNum, _rotationNum);
             _currentY = 0 - _block.GetLength(0);
             _currentX = _random.Next(0, 11 - _block.GetLength(0));
+            ConnectingToAI?.Invoke(this, new TetrisEventArgs(_block, _tetrisBoard));
         }
 
         private void NewBlock()
@@ -99,10 +101,9 @@ namespace Tetris
             {
                 case 1:
                     // ####
-                    if (rotationNum % 2 == 0)
-                        return new[,] {{0, 0, 0, 0}, { 1, 1, 1, 1 }, { 0, 0, 0, 0}, { 0, 0, 0, 0}};
-                    else
-                        return new[,] {{0, 0, 1, 0}, {0, 0, 1, 0}, {0, 0, 1, 0}, {0, 0, 1, 0}};
+                    return rotationNum % 2 == 0 
+                        ? new[,] {{0, 0, 0, 0}, { 1, 1, 1, 1 }, { 0, 0, 0, 0}, { 0, 0, 0, 0}} 
+                        : new[,] {{0, 0, 1, 0}, {0, 0, 1, 0}, {0, 0, 1, 0}, {0, 0, 1, 0}};
                 // ##
                 // ##
                 case 2:
@@ -110,10 +111,9 @@ namespace Tetris
                 // ##
                 //  ##
                 case 3:
-                    if (rotationNum % 2 == 0)
-                        return new[,] {{0, 0, 1}, {0, 1, 1}, {0, 1, 0}};
-                    else
-                        return new[,] {{1, 1, 0}, {0, 1, 1}, {0, 0, 0}};
+                    return rotationNum % 2 == 0 
+                        ? new[,] {{1, 1, 0}, {0, 1, 1}, {0, 0, 0}} 
+                        : new[,] {{0, 0, 1}, {0, 1, 1}, {0, 1, 0}};
                 case 4:
                     switch (rotationNum % 4)
                     {
@@ -197,16 +197,16 @@ namespace Tetris
 
         private void NextBlockPreview()
         {
-            const int sizeX = 25;
-            const int sizeY = 25;
+            const int sizeX = 30;
+            const int sizeY = 30;
             int[,] block = BlockCreate(_saveBlock.Peek(), 0);
             using (Graphics g = _form.CreateGraphics())
             {
                 int size = block.GetLength(0);
-                for (int y = 0; y < 4; y++)
+                for (int y = 0; y < 2; y++)
                 for (int x = 0; x < 4; x++)
                 {
-                    int offsetX = x + _offsetX + 4;
+                    int offsetX = x + _offsetX + 3;
                     int offsetY = y + 4;
                     if (x >= size || y >= size || block[y, x] != 1)
                     {
@@ -244,6 +244,14 @@ namespace Tetris
                 }
 
             return true;
+        }
+
+        private void ReDrawBlock()
+        {
+            RemoveRedBlock();
+            MoveRedBlock();
+            DeleteBlockPreview();
+            BlockDownPreview();
         }
 
         private void RemoveRedBlock()
@@ -393,22 +401,19 @@ namespace Tetris
             {
                 _rotationNum++;
                 _block = block;
-                RemoveRedBlock();
-                MoveRedBlock();
-                DeleteBlockPreview();
-                BlockDownPreview();
+                ReDrawBlock();
             }
         }
 
 
         private void SetDelay()
         {
-            if (Delay > 250)
-                Delay -= 5;
-            else if (Delay > 200)
-                Delay -= 2;
-            else if (Delay > 100)
-                Delay -= 1;
+            if (_delay > 250)
+                _delay -= 5;
+            else if (_delay > 200)
+                _delay -= 2;
+            else if (_delay > 100)
+                _delay -= 1;
         }
 
         private void HardDown()
@@ -457,16 +462,13 @@ namespace Tetris
 
         private void MoveDown()
         {
-            lock (Locker)
+            lock (_locker)
             {
                 if (CanMoveBlock(_block, _currentY + 1, _currentX))
                 {
                     _currentY++;
                     Score += 5;
-                    RemoveRedBlock();
-                    MoveRedBlock();
-                    DeleteBlockPreview();
-                    BlockDownPreview();
+                    ReDrawBlock();
                 }
                 else
                 {
@@ -499,20 +501,14 @@ namespace Tetris
         {
             if (!CanMoveBlock(_block, _currentY, _currentX + 1)) return;
             _currentX++;
-            RemoveRedBlock();
-            MoveRedBlock();
-            DeleteBlockPreview();
-            BlockDownPreview();
+            ReDrawBlock();
         }
 
         private void MoveLeft()
         {
             if (!CanMoveBlock(_block, _currentY, _currentX - 1)) return;
             _currentX--;
-            RemoveRedBlock();
-            MoveRedBlock();
-            DeleteBlockPreview();
-            BlockDownPreview();
+            ReDrawBlock();
         }
     }
 }
