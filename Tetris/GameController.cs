@@ -37,7 +37,7 @@ namespace Tetris
         private void GameEnd()
         {
             string mag = GameEndAlertMsg();
-            Player.ForEach(t => t.CanGameRun = false);
+            Player.ForEach(t => t.GamePlaying = false);
             Player.Clear();
             GameEndAction.Invoke(mag);
         }
@@ -46,7 +46,7 @@ namespace Tetris
         {
             if (Player.Count <= 1)
                 return "Game Over!";
-            int id = Player.First(t => t.CanGameRun).PlayerId;
+            int id = Player.First(t => t.GamePlaying).PlayerId;
             return $"플레이어{id} 승리!";
         }
     }

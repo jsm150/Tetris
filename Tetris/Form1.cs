@@ -8,8 +8,8 @@ namespace Tetris
 {
     public partial class Form1 : Form
     {
-        private readonly WindowsMediaPlayer _mediaPlayer = new WindowsMediaPlayer();
         private readonly GameController _gameController;
+        private readonly WindowsMediaPlayer _mediaPlayer = new WindowsMediaPlayer();
 
         public Form1()
         {
