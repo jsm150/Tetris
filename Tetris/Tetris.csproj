@@ -47,6 +47,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
@@ -70,6 +73,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="AI\GeneticAlgorithm.cs" />
     <Compile Include="KeyBoardAction\IKeyboardSetting.cs" />
     <Compile Include="KeyBoardAction\KeyboardPlayer1.cs" />
     <Compile Include="KeyBoardAction\KeyboardPlayer2.cs" />

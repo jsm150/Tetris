@@ -41,10 +41,11 @@ namespace Tetris
 
         public event EventHandler<TetrisEventArgs> AutoPlayer;
         public event EventHandler<AiInitEventArgs> ConnectingToAi;
+        public event EventHandler GameEnd;
 
         public async Task GameStart()
         {
-            ConnectingToAi?.Invoke(this, new AiInitEventArgs(DownLocationCalc, _block, _keyboardSetting, PlayingAI));
+            ConnectingToAi?.Invoke(this, new AiInitEventArgs(DownLocationCalc, _block, _keyboardSetting, HasPlayingAi));
             for (var y = 0; y < HEIGHT; y++)
             for (var x = 0; x < WIDTH; x++)
                 DrawColer(y, x);
@@ -59,11 +60,14 @@ namespace Tetris
                 await Task.Delay(_delay);
                 MoveDown();
                 if (!GamePlaying)
+                {
+                    GameEnd.Invoke(this, EventArgs.Empty);
                     break;
+                }
             }
         }
 
-        private void PlayingAI()
+        private void HasPlayingAi()
         {
             AiPlaying = true;
         }
@@ -273,7 +277,7 @@ namespace Tetris
                     continue;
                 if (block[y, x] != 1)
                     continue;
-                if (y + currentY != HEIGHT && _tetrisBoard[y + currentY, x + currentX] <= 10)
+                if (y + currentY < HEIGHT && _tetrisBoard[y + currentY, x + currentX] <= 10)
                     continue;
                 return currentY - 1;
             }

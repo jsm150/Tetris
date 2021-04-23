@@ -89,5 +89,9 @@ namespace Tetris
             Settings.Default.Save();
         }
 
+        private void btn_Genetic_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
