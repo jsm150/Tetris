@@ -2,12 +2,18 @@
 
 namespace Tetris
 {
-    public interface IKeyboardSetting
+    public abstract class IKeyboardSetting
     {
-        bool IsKeyDownAction(KeyEventArgs e);
-        bool IsKeyLeftAction(KeyEventArgs e);
-        bool IsKeyRightAction(KeyEventArgs e);
-        bool IsKeyRotationAction(KeyEventArgs e);
-        bool IsKeyHardDownAction(KeyEventArgs e);
+        public abstract bool IsKeyDownAction(KeyEventArgs e);
+        public abstract bool IsKeyLeftAction(KeyEventArgs e);
+        public abstract bool IsKeyRightAction(KeyEventArgs e);
+        public abstract bool IsKeyRotationAction(KeyEventArgs e);
+        public abstract bool IsKeyHardDownAction(KeyEventArgs e);
+
+        public abstract Keys DownCode { get; }
+        public abstract Keys LeftCode { get; }
+        public abstract Keys RightCode { get; }
+        public abstract Keys RotationCode { get; }
+        public abstract Keys HardDownCode { get; }
     }
 }

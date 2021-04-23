@@ -37,20 +37,22 @@ namespace Tetris
         public int PlayerId { get; }
         public bool GamePlaying { get; set; } = true;
         public int Score { get; private set; }
+        public bool AiPlaying { get; private set; } = false;
+
         public event EventHandler<TetrisEventArgs> AutoPlayer;
-        public event EventHandler<TetrisEventArgs> DeliveryToMethod;
+        public event EventHandler<AiInitEventArgs> ConnectingToAi;
 
         public async Task GameStart()
         {
+            ConnectingToAi?.Invoke(this, new AiInitEventArgs(DownLocationCalc, _block, _keyboardSetting, PlayingAI));
             for (var y = 0; y < HEIGHT; y++)
             for (var x = 0; x < WIDTH; x++)
                 DrawColer(y, x);
-            DeliveryToMethod?.Invoke(this, new TetrisEventArgs(_block.BlockCreate, DownLocationCalc));
             ReSetBlock();
             await LoopDownAsync();
         }
 
-        public async Task LoopDownAsync()
+        private async Task LoopDownAsync()
         {
             while (true)
             {
@@ -61,13 +63,18 @@ namespace Tetris
             }
         }
 
+        private void PlayingAI()
+        {
+            AiPlaying = true;
+        }
+
         private void ReSetBlock()
         {
             _block.NewBlock();
             NextBlockPreview();
             _currentY = 0 - _block.Block.GetLength(0);
             _currentX = _random.Next(0, 11 - _block.Block.GetLength(0));
-            AutoPlayer?.Invoke(this, new TetrisEventArgs(tetrisBoard: _tetrisBoard));
+            AutoPlayer?.Invoke(this, new TetrisEventArgs(tetrisBoard: _tetrisBoard, currentX: _currentX));
         }
 
         private void DrawColer(int y, int x)
@@ -144,17 +151,15 @@ namespace Tetris
             for (var x = 0; x < size; x++)
                 if (block[y, x] == 1)
                 {
-                    if (ny + y >= HEIGHT || nx + x >= WIDTH)
-                        return false;
-                    if (nx + x < 0)
+                    if (ny + y >= HEIGHT || nx + x >= WIDTH || nx + x < 0)
                         return false;
                     if (ny + y < 0)
                         continue;
-                    if (_tetrisBoard[y + ny, x + nx] > 10)
-                    {
-                        if (callByMoveDown && ny < 0) GamePlaying = false;
-                        return false;
-                    }
+                    if (_tetrisBoard[y + ny, x + nx] <= 10) 
+                        continue;
+                    if (callByMoveDown && ny < 0) 
+                        GamePlaying = false;
+                    return false;
                 }
 
             return true;
@@ -254,14 +259,19 @@ namespace Tetris
 
         private int DownLocationCalc(int nowY, int currentX)
         {
-            int size = _block.Block.GetLength(0);
+            return DownLocationCalc(nowY, currentX, _block.Block);
+        }
+
+        private int DownLocationCalc(int nowY, int currentX, int[,] block)
+        {
+            int size = block.GetLength(0);
             for (int currentY = nowY; currentY <= HEIGHT; currentY++)
             for (int y = size - 1; y >= 0; y--)
             for (var x = 0; x < size; x++)
             {
                 if (currentY + y < 0)
                     continue;
-                if (_block.Block[y, x] != 1)
+                if (block[y, x] != 1)
                     continue;
                 if (y + currentY != HEIGHT && _tetrisBoard[y + currentY, x + currentX] <= 10)
                     continue;

@@ -8,7 +8,7 @@ namespace Tetris
 {
     public class GameController
     {
-        public readonly List<Tetris> Player = new List<Tetris>();
+        private readonly List<Tetris> Player = new List<Tetris>();
 
         private GameController()
         {
@@ -25,7 +25,11 @@ namespace Tetris
 
         public void KeyBoardAction(KeyEventArgs e)
         {
-            Player.ForEach(t => t.KeyBoardAction(e));
+            foreach (Tetris t in Player)
+            {
+                if (!t.AiPlaying)
+                    t.KeyBoardAction(e);
+            }
         }
 
         public async Task GameStart()

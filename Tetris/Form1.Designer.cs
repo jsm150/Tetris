@@ -159,6 +159,7 @@ namespace Tetris
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.Name = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.tBar_Volume)).EndInit();
             this.ResumeLayout(false);

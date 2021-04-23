@@ -8,39 +8,39 @@ namespace Tetris
         {
         }
 
-        public Keys DownCode => Keys.S;
-        public Keys LeftCode => Keys.A;
-        public Keys RightCode => Keys.D;
-        public Keys RotationCode => Keys.W;
-        public Keys HardDownCode => Keys.E;
+        public override Keys DownCode => Keys.S;
+        public override Keys LeftCode => Keys.A;
+        public override Keys RightCode => Keys.D;
+        public override Keys RotationCode => Keys.W;
+        public override Keys HardDownCode => Keys.E;
 
         public static KeyboardPlayer2 GetInstance { get; } = new KeyboardPlayer2();
 
-        public bool IsKeyDownAction(KeyEventArgs e)
+        public override bool IsKeyDownAction(KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
             return e.KeyCode == DownCode;
         }
 
-        public bool IsKeyLeftAction(KeyEventArgs e)
+        public override bool IsKeyLeftAction(KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
             return e.KeyCode == LeftCode;
         }
 
-        public bool IsKeyRightAction(KeyEventArgs e)
+        public override bool IsKeyRightAction(KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
             return e.KeyCode == RightCode;
         }
 
-        public bool IsKeyRotationAction(KeyEventArgs e)
+        public override bool IsKeyRotationAction(KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
             return e.KeyCode == RotationCode;
         }
 
-        public bool IsKeyHardDownAction(KeyEventArgs e)
+        public override bool IsKeyHardDownAction(KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
             return e.KeyCode == HardDownCode;

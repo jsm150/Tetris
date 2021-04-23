@@ -1,23 +1,27 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 
 namespace Tetris
 {
     public class TetrisEventArgs : EventArgs
     {
-        public TetrisEventArgs(Func<int, int, int[,]> blockCreate = null,
-            Func<int, int, int> downLocationCalc = null,
+        public TetrisEventArgs(Func<int, int, int[,], int> downLocationCalc = null,
+            TetrisBlock tetrisBlock = null,
+            IKeyboardSetting k = null,
             int[,] tetrisBoard = null,
-            int blockNum = 0)
+            int currentX = 0)
         {
             DownLocationCalc = downLocationCalc;
-            BlockCreate = blockCreate;
+            TetrisBlock = tetrisBlock;
+            KeyboardSetting = k;
             TetrisBoard = tetrisBoard;
-            BlockNum = blockNum;
+            CurrentX = currentX;
         }
 
-        public int BlockNum { get; }
-        public Func<int, int, int[,]> BlockCreate { get; }
-        public Func<int, int, int> DownLocationCalc { get; }
+        public Func<int, int, int[,], int> DownLocationCalc { get; }
+        public TetrisBlock TetrisBlock { get; }
+        public IKeyboardSetting KeyboardSetting { get; }
         public int[,] TetrisBoard { get; }
+        public int CurrentX { get; }
     }
 }

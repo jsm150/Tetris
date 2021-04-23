@@ -25,7 +25,7 @@ namespace Tetris
         public int BlockNum { get; private set; }
         public int RotationNum { get; private set; }
 
-        private int[] SetBlockRotationCountInit()
+        private static int[] SetBlockRotationCountInit()
         {
             var arr = new int[8];
             arr[1] = 2;
@@ -38,7 +38,7 @@ namespace Tetris
             return arr;
         }
 
-        private Brush[] SetBlockColorInit()
+        private static Brush[] SetBlockColorInit()
         {
             var arr = new Brush[8];
             arr[1] = Brushes.Aqua;
