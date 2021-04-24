@@ -59,11 +59,10 @@ namespace Tetris
             {
                 await Task.Delay(_delay);
                 MoveDown();
-                if (!GamePlaying)
-                {
-                    GameEnd.Invoke(this, EventArgs.Empty);
-                    break;
-                }
+                if (GamePlaying) continue;
+
+                GameEnd?.Invoke(this, EventArgs.Empty);
+                break;
             }
         }
 
@@ -202,11 +201,11 @@ namespace Tetris
 
             LOOP_EXIT:
 
-            foreach (int i in _clearLineList.Where(i => i > 0))
+            foreach (int i in _clearLineList)
                 for (int y = i; y >= highLine; y--)
                 for (var x = 0; x < WIDTH; x++)
                 {
-                    if (_tetrisBoard[y - 1, x] > 10)
+                    if (y > 0 && _tetrisBoard[y - 1, x] > 10)
                         _tetrisBoard[y, x] = _tetrisBoard[y - 1, x];
                     else
                         _tetrisBoard[y, x] = 0;

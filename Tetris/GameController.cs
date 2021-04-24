@@ -50,8 +50,9 @@ namespace Tetris
         {
             if (Player.Count <= 1)
                 return "Game Over!";
-            int id = Player.First(t => t.GamePlaying).PlayerId;
-            return $"플레이어{id} 승리!";
+            int id = Player.FirstOrDefault(t => t.GamePlaying)?.PlayerId ?? 0;
+            
+            return id != 0? $"플레이어{id} 승리!" : "비겼습니다!";
         }
     }
 }

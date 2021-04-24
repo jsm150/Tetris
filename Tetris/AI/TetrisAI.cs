@@ -26,8 +26,9 @@ namespace Tetris
             _playerId = tetris.PlayerId;
         }
 
-        private static void DeBugging(int[,] board)
+        private static void DeBugging(int[,] board, Func<bool> TryCondition)
         {
+            if (!TryCondition.Invoke()) return;
             Console.Clear();
             int width = board.GetLength(1);
             int height = board.GetLength(0);
@@ -35,8 +36,9 @@ namespace Tetris
             {
                 for (int x = 0; x < width; x++)
                 {
-                    Console.Write($"{board[y, x], 2} ");
+                    Console.Write($"{board[y, x],2} ");
                 }
+
                 Console.WriteLine();
             }
         }
@@ -55,16 +57,15 @@ namespace Tetris
         {
             Keys keyData = e.CurrentX < optimalX ? _keyboardSetting.RightCode : _keyboardSetting.LeftCode;
             int end = Math.Abs(e.CurrentX - optimalX);
-            await Task.Delay(1);
             for (int i = 0; i < optimalRotation; i++)
             {
-                await Task.Delay(1);
+                await Task.Delay(00);
                 KeyboardAction(new KeyEventArgs(_keyboardSetting.RotationCode));
             }
 
             for (int i = 0; i < end; i++)
             {
-                await Task.Delay(1);
+                await Task.Delay(00);
                 KeyboardAction(new KeyEventArgs(keyData));
             }
 
@@ -106,8 +107,8 @@ namespace Tetris
                     if (!CanPutBlock(x, block)) continue;
                     int y = DownLocationCalc(-block.GetLength(0), x, block);
                     int[,] board = AttachToBoard(y, x, e.TetrisBoard, block);
-                    //DeBugging(board);
-                    double temp = GetBestCaseValue(y, x, board);
+                    //DeBugging(board, () => _block.BlockNum == 1 && y < 2);
+                    double temp = GetBestCaseValue(y, x, board, block);
 
                     if (max >= temp) continue;
                     max = temp;
@@ -131,17 +132,17 @@ namespace Tetris
             return newBoard;
         }
 
-        private static double GetBestCaseValue(int currentY, int currentX, int[,] board)
+        private static double GetBestCaseValue(int currentY, int currentX, int[,] board, int[,] block)
         {
             double value = 0;
-            value += GetValue1(board);
+            value += GetValue1(board, block, currentY);
             value += GetHoleValue(board);
 
 
             return value;
         }
 
-        private static double GetValue1(int[,] board)
+        private static double GetValue1(int[,] board, int[,] block, int currentY)
         {
             double totalValue = 0;
             double blockHeightValue = 0;
@@ -153,14 +154,18 @@ namespace Tetris
                 if (HasLineClear(y))
                     lineClearValue++;
 
-                var cnt = 0;
                 for (int x = 0; x < width; x++)
                 {
                     if (board[y, x] > 10)
-                        cnt++;
+                        blockHeightValue += height - y;
                 }
+            }
 
-                blockHeightValue += (height - y) * cnt;
+            for (int y = 0; y < -currentY; y++)
+            for (int x = 0; x < block.GetLength(1); x++)
+            {
+                if (block[y, x] == 1)
+                    blockHeightValue += height + (-currentY - y);
             }
 
             bool HasLineClear(int y)
