@@ -5,7 +5,7 @@ namespace Tetris
 {
     public class TetrisEventArgs : EventArgs
     {
-        public TetrisEventArgs(int[,] tetrisBoard = null, int currentX = 0)
+        public TetrisEventArgs(int[,] tetrisBoard, int currentX = 0)
         {
             TetrisBoard = tetrisBoard;
             CurrentX = currentX;

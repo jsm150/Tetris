@@ -9,7 +9,7 @@ namespace Tetris
     public class TetrisBlock
     {
         private readonly int[] _blockNumArr = Enumerable.Range(0, 8).ToArray();
-        private readonly Random _random = new Random(DateTime.Now.Millisecond);
+        private static readonly Random _random = new Random();
         private readonly Queue<int> _saveBlock = new Queue<int>();
         private int _blockNumPoint = 8;
 

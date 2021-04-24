@@ -15,7 +15,7 @@ namespace Tetris
         private readonly Action<KeyEventArgs> KeyboardAction;
         private IKeyboardSetting _keyboardSetting;
         private TetrisBlock _block;
-        private int _playerId;
+        private readonly int _playerId;
 
         public TetrisAI(Tetris tetris)
         {

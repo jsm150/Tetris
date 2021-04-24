@@ -19,7 +19,7 @@ namespace Tetris
         private readonly object _locker = new object();
         private readonly int _offsetX;
         private readonly int _offsetY = 7;
-        private readonly Random _random = new Random(DateTime.Now.Millisecond);
+        private static readonly Random _random = new Random();
         private readonly int[,] _tetrisBoard = new int[20, 10];
         private int _currentX;
         private int _currentY = -1;
