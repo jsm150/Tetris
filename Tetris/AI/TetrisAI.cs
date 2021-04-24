@@ -12,23 +12,19 @@ namespace Tetris
         private static Dictionary<int, TetrisAI> TetrisAi { get; } = new Dictionary<int, TetrisAI>();
 
         private Func<int, int, int[,], int> DownLocationCalc;
-        private readonly Action<KeyEventArgs> KeyboardAction;
         private IKeyboardSetting _keyboardSetting;
         private TetrisBlock _block;
-        private readonly int _playerId;
 
-        public TetrisAI(Tetris tetris)
+        private TetrisAI(Tetris tetris)
         {
-            tetris.AutoPlayer += FindOptimalPosAsync;
+            tetris.ReSetBlockEvent += FindOptimalPosAsync;
             tetris.ConnectingToAi += ConnectingToTetris;
-            tetris.GameEnd += DisconnectToTetris;
-            KeyboardAction = tetris.KeyBoardAction;
-            _playerId = tetris.PlayerId;
+            tetris.GameEndEvent += DisconnectToTetris;
         }
 
-        private static void DeBugging(int[,] board, Func<bool> TryCondition)
+        private static void DeBugging(int[,] board, Func<bool> condition)
         {
-            if (!TryCondition.Invoke()) return;
+            if (!condition.Invoke()) return;
             Console.Clear();
             int width = board.GetLength(1);
             int height = board.GetLength(0);
@@ -50,26 +46,8 @@ namespace Tetris
 
         private void DisconnectToTetris(object sender, EventArgs e)
         {
-            TetrisAi.Remove(_playerId);
-        }
-
-        private async Task AutoPlaying(TetrisEventArgs e, int optimalX, int optimalRotation)
-        {
-            Keys keyData = e.CurrentX < optimalX ? _keyboardSetting.RightCode : _keyboardSetting.LeftCode;
-            int end = Math.Abs(e.CurrentX - optimalX);
-            for (int i = 0; i < optimalRotation; i++)
-            {
-                await Task.Delay(00);
-                KeyboardAction(new KeyEventArgs(_keyboardSetting.RotationCode));
-            }
-
-            for (int i = 0; i < end; i++)
-            {
-                await Task.Delay(00);
-                KeyboardAction(new KeyEventArgs(keyData));
-            }
-
-            KeyboardAction(new KeyEventArgs(_keyboardSetting.HardDownCode));
+            var tetris = sender as Tetris;
+            TetrisAi.Remove(tetris.PlayerId);
         }
 
         private void ConnectingToTetris(object sender, AiInitEventArgs e)
@@ -77,6 +55,38 @@ namespace Tetris
             DownLocationCalc = e.DownLocationCalc;
             _block = e.TetrisBlock;
             _keyboardSetting = e.KeyboardSetting;
+        }
+
+        private int GetCurrentHeight(int[,] board)
+        {
+            for (int y = 0; y < board.GetLength(0); y++)
+            for (int x = 0; x < board.GetLength(1); x++)
+            {
+                if (board[y, x] > 10)
+                    return Math.Min(board.GetLength(0) - y, 16);
+            }
+
+            return -1;
+        }
+
+        private async Task AutoPlaying(Tetris tetris, TetrisEventArgs e, int optimalX, int optimalRotation)
+        {
+            int delay = (16 - GetCurrentHeight(e.TetrisBoard)) * 19;
+            Keys keyData = e.CurrentX < optimalX ? _keyboardSetting.RightCode : _keyboardSetting.LeftCode;
+            int end = Math.Abs(e.CurrentX - optimalX);
+            for (int i = 0; i < optimalRotation; i++)
+            {
+                await Task.Delay(delay);
+                tetris.KeyBoardAction(new KeyEventArgs(_keyboardSetting.RotationCode));
+            }
+
+            for (int i = 0; i < end; i++)
+            {
+                await Task.Delay(delay);
+                tetris.KeyBoardAction(new KeyEventArgs(keyData));
+            }
+
+            tetris.KeyBoardAction(new KeyEventArgs(_keyboardSetting.HardDownCode));
         }
 
         private static bool CanPutBlock(int currentX, int[,] block)
@@ -116,7 +126,7 @@ namespace Tetris
                 }
             }
 
-            await AutoPlaying(e, pos.X, pos.RotationNum);
+            await AutoPlaying(sender as Tetris, e, pos.X, pos.RotationNum);
         }
 
         private int[,] AttachToBoard(int currentY, int currentX, int[,] board, int[,] block)

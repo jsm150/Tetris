@@ -40,7 +40,7 @@ namespace Tetris
 
         private static Brush[] SetBlockColorInit()
         {
-            var arr = new Brush[8];
+            var arr = new Brush[9];
             arr[1] = Brushes.Aqua;
             arr[2] = Brushes.Yellow;
             arr[3] = Brushes.Red;
@@ -48,6 +48,7 @@ namespace Tetris
             arr[5] = Brushes.PaleVioletRed;
             arr[6] = Brushes.CornflowerBlue;
             arr[7] = Brushes.GreenYellow;
+            arr[8] = Brushes.Gray;
             return arr;
         }
 

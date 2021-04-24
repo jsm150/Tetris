@@ -39,9 +39,10 @@ namespace Tetris
         public int Score { get; private set; }
         public bool AiPlaying { get; private set; } = false;
 
-        public event EventHandler<TetrisEventArgs> AutoPlayer;
         public event EventHandler<AiInitEventArgs> ConnectingToAi;
-        public event EventHandler GameEnd;
+        public event EventHandler<TetrisEventArgs> ReSetBlockEvent;
+        public event EventHandler<TetrisEventArgs> LineClearEvent;
+        public event EventHandler GameEndEvent;
 
         public async Task GameStart()
         {
@@ -61,7 +62,7 @@ namespace Tetris
                 MoveDown();
                 if (GamePlaying) continue;
 
-                GameEnd?.Invoke(this, EventArgs.Empty);
+                GameEndEvent?.Invoke(this, EventArgs.Empty);
                 break;
             }
         }
@@ -77,7 +78,7 @@ namespace Tetris
             NextBlockPreview();
             _currentY = 0 - _block.Block.GetLength(0);
             _currentX = _random.Next(0, 11 - _block.Block.GetLength(0));
-            AutoPlayer?.Invoke(this, new TetrisEventArgs(tetrisBoard: _tetrisBoard, currentX: _currentX));
+            ReSetBlockEvent?.Invoke(this, new TetrisEventArgs(tetrisBoard: _tetrisBoard, currentX: _currentX));
         }
 
         private void DrawColer(int y, int x)
@@ -102,11 +103,16 @@ namespace Tetris
                     case 3:
                         g.DrawRectangle(new Pen(Brushes.DarkGray), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
                         break;
+                    case 18:
+                        g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                        g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                        break;
                     default:
                     {
-                        if (_tetrisBoard[y, x] > 10)
+                        if (_tetrisBoard[y, x] > 10 && _tetrisBoard[y, x] <= 17)
                         {
-                            //_blockColor[_tetrisBoard[y, x] - 10]
+                            // _block.BlockColor[_tetrisBoard[y, x] - 10]
+                            // Brushes.White
                             g.FillRectangle(Brushes.White, offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
                             g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
                         }
@@ -187,19 +193,21 @@ namespace Tetris
                 }
         }
 
-        private void ClearLine()
+        private int GetHighLine()
         {
-            var highLine = 1;
-
             for (var y = 0; y < HEIGHT; y++)
             for (var x = 0; x < WIDTH; x++)
                 if (_tetrisBoard[y, x] > 10)
                 {
-                    highLine = y;
-                    goto LOOP_EXIT;
+                    return y;
                 }
 
-            LOOP_EXIT:
+            return -1;
+        }
+
+        private void ClearLine()
+        {
+            int highLine = GetHighLine();
 
             foreach (int i in _clearLineList)
                 for (int y = i; y >= highLine; y--)
@@ -212,11 +220,7 @@ namespace Tetris
                     DrawColer(y, x);
                 }
 
-            for (var x = 0; x < WIDTH; x++)
-            {
-                _tetrisBoard[0, x] = 0;
-                DrawColer(0, x);
-            }
+            LineClearEvent?.Invoke(this, new TetrisEventArgs(lineClearCount: _clearLineList.Count));
         }
 
         private bool CanClearLine()
@@ -345,32 +349,35 @@ namespace Tetris
 
         private void HardDown()
         {
-            int size = _block.Block.GetLength(0);
-            for (int currentY = _currentY; currentY <= HEIGHT; currentY++)
-            for (int y = size - 1; y >= 0; y--)
-            for (var x = 0; x < size; x++)
+            lock (_locker)
             {
-                if (_block.Block[y, x] != 1)
-                    continue;
-                if (y + currentY < 0)
-                    continue;
-                if (y + currentY != HEIGHT && _tetrisBoard[y + currentY, x + _currentX] <= 10)
-                    continue;
-
-                if (CanMoveBlock(_block.Block, currentY - 1, _currentX, true))
+                int size = _block.Block.GetLength(0);
+                for (int currentY = _currentY; currentY <= HEIGHT; currentY++)
+                for (int y = size - 1; y >= 0; y--)
+                for (var x = 0; x < size; x++)
                 {
-                    Score += 5 * (currentY - 1 - _currentY);
-                    _currentY = currentY - 1;
-                    _label.Text = Score.ToString();
-                    RemoveRedBlock();
-                    MoveRedBlock();
+                    if (_block.Block[y, x] != 1)
+                        continue;
+                    if (y + currentY < 0)
+                        continue;
+                    if (y + currentY != HEIGHT && _tetrisBoard[y + currentY, x + _currentX] <= 10)
+                        continue;
+
+                    if (CanMoveBlock(_block.Block, currentY - 1, _currentX, true))
+                    {
+                        Score += 5 * (currentY - 1 - _currentY);
+                        _currentY = currentY - 1;
+                        _label.Text = Score.ToString();
+                        RemoveRedBlock();
+                        MoveRedBlock();
+                    }
+
+                    goto LOOP_EXIT;
                 }
 
-                goto LOOP_EXIT;
+                LOOP_EXIT:
+                MoveDown();
             }
-
-            LOOP_EXIT:
-            MoveDown();
         }
 
         public void KeyBoardAction(KeyEventArgs e)
@@ -385,6 +392,47 @@ namespace Tetris
                 MoveRight();
             if (_keyboardSetting.IsKeyRotationAction(e))
                 RotationBlock();
+        }
+
+        public void SetGarbageLine(int cnt)
+        {
+            lock (_locker)
+            {
+                if (cnt <= 0) return;
+
+                int highLine = GetHighLine();
+                int blank = _random.Next(0, WIDTH);
+                for (int y = Math.Max(highLine - cnt, 0); y < HEIGHT - cnt; y++)
+                for (int x = 0; x < WIDTH; x++)
+                {
+                    _tetrisBoard[y, x] = _tetrisBoard[y + cnt, x];
+                    DrawColer(y, x);
+                }
+
+                for (int y = HEIGHT - cnt; y < HEIGHT; y++)
+                for (int x = 0; x < WIDTH; x++)
+                {
+                    _tetrisBoard[y, x] = x == blank? 0 : 18;
+                    DrawColer(y, x);
+                }
+
+                for (int y = 0; y < _block.Block.GetLength(0); y++)
+                {
+                    if (_currentY + y < 0 || _currentY + y >= HEIGHT) continue;
+                    for (int x = 0; x < _block.Block.GetLength(0); x++)
+                    {
+                        if (_block.Block[y, x] == 1 && _tetrisBoard[_currentY + y, _currentX + x] > 10)
+                        {
+                            _currentX -= _block.Block.GetLength(0) - y;
+                        }
+                    }
+                }
+
+                if (highLine - cnt < 0)
+                {
+                    GamePlaying = false;
+                }
+            }
         }
 
         private void MoveDown()
