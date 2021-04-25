@@ -78,7 +78,7 @@ namespace Tetris
             NextBlockPreview();
             _currentY = 0 - _block.Block.GetLength(0);
             _currentX = _random.Next(0, 11 - _block.Block.GetLength(0));
-            ReSetBlockEvent?.Invoke(this, new TetrisEventArgs(tetrisBoard: _tetrisBoard, currentX: _currentX));
+            ReSetBlockEvent?.Invoke(this, new TetrisEventArgs(_tetrisBoard, _currentX, _delay));
         }
 
         private void DrawColer(int y, int x)

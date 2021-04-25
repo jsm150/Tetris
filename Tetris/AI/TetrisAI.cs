@@ -71,8 +71,8 @@ namespace Tetris
 
         private async Task AutoPlaying(Tetris tetris, TetrisEventArgs e, int optimalX, int optimalRotation)
         {
-            int delay = (16 - GetCurrentHeight(e.TetrisBoard)) * 19;
-            //int delay = 0;
+            var delay = Convert.ToInt32((16 - GetCurrentHeight(e.TetrisBoard)) * 19 * (e.Delay / 450.0));
+            //var delay = 0;
             Keys keyData = e.CurrentX < optimalX ? _keyboardSetting.RightCode : _keyboardSetting.LeftCode;
             int end = Math.Abs(e.CurrentX - optimalX);
             for (int i = 0; i < optimalRotation; i++)
