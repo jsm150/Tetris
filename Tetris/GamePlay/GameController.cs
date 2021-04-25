@@ -26,10 +26,8 @@ namespace Tetris
         public static void KeyBoardAction(KeyEventArgs e)
         {
             foreach (Tetris t in Players)
-            {
                 if (!t.AiPlaying)
                     t.KeyBoardAction(e);
-            }
         }
 
         public static async Task GameStart()
@@ -52,8 +50,8 @@ namespace Tetris
             if (Players.Count <= 1)
                 return "Game Over!";
             int id = Players.FirstOrDefault(t => t.GamePlaying)?.PlayerId ?? 0;
-            
-            return id != 0? $"플레이어{id} 승리!" : "비겼습니다!";
+
+            return id != 0 ? $"플레이어{id} 승리!" : "비겼습니다!";
         }
     }
 }

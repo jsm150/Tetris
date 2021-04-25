@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -9,11 +7,10 @@ namespace Tetris
 {
     public class TetrisAI
     {
-        private static Dictionary<int, TetrisAI> TetrisAi { get; } = new Dictionary<int, TetrisAI>();
+        private TetrisBlock _block;
+        private IKeyboardSetting _keyboardSetting;
 
         private Func<int, int, int[,], int> DownLocationCalc;
-        private IKeyboardSetting _keyboardSetting;
-        private TetrisBlock _block;
 
         private TetrisAI(Tetris tetris)
         {
@@ -22,18 +19,17 @@ namespace Tetris
             tetris.GameEndEvent += DisconnectToTetris;
         }
 
+        private static Dictionary<int, TetrisAI> TetrisAi { get; } = new Dictionary<int, TetrisAI>();
+
         private static void DeBugging(int[,] board, Func<bool> condition)
         {
             if (!condition.Invoke()) return;
             Console.Clear();
             int width = board.GetLength(1);
             int height = board.GetLength(0);
-            for (int y = 0; y < height; y++)
+            for (var y = 0; y < height; y++)
             {
-                for (int x = 0; x < width; x++)
-                {
-                    Console.Write($"{board[y, x],2} ");
-                }
+                for (var x = 0; x < width; x++) Console.Write($"{board[y, x],2} ");
 
                 Console.WriteLine();
             }
@@ -59,29 +55,26 @@ namespace Tetris
 
         private int GetCurrentHeight(int[,] board)
         {
-            for (int y = 0; y < board.GetLength(0); y++)
-            for (int x = 0; x < board.GetLength(1); x++)
-            {
+            for (var y = 0; y < board.GetLength(0); y++)
+            for (var x = 0; x < board.GetLength(1); x++)
                 if (board[y, x] > 10)
                     return Math.Min(board.GetLength(0) - y, 16);
-            }
 
             return -1;
         }
 
         private async Task AutoPlaying(Tetris tetris, TetrisEventArgs e, int optimalX, int optimalRotation)
         {
-            var delay = Convert.ToInt32((16 - GetCurrentHeight(e.TetrisBoard)) * 19 * (e.Delay / 450.0));
-            //var delay = 0;
+            int delay = GameController.GetPlayers().Count <= 1 ? 0 : (16 - GetCurrentHeight(e.TetrisBoard)) * 19;
             Keys keyData = e.CurrentX < optimalX ? _keyboardSetting.RightCode : _keyboardSetting.LeftCode;
             int end = Math.Abs(e.CurrentX - optimalX);
-            for (int i = 0; i < optimalRotation; i++)
+            for (var i = 0; i < optimalRotation; i++)
             {
                 await Task.Delay(delay);
                 tetris.KeyBoardAction(new KeyEventArgs(_keyboardSetting.RotationCode));
             }
 
-            for (int i = 0; i < end; i++)
+            for (var i = 0; i < end; i++)
             {
                 await Task.Delay(delay);
                 tetris.KeyBoardAction(new KeyEventArgs(keyData));
@@ -95,10 +88,8 @@ namespace Tetris
             int size = block.GetLength(0);
             for (var y = 0; y < size; y++)
             for (var x = 0; x < size; x++)
-            {
                 if (block[y, x] == 1 && (currentX + x < 0 || currentX + x >= 10))
                     return false;
-            }
 
             return true;
         }
@@ -110,7 +101,7 @@ namespace Tetris
             int width = e.TetrisBoard.GetLength(1);
             double max = int.MinValue;
 
-            for (int i = 0; i < _block.BlockRotationCount[_block.BlockNum]; i++)
+            for (var i = 0; i < _block.BlockRotationCount[_block.BlockNum]; i++)
             {
                 int[,] block = _block.BlockCreate(_block.BlockNum, i);
                 for (int x = -block.GetLength(0) + 1; x < width; x++)
@@ -133,12 +124,10 @@ namespace Tetris
         private int[,] AttachToBoard(int currentY, int currentX, int[,] board, int[,] block)
         {
             var newBoard = (int[,]) board.Clone();
-            for (int y = 0; y < block.GetLength(0); y++)
-            for (int x = 0; x < block.GetLength(0); x++)
-            {
+            for (var y = 0; y < block.GetLength(0); y++)
+            for (var x = 0; x < block.GetLength(0); x++)
                 if (block[y, x] == 1 && currentY + y >= 0)
                     newBoard[currentY + y, currentX + x] = _block.BlockNum + 10;
-            }
 
             return newBoard;
         }
@@ -159,24 +148,20 @@ namespace Tetris
             double lineClearValue = 0;
             int width = board.GetLength(1);
             int height = board.GetLength(0);
-            for (int y = 0; y < height; y++)
+            for (var y = 0; y < height; y++)
             {
                 if (HasLineClear(y))
                     lineClearValue++;
 
-                for (int x = 0; x < width; x++)
-                {
+                for (var x = 0; x < width; x++)
                     if (board[y, x] > 10)
                         blockHeightValue += height - y;
-                }
             }
 
-            for (int y = 0; y < -currentY; y++)
-            for (int x = 0; x < block.GetLength(1); x++)
-            {
+            for (var y = 0; y < -currentY; y++)
+            for (var x = 0; x < block.GetLength(1); x++)
                 if (block[y, x] == 1)
                     blockHeightValue += height + (-currentY - y);
-            }
 
             bool HasLineClear(int y)
             {
@@ -186,8 +171,8 @@ namespace Tetris
                 return true;
             }
 
-            value += blockHeightValue * -3.78;
-            value += lineClearValue * 8.2;
+            value += blockHeightValue * -3.4;
+            value += Math.Pow(lineClearValue, 2) * 8.2;
             return value;
         }
 
@@ -200,14 +185,15 @@ namespace Tetris
             int width = board.GetLength(1);
             for (var x = 0; x < width; x++)
             {
-                int cnt = 0;
+                var cnt = 0;
                 for (int y = height - 1; y >= 0; y--)
                 {
                     if (board[y, x] > 10) continue;
 
                     while (y >= 0 && board[y, x] <= 10)
                     {
-                        cnt++; y--;
+                        cnt++;
+                        y--;
                     }
 
                     if (y < 0) break;
@@ -217,13 +203,14 @@ namespace Tetris
 
                     while (y >= 0 && board[y, x] > 10)
                     {
-                        blockedValue++; y--;
+                        blockedValue++;
+                        y--;
                     }
                 }
             }
-            
-            value += holeValue * -8.8;
-            value += blockedValue * -0.59;
+
+            value += holeValue * -20;
+            value += blockedValue * -1;
             return value;
         }
 
@@ -241,21 +228,19 @@ namespace Tetris
             int[] dy = {-1, 0, 1, 0};
             int[] dx = {0, 1, 0, -1};
 
-            for (int y = 0; y < height; y++)
-            for (int x = 0; x < width; x++)
+            for (var y = 0; y < height; y++)
+            for (var x = 0; x < width; x++)
             {
                 if (block[y, x] != 1) continue;
-                for (int i = 0; i < dy.Length; i++)
-                {
+                for (var i = 0; i < dy.Length; i++)
                     if (currentX + x + dx[i] < 0 || currentX + x + dx[i] >= board.GetLength(1))
                         sideValue++;
                     else if (currentY + y + dy[i] >= board.GetLength(0))
                         floorValue++;
                     else if (currentY + y + dy[i] >= 0 && board[currentY + y + dy[i], currentX + x + dx[i]] > 10)
-                        if (y + dy[i] >= size || y + dy[i] < 0 || x + dx[i] >= size || x + dx[i] < 0 
+                        if (y + dy[i] >= size || y + dy[i] < 0 || x + dx[i] >= size || x + dx[i] < 0
                             || block[y + dy[i], x + dx[i]] != 1)
                             blockValue++;
-                }
             }
 
             value += sideValue * 2.5;
@@ -263,7 +248,5 @@ namespace Tetris
             value += floorValue * 4.0;
             return value;
         }
-
-
     }
 }

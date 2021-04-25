@@ -12,6 +12,7 @@ namespace Tetris
             KeyboardSetting = keyboard;
             setAiPlaying.Invoke();
         }
+
         public Func<int, int, int[,], int> DownLocationCalc { get; }
         public TetrisBlock TetrisBlock { get; }
         public IKeyboardSetting KeyboardSetting { get; }

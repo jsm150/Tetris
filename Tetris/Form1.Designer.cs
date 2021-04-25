@@ -41,7 +41,7 @@ namespace Tetris
             this.lbl_2pScore = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.tBar_Volume = new System.Windows.Forms.TrackBar();
-            this.btn_VsAI = new System.Windows.Forms.Button();
+            this.btn_AIPlay = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.tBar_Volume)).BeginInit();
             this.SuspendLayout();
             // 
@@ -142,15 +142,15 @@ namespace Tetris
             this.tBar_Volume.Value = 10;
             this.tBar_Volume.Scroll += new System.EventHandler(this.tBar_Volume_Scroll);
             // 
-            // btn_VsAI
+            // btn_AIPlay
             // 
-            this.btn_VsAI.Location = new System.Drawing.Point(35, 69);
-            this.btn_VsAI.Name = "btn_VsAI";
-            this.btn_VsAI.Size = new System.Drawing.Size(46, 23);
-            this.btn_VsAI.TabIndex = 11;
-            this.btn_VsAI.Text = "AI";
-            this.btn_VsAI.UseVisualStyleBackColor = true;
-            this.btn_VsAI.Click += new System.EventHandler(this.btn_VsAI_Click);
+            this.btn_AIPlay.Location = new System.Drawing.Point(35, 69);
+            this.btn_AIPlay.Name = "btn_AIPlay";
+            this.btn_AIPlay.Size = new System.Drawing.Size(46, 23);
+            this.btn_AIPlay.TabIndex = 11;
+            this.btn_AIPlay.Text = "AI";
+            this.btn_AIPlay.UseVisualStyleBackColor = true;
+            this.btn_AIPlay.Click += new System.EventHandler(this.btn_AIPlay_Click);
             // 
             // Form1
             // 
@@ -158,7 +158,7 @@ namespace Tetris
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(361, 104);
-            this.Controls.Add(this.btn_VsAI);
+            this.Controls.Add(this.btn_AIPlay);
             this.Controls.Add(this.tBar_Volume);
             this.Controls.Add(this.lbl_2pScore);
             this.Controls.Add(this.label6);
@@ -191,7 +191,7 @@ namespace Tetris
         private System.Windows.Forms.Label lbl_2pScore;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TrackBar tBar_Volume;
-        private System.Windows.Forms.Button btn_VsAI;
+        private System.Windows.Forms.Button btn_AIPlay;
     }
 }
 

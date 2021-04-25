@@ -73,7 +73,6 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="AI\GeneticAlgorithm.cs" />
     <Compile Include="GamePlay\MultiPlay.cs" />
     <Compile Include="KeyBoardAction\IKeyboardSetting.cs" />
     <Compile Include="KeyBoardAction\KeyboardPlayer1.cs" />

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -11,19 +10,19 @@ namespace Tetris
     {
         private const int WIDTH = 10;
         private const int HEIGHT = 20;
+        private static readonly Random _random = new Random();
         private readonly TetrisBlock _block = new TetrisBlock();
         private readonly List<int> _clearLineList = new List<int>();
+        private readonly int _delay = 360;
         private readonly Form1 _form;
         private readonly IKeyboardSetting _keyboardSetting;
         private readonly Label _label;
         private readonly object _locker = new object();
         private readonly int _offsetX;
         private readonly int _offsetY = 7;
-        private static readonly Random _random = new Random();
         private readonly int[,] _tetrisBoard = new int[20, 10];
         private int _currentX;
         private int _currentY = -1;
-        private int _delay = 450;
 
         public Tetris(Form1 f, int offsetX, Label label, IKeyboardSetting key, int id)
         {
@@ -37,7 +36,7 @@ namespace Tetris
         public int PlayerId { get; }
         public bool GamePlaying { get; set; } = true;
         public int Score { get; private set; }
-        public bool AiPlaying { get; private set; } = false;
+        public bool AiPlaying { get; private set; }
 
         public event EventHandler<AiInitEventArgs> ConnectingToAi;
         public event EventHandler<TetrisEventArgs> ReSetBlockEvent;
@@ -104,7 +103,8 @@ namespace Tetris
                         g.DrawRectangle(new Pen(Brushes.DarkGray), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
                         break;
                     case 18:
-                        g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                        g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], offsetX * sizeX, offsetY * sizeY,
+                            sizeX, sizeY);
                         g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
                         break;
                     default:
@@ -164,9 +164,9 @@ namespace Tetris
                         return false;
                     if (ny + y < 0)
                         continue;
-                    if (_tetrisBoard[y + ny, x + nx] <= 10) 
+                    if (_tetrisBoard[y + ny, x + nx] <= 10)
                         continue;
-                    if (callByMoveDown && ny < 0) 
+                    if (callByMoveDown && ny < 0)
                         GamePlaying = false;
                     return false;
                 }
@@ -198,9 +198,7 @@ namespace Tetris
             for (var y = 0; y < HEIGHT; y++)
             for (var x = 0; x < WIDTH; x++)
                 if (_tetrisBoard[y, x] > 10)
-                {
                     return y;
-                }
 
             return -1;
         }
@@ -336,17 +334,6 @@ namespace Tetris
             }
         }
 
-
-        private void SetDelay()
-        {
-            if (_delay > 250)
-                _delay -= 4;
-            else if (_delay > 200)
-                _delay -= 2;
-            else if (_delay > 100)
-                _delay -= 1;
-        }
-
         private void HardDown()
         {
             lock (_locker)
@@ -403,35 +390,28 @@ namespace Tetris
                 int highLine = GetHighLine();
                 int blank = _random.Next(0, WIDTH);
                 for (int y = Math.Max(highLine - cnt, 0); y < HEIGHT - cnt; y++)
-                for (int x = 0; x < WIDTH; x++)
+                for (var x = 0; x < WIDTH; x++)
                 {
                     _tetrisBoard[y, x] = _tetrisBoard[y + cnt, x];
                     DrawColer(y, x);
                 }
 
                 for (int y = HEIGHT - cnt; y < HEIGHT; y++)
-                for (int x = 0; x < WIDTH; x++)
+                for (var x = 0; x < WIDTH; x++)
                 {
-                    _tetrisBoard[y, x] = x == blank? 0 : 18;
+                    _tetrisBoard[y, x] = x == blank ? 0 : 18;
                     DrawColer(y, x);
                 }
 
-                for (int y = 0; y < _block.Block.GetLength(0); y++)
+                for (var y = 0; y < _block.Block.GetLength(0); y++)
                 {
                     if (_currentY + y < 0 || _currentY + y >= HEIGHT) continue;
-                    for (int x = 0; x < _block.Block.GetLength(0); x++)
-                    {
+                    for (var x = 0; x < _block.Block.GetLength(0); x++)
                         if (_block.Block[y, x] == 1 && _tetrisBoard[_currentY + y, _currentX + x] > 10)
-                        {
                             _currentX -= _block.Block.GetLength(0) - y;
-                        }
-                    }
                 }
 
-                if (highLine - cnt < 0)
-                {
-                    GamePlaying = false;
-                }
+                if (highLine - cnt < 0) GamePlaying = false;
             }
         }
 
@@ -449,7 +429,6 @@ namespace Tetris
                 {
                     if (!GamePlaying)
                         return;
-                    SetDelay();
                     Score += 30;
                     for (var i = 0; i < HEIGHT; i++)
                     for (var j = 0; j < WIDTH; j++)

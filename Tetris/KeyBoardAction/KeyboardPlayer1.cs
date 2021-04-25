@@ -1,6 +1,4 @@
 ﻿using System.Windows.Forms;
-using System.Windows.Input;
-using KeyEventArgs = System.Windows.Forms.KeyEventArgs;
 
 namespace Tetris
 {

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace Tetris
 {
@@ -21,10 +19,8 @@ namespace Tetris
             int garbageLine = GetGarbageLine(e.LineClearCount);
 
             foreach (Tetris player in players)
-            {
                 if (player.PlayerId != tetris?.PlayerId)
                     player.SetGarbageLine(garbageLine);
-            }
         }
 
         private static int GetGarbageLine(int count)
