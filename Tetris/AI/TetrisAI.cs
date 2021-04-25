@@ -172,7 +172,7 @@ namespace Tetris
             }
 
             value += blockHeightValue * -3.4;
-            value += Math.Pow(lineClearValue, 2) * 8.2;
+            value += Math.Pow(lineClearValue, 2) * 9;
             return value;
         }
 
@@ -210,7 +210,7 @@ namespace Tetris
             }
 
             value += holeValue * -20;
-            value += blockedValue * -1;
+            value += blockedValue * -3;
             return value;
         }
 
@@ -243,7 +243,7 @@ namespace Tetris
                             blockValue++;
             }
 
-            value += sideValue * 2.5;
+            value += sideValue * 3.7;
             value += blockValue * 3.7;
             value += floorValue * 4.0;
             return value;
