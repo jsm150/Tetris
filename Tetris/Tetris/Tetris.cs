@@ -23,6 +23,8 @@ namespace Tetris
         private readonly int[,] _tetrisBoard = new int[20, 10];
         private int _currentX;
         private int _currentY = -1;
+        private int _score;
+        private int _combo;
 
         public Tetris(Form1 f, int offsetX, Label label, IKeyboardSetting key, int id)
         {
@@ -35,7 +37,6 @@ namespace Tetris
 
         public int PlayerId { get; }
         public bool GamePlaying { get; set; } = true;
-        public int Score { get; private set; }
         public bool AiPlaying { get; private set; }
 
         public event EventHandler<AiInitEventArgs> ConnectingToAi;
@@ -218,7 +219,7 @@ namespace Tetris
                     DrawColer(y, x);
                 }
 
-            LineClearEvent?.Invoke(this, new TetrisEventArgs(lineClearCount: _clearLineList.Count));
+            LineClearEvent?.Invoke(this, new TetrisEventArgs(lineClearCount: _clearLineList.Count, combo: _combo));
         }
 
         private bool CanClearLine()
@@ -352,9 +353,9 @@ namespace Tetris
 
                     if (CanMoveBlock(_block.Block, currentY - 1, _currentX, true))
                     {
-                        Score += 5 * (currentY - 1 - _currentY);
+                        _score += 2 * (currentY - 1 - _currentY);
                         _currentY = currentY - 1;
-                        _label.Text = Score.ToString();
+                        _label.Text = _score.ToString();
                         RemoveRedBlock();
                         MoveRedBlock();
                     }
@@ -422,14 +423,14 @@ namespace Tetris
                 if (CanMoveBlock(_block.Block, _currentY + 1, _currentX, true))
                 {
                     _currentY++;
-                    Score += 5;
+                    _score += 2;
                     ReDrawBlock();
                 }
                 else
                 {
                     if (!GamePlaying)
                         return;
-                    Score += 30;
+                    _score += 10;
                     for (var i = 0; i < HEIGHT; i++)
                     for (var j = 0; j < WIDTH; j++)
                         if (_tetrisBoard[i, j] == 1)
@@ -440,14 +441,16 @@ namespace Tetris
 
                     if (CanClearLine())
                     {
-                        Score += 500 * _clearLineList.Count;
+                        _combo++;
+                        _score += 300 * (int) Math.Pow(_clearLineList.Count, 2);
                         ClearLine();
                     }
+                    else _combo = 0;
 
                     ReSetBlock();
                 }
 
-                _label.Text = Score.ToString();
+                _label.Text = _score.ToString();
             }
         }
 

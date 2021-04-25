@@ -16,22 +16,32 @@ namespace Tetris
             if (players.Count <= 1) return;
 
             var tetris = sender as Tetris;
-            int garbageLine = GetGarbageLine(e.LineClearCount);
+            int garbageLine = GetGarbageLine(e);
 
             foreach (Tetris player in players)
                 if (player.PlayerId != tetris?.PlayerId)
                     player.SetGarbageLine(garbageLine);
         }
 
-        private static int GetGarbageLine(int count)
+        private static int GetGarbageLine(TetrisEventArgs e)
         {
-            if (count <= 1)
-                return 0;
-            if (count <= 2)
-                return 1;
-            if (count <= 3)
-                return 2;
-            return 4;
+            var cnt = 0;
+
+            if (e.LineClearCount >= 4)
+                cnt += 4;
+            else if (e.LineClearCount >= 3)
+                cnt += 2;
+            else if (e.LineClearCount >= 2)
+                cnt += 1;
+
+            if (e.Combo >= 6)
+                cnt += 3;
+            else if (e.Combo >= 4)
+                cnt += 2;
+            else if (e.Combo >= 2)
+                cnt += 1;
+
+            return cnt;
         }
     }
 }
