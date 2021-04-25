@@ -44,7 +44,7 @@ namespace Tetris
             TetrisAi.Add(tetris.PlayerId, new TetrisAI(tetris));
         }
 
-        private void DisconnectToTetris(object sender, EventArgs e)
+        private static void DisconnectToTetris(object sender, EventArgs e)
         {
             var tetris = sender as Tetris;
             TetrisAi.Remove(tetris.PlayerId);
@@ -72,6 +72,7 @@ namespace Tetris
         private async Task AutoPlaying(Tetris tetris, TetrisEventArgs e, int optimalX, int optimalRotation)
         {
             int delay = (16 - GetCurrentHeight(e.TetrisBoard)) * 19;
+            //int delay = 0;
             Keys keyData = e.CurrentX < optimalX ? _keyboardSetting.RightCode : _keyboardSetting.LeftCode;
             int end = Math.Abs(e.CurrentX - optimalX);
             for (int i = 0; i < optimalRotation; i++)
@@ -146,15 +147,14 @@ namespace Tetris
         {
             double value = 0;
             value += GetValue1(board, block, currentY);
-            value += GetHoleValue(board);
-
-
+            value += GetValue2(board);
+            value += GetValue3(currentY, currentX, board, block);
             return value;
         }
 
         private static double GetValue1(int[,] board, int[,] block, int currentY)
         {
-            double totalValue = 0;
+            double value = 0;
             double blockHeightValue = 0;
             double lineClearValue = 0;
             int width = board.GetLength(1);
@@ -186,14 +186,16 @@ namespace Tetris
                 return true;
             }
 
-            totalValue += blockHeightValue * -3.78;
-            totalValue += lineClearValue * 8.2;
-            return totalValue;
+            value += blockHeightValue * -3.78;
+            value += lineClearValue * 8.2;
+            return value;
         }
 
-        private static double GetHoleValue(int[,] board)
+        private static double GetValue2(int[,] board)
         {
             double value = 0;
+            double holeValue = 0;
+            double blockedValue = 0;
             int height = board.GetLength(0);
             int width = board.GetLength(1);
             for (var x = 0; x < width; x++)
@@ -207,14 +209,61 @@ namespace Tetris
                     {
                         cnt++; y--;
                     }
-                    if (y < 0)
-                        break;
-                    value += cnt;
+
+                    if (y < 0) break;
+
+                    holeValue += cnt;
                     cnt = 0;
+
+                    while (y >= 0 && board[y, x] > 10)
+                    {
+                        blockedValue++; y--;
+                    }
+                }
+            }
+            
+            value += holeValue * -8.8;
+            value += blockedValue * -0.59;
+            return value;
+        }
+
+        private static double GetValue3(int currentY, int currentX, int[,] board, int[,] block)
+        {
+            double value = 0;
+            double sideValue = 0;
+            double floorValue = 0;
+            double blockValue = 0;
+
+            int height = block.GetLength(0);
+            int width = block.GetLength(1);
+            int size = block.GetLength(0);
+
+            int[] dy = {-1, 0, 1, 0};
+            int[] dx = {0, 1, 0, -1};
+
+            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
+            {
+                if (block[y, x] != 1) continue;
+                for (int i = 0; i < dy.Length; i++)
+                {
+                    if (currentX + x + dx[i] < 0 || currentX + x + dx[i] >= board.GetLength(1))
+                        sideValue++;
+                    else if (currentY + y + dy[i] >= board.GetLength(0))
+                        floorValue++;
+                    else if (currentY + y + dy[i] >= 0 && board[currentY + y + dy[i], currentX + x + dx[i]] > 10)
+                        if (y + dy[i] >= size || y + dy[i] < 0 || x + dx[i] >= size || x + dx[i] < 0 
+                            || block[y + dy[i], x + dx[i]] != 1)
+                            blockValue++;
                 }
             }
 
-            return value * -8.8;
+            value += sideValue * 2.5;
+            value += blockValue * 3.7;
+            value += floorValue * 4.0;
+            return value;
         }
+
+
     }
 }

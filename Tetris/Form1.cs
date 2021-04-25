@@ -32,6 +32,7 @@ namespace Tetris
             StartSetting();
             var player1 = new Tetris(this, 1, lbl_Score, KeyboardPlayer1.GetInstance, 1);
             GameController.PlayerAdd(player1);
+            //TetrisAI.AutoPlay(player1);
             await GameController.GameStart();
         }
 
@@ -41,6 +42,7 @@ namespace Tetris
             _mediaPlayer.controls.play();
             btn_GameStart.Enabled = false;
             btn_1vs1.Enabled = false;
+            btn_VsAI.Enabled = false;
         }
 
         private void GameEnd(string gameAlertMsg)
@@ -49,6 +51,7 @@ namespace Tetris
             _mediaPlayer.controls.stop();
             btn_GameStart.Enabled = true;
             btn_1vs1.Enabled = true;
+            btn_VsAI.Enabled = true;
 
             lbl_BestScore.Text = int.Parse(lbl_Score.Text) > int.Parse(lbl_BestScore.Text)
                 ? lbl_Score.Text
