@@ -26,13 +26,31 @@ namespace Tetris
             GameController.GameEndAction = GameEnd;
         }
 
-        private async void btn_AIPlay_Click(object sender, EventArgs e)
+        private async void btn_GameStart_Click(object sender, EventArgs e)
         {
-            Size = new Size(380, 880);
+            Size = new Size(700, 880);
             StartSetting();
             var player1 = new Tetris(this, 1, lbl_Score, KeyboardPlayer1.GetInstance, 1);
+            var player2 = new Tetris(this, 12, lbl_2pScore, KeyboardPlayer1.GetInstance, 2);
             GameController.PlayerAdd(player1);
-            TetrisAI.AutoPlay(player1);
+            GameController.PlayerAdd(player2);
+            TetrisAI.AutoPlay(player2);
+            await GameController.GameStart();
+        }
+
+        private async void btn_AIPlay_Click(object sender, EventArgs e)
+        {
+            Size = new Size(470, 620);
+            StartSetting();
+            await GeneticAlgorithm.AlgorithmStart(this);
+        }
+
+        private async void btn_1vs1_Click(object sender, EventArgs e)
+        {
+            Size = new Size(700, 880);
+            StartSetting();
+            GameController.PlayerAdd(new Tetris(this, 1, lbl_Score, KeyboardPlayer2.GetInstance, 1));
+            GameController.PlayerAdd(new Tetris(this, 12, lbl_2pScore, KeyboardPlayer1.GetInstance, 2));
             await GameController.GameStart();
         }
 
@@ -74,32 +92,11 @@ namespace Tetris
             _mediaPlayer.controls.play();
         }
 
-        private async void btn_1vs1_Click(object sender, EventArgs e)
-        {
-            Size = new Size(700, 880);
-            StartSetting();
-            GameController.PlayerAdd(new Tetris(this, 1, lbl_Score, KeyboardPlayer2.GetInstance, 1));
-            GameController.PlayerAdd(new Tetris(this, 12, lbl_2pScore, KeyboardPlayer1.GetInstance, 2));
-            await GameController.GameStart();
-        }
-
         private void tBar_Volume_Scroll(object sender, EventArgs e)
         {
             _mediaPlayer.settings.volume = tBar_Volume.Value;
             Settings.Default.Volume = tBar_Volume.Value;
             Settings.Default.Save();
-        }
-
-        private async void btn_GameStart_Click(object sender, EventArgs e)
-        {
-            Size = new Size(700, 880);
-            StartSetting();
-            var player1 = new Tetris(this, 1, lbl_Score, KeyboardPlayer1.GetInstance, 1);
-            var player2 = new Tetris(this, 12, lbl_2pScore, KeyboardPlayer2.GetInstance, 2);
-            GameController.PlayerAdd(player1);
-            GameController.PlayerAdd(player2);
-            TetrisAI.AutoPlay(player2);
-            await GameController.GameStart();
         }
     }
 }

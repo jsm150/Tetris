@@ -10,20 +10,18 @@ namespace Tetris
     {
         private const int WIDTH = 10;
         private const int HEIGHT = 20;
-        private static readonly Random _random = new Random();
+        private const int DELAY = 360;
+        private static readonly Random Random = new Random();
         private readonly TetrisBlock _block = new TetrisBlock();
         private readonly List<int> _clearLineList = new List<int>();
-        private readonly int _delay = 360;
         private readonly Form1 _form;
         private readonly IKeyboardSetting _keyboardSetting;
         private readonly Label _label;
         private readonly object _locker = new object();
         private readonly int _offsetX;
-        private readonly int _offsetY = 7;
-        private readonly int[,] _tetrisBoard = new int[20, 10];
+        private readonly int[,] _tetrisBoard = new int[HEIGHT, WIDTH];
         private int _currentX;
         private int _currentY = -1;
-        private int _score;
         private int _combo;
 
         public Tetris(Form1 f, int offsetX, Label label, IKeyboardSetting key, int id)
@@ -35,6 +33,7 @@ namespace Tetris
             _keyboardSetting = key;
         }
 
+        public int Score { get; private set; }
         public int PlayerId { get; }
         public bool GamePlaying { get; set; } = true;
         public bool AiPlaying { get; private set; }
@@ -54,11 +53,11 @@ namespace Tetris
             await LoopDownAsync();
         }
 
-        private async Task LoopDownAsync()
+        protected virtual async Task LoopDownAsync()
         {
             while (true)
             {
-                await Task.Delay(_delay);
+                await Task.Delay(DELAY);
                 MoveDown();
                 if (GamePlaying) continue;
 
@@ -77,18 +76,16 @@ namespace Tetris
             _block.NewBlock();
             NextBlockPreview();
             _currentY = 0 - _block.Block.GetLength(0);
-            _currentX = _random.Next(0, 11 - _block.Block.GetLength(0));
+            _currentX = Random.Next(0, 11 - _block.Block.GetLength(0));
             ReSetBlockEvent?.Invoke(this, TetrisEventArgs.ReSetBlockEvent(_tetrisBoard, _currentX));
         }
 
-        private void DrawColer(int y, int x)
+        protected virtual void DrawColer(int y, int x, int offsetY = 7, int sizeX = 30, int sizeY = 30)
         {
-            const int sizeX = 30;
-            const int sizeY = 30;
             using (Graphics g = _form.CreateGraphics())
             {
                 int offsetX = x + _offsetX;
-                int offsetY = y + _offsetY;
+                offsetY += y;
                 switch (_tetrisBoard[y, x])
                 {
                     case 0:
@@ -124,7 +121,7 @@ namespace Tetris
             }
         }
 
-        private void NextBlockPreview()
+        protected virtual void NextBlockPreview()
         {
             const int sizeX = 30;
             const int sizeY = 30;
@@ -153,7 +150,8 @@ namespace Tetris
             }
         }
 
-        private bool CanMoveBlock(int[,] block, int ny, int nx, bool callByMoveDown = false) // 블럭 이동이 가능한지 체크, 게임오버 체크
+        // 블럭 이동이 가능한지 체크, 게임오버 체크
+        private bool CanMoveBlock(int[,] block, int ny, int nx, bool callByMoveDown = false) 
         {
             int size = block.GetLength(0);
 
@@ -175,15 +173,15 @@ namespace Tetris
             return true;
         }
 
-        private void ReDrawBlock()
+        protected virtual void ReDrawBlock()
         {
             RemoveRedBlock();
             MoveRedBlock();
-            DeleteBlockPreview();
+            DeleteBlockDownPreview();
             DrawDownLocation(DownLocationCalc(_currentY, _currentX));
         }
 
-        private void RemoveRedBlock()
+        protected void RemoveRedBlock()
         {
             for (var y = 0; y < HEIGHT; y++)
             for (var x = 0; x < WIDTH; x++)
@@ -249,7 +247,7 @@ namespace Tetris
             }
         }
 
-        private void MoveRedBlock()
+        protected void MoveRedBlock()
         {
             int size = _block.Block.GetLength(0);
             for (var y = 0; y < size; y++)
@@ -299,7 +297,7 @@ namespace Tetris
                 }
         }
 
-        private void DeleteBlockPreview()
+        private void DeleteBlockDownPreview()
         {
             for (var y = 0; y < HEIGHT; y++)
             for (var x = 0; x < WIDTH; x++)
@@ -353,9 +351,9 @@ namespace Tetris
 
                     if (CanMoveBlock(_block.Block, currentY - 1, _currentX, true))
                     {
-                        _score += 2 * (currentY - 1 - _currentY);
+                        Score += 2 * (currentY - 1 - _currentY);
                         _currentY = currentY - 1;
-                        _label.Text = _score.ToString();
+                        _label.Text = Score.ToString();
                         RemoveRedBlock();
                         MoveRedBlock();
                     }
@@ -389,7 +387,7 @@ namespace Tetris
                 if (cnt <= 0) return;
 
                 int highLine = GetHighLine();
-                int blank = _random.Next(0, WIDTH);
+                int blank = Random.Next(0, WIDTH);
                 for (int y = Math.Max(highLine - cnt, 0); y < HEIGHT - cnt; y++)
                 for (var x = 0; x < WIDTH; x++)
                 {
@@ -426,14 +424,14 @@ namespace Tetris
                 if (CanMoveBlock(_block.Block, _currentY + 1, _currentX, true))
                 {
                     _currentY++;
-                    _score += 2;
+                    Score += 2;
                     ReDrawBlock();
                 }
                 else
                 {
                     if (!GamePlaying)
                         return;
-                    _score += 10;
+                    Score += 10;
                     for (var i = 0; i < HEIGHT; i++)
                     for (var j = 0; j < WIDTH; j++)
                         if (_tetrisBoard[i, j] == 1)
@@ -445,7 +443,7 @@ namespace Tetris
                     if (CanClearLine())
                     {
                         _combo++;
-                        _score += 300 * (int) Math.Pow(_clearLineList.Count, 2);
+                        Score += 300 * (int) Math.Pow(_clearLineList.Count, 2);
                         ClearLine();
                     }
                     else _combo = 0;
@@ -453,7 +451,7 @@ namespace Tetris
                     ReSetBlock();
                 }
 
-                _label.Text = _score.ToString();
+                _label.Text = Score.ToString();
             }
         }
 
@@ -469,6 +467,11 @@ namespace Tetris
             if (!CanMoveBlock(_block.Block, _currentY, _currentX - 1)) return;
             _currentX--;
             ReDrawBlock();
+        }
+
+        protected void OnGameEnd()
+        {
+            GameEndEvent?.Invoke(this, EventArgs.Empty);
         }
     }
 }

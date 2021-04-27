@@ -4,7 +4,7 @@ namespace Tetris
 {
     public class TetrisEventArgs : EventArgs
     {
-        public TetrisEventArgs(int[,] tetrisBoard, int currentX, int lineClearCount, int combo,
+        private TetrisEventArgs(int[,] tetrisBoard, int currentX, int lineClearCount, int combo,
             Func<int, int, int[,], int> downLocationCalc, TetrisBlock tetrisBlock,
             IKeyboardSetting keyboardSetting)
         {

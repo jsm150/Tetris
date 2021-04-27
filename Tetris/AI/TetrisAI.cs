@@ -9,14 +9,16 @@ namespace Tetris
     {
         private TetrisBlock _block;
         private IKeyboardSetting _keyboardSetting;
+        private Weight _weight;
 
         private Func<int, int, int[,], int> DownLocationCalc;
 
-        private TetrisAI(Tetris tetris)
+        private TetrisAI(Tetris tetris, Weight weight)
         {
             tetris.ReSetBlockEvent += FindOptimalPosAsync;
             tetris.ConnectingToAi += ConnectingToTetris;
             tetris.GameEndEvent += DisconnectToTetris;
+            _weight = weight;
         }
 
         private static Dictionary<int, TetrisAI> TetrisAi { get; } = new Dictionary<int, TetrisAI>();
@@ -35,9 +37,11 @@ namespace Tetris
             }
         }
 
-        public static void AutoPlay(Tetris tetris)
+        public static void AutoPlay(Tetris tetris, Weight weight = null)
         {
-            TetrisAi.Add(tetris.PlayerId, new TetrisAI(tetris));
+            if (weight == null)
+                weight = new Weight();
+            TetrisAi.Add(tetris.PlayerId, new TetrisAI(tetris, weight));
         }
 
         private static void DisconnectToTetris(object sender, EventArgs e)
@@ -134,7 +138,7 @@ namespace Tetris
             return newBoard;
         }
 
-        private static double GetBestCaseValue(int currentY, int currentX, int[,] board, int[,] block)
+        private double GetBestCaseValue(int currentY, int currentX, int[,] board, int[,] block)
         {
             double value = 0;
             value += GetValue1(board, block, currentY);
@@ -143,7 +147,7 @@ namespace Tetris
             return value;
         }
 
-        private static double GetValue1(int[,] board, int[,] block, int currentY)
+        private double GetValue1(int[,] board, int[,] block, int currentY)
         {
             double value = 0;
             double blockHeightValue = 0;
@@ -173,12 +177,12 @@ namespace Tetris
                 return true;
             }
 
-            value += blockHeightValue * -3.4;
-            value += lineClearValue * 9;
+            value += blockHeightValue * _weight.BlockHeightValue;
+            value += lineClearValue * _weight.LineClearValue;
             return value;
         }
 
-        private static double GetValue2(int[,] board)
+        private double GetValue2(int[,] board)
         {
             double value = 0;
             double holeValue = 0;
@@ -210,12 +214,12 @@ namespace Tetris
                 }
             }
 
-            value += holeValue * -20;
-            value += blockedValue * -3;
+            value += holeValue * _weight.HoleValue;
+            value += blockedValue * _weight.BlockedValue;
             return value;
         }
 
-        private static double GetValue3(int currentY, int currentX, int[,] board, int[,] block)
+        private double GetValue3(int currentY, int currentX, int[,] board, int[,] block)
         {
             double value = 0;
             double sideValue = 0;
@@ -244,9 +248,9 @@ namespace Tetris
                             blockValue++;
             }
 
-            value += sideValue * 3.7;
-            value += blockValue * 3.7;
-            value += floorValue * 4.0;
+            value += sideValue * _weight.SideValue;
+            value += blockValue * _weight.BlockValue;
+            value += floorValue * _weight.FloorValue;
             return value;
         }
     }
