@@ -46,26 +46,16 @@ namespace Tetris
             TetrisAi.Remove(tetris.PlayerId);
         }
 
-        private void ConnectingToTetris(object sender, AiInitEventArgs e)
+        private void ConnectingToTetris(object sender, TetrisEventArgs e)
         {
             DownLocationCalc = e.DownLocationCalc;
             _block = e.TetrisBlock;
             _keyboardSetting = e.KeyboardSetting;
         }
 
-        private int GetCurrentHeight(int[,] board)
-        {
-            for (var y = 0; y < board.GetLength(0); y++)
-            for (var x = 0; x < board.GetLength(1); x++)
-                if (board[y, x] > 10)
-                    return Math.Min(board.GetLength(0) - y, 16);
-
-            return -1;
-        }
-
         private async Task AutoPlaying(Tetris tetris, TetrisEventArgs e, int optimalX, int optimalRotation)
         {
-            int delay = GameController.GetPlayers().Count <= 1 ? 0 : (16 - GetCurrentHeight(e.TetrisBoard)) * 19;
+            int delay = GetDelay(e.TetrisBoard);
             Keys keyData = e.CurrentX < optimalX ? _keyboardSetting.RightCode : _keyboardSetting.LeftCode;
             int end = Math.Abs(e.CurrentX - optimalX);
             for (var i = 0; i < optimalRotation; i++)
@@ -81,6 +71,18 @@ namespace Tetris
             }
 
             tetris.KeyBoardAction(new KeyEventArgs(_keyboardSetting.HardDownCode));
+
+            int GetDelay(int[,] board)
+            {
+                for (var y = 0; y < board.GetLength(0); y++)
+                for (var x = 0; x < board.GetLength(1); x++)
+                    if (board[y, x] > 10)
+                    {
+                        int h = Math.Min(board.GetLength(0) - y, 16);
+                        return GameController.GetPlayers().Count <= 1 ? 0 : (16 - h) * 19;
+                    }
+                return 0;
+            }
         }
 
         private static bool CanPutBlock(int currentX, int[,] block)
@@ -107,9 +109,9 @@ namespace Tetris
                 for (int x = -block.GetLength(0) + 1; x < width; x++)
                 {
                     if (!CanPutBlock(x, block)) continue;
+
                     int y = DownLocationCalc(-block.GetLength(0), x, block);
                     int[,] board = AttachToBoard(y, x, e.TetrisBoard, block);
-                    //DeBugging(board, () => _block.BlockNum == 1 && y < 2);
                     double temp = GetBestCaseValue(y, x, board, block);
 
                     if (max >= temp) continue;
@@ -172,7 +174,7 @@ namespace Tetris
             }
 
             value += blockHeightValue * -3.4;
-            value += Math.Pow(lineClearValue, 2) * 9;
+            value += lineClearValue * 9;
             return value;
         }
 
@@ -185,10 +187,10 @@ namespace Tetris
             int width = board.GetLength(1);
             for (var x = 0; x < width; x++)
             {
-                var cnt = 0;
                 for (int y = height - 1; y >= 0; y--)
                 {
                     if (board[y, x] > 10) continue;
+                    var cnt = 0;
 
                     while (y >= 0 && board[y, x] <= 10)
                     {
@@ -199,7 +201,6 @@ namespace Tetris
                     if (y < 0) break;
 
                     holeValue += cnt;
-                    cnt = 0;
 
                     while (y >= 0 && board[y, x] > 10)
                     {

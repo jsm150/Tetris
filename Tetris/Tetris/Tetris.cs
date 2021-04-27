@@ -39,14 +39,14 @@ namespace Tetris
         public bool GamePlaying { get; set; } = true;
         public bool AiPlaying { get; private set; }
 
-        public event EventHandler<AiInitEventArgs> ConnectingToAi;
+        public event EventHandler<TetrisEventArgs> ConnectingToAi;
         public event EventHandler<TetrisEventArgs> ReSetBlockEvent;
         public event EventHandler<TetrisEventArgs> LineClearEvent;
         public event EventHandler GameEndEvent;
 
         public async Task GameStart()
         {
-            ConnectingToAi?.Invoke(this, new AiInitEventArgs(DownLocationCalc, _block, _keyboardSetting, HasPlayingAi));
+            ConnectingToAi?.Invoke(this, TetrisEventArgs.GameStartEvent(DownLocationCalc, _block, _keyboardSetting, HasPlayingAi));
             for (var y = 0; y < HEIGHT; y++)
             for (var x = 0; x < WIDTH; x++)
                 DrawColer(y, x);
@@ -78,7 +78,7 @@ namespace Tetris
             NextBlockPreview();
             _currentY = 0 - _block.Block.GetLength(0);
             _currentX = _random.Next(0, 11 - _block.Block.GetLength(0));
-            ReSetBlockEvent?.Invoke(this, new TetrisEventArgs(_tetrisBoard, _currentX, _delay));
+            ReSetBlockEvent?.Invoke(this, TetrisEventArgs.ReSetBlockEvent(_tetrisBoard, _currentX));
         }
 
         private void DrawColer(int y, int x)
@@ -219,7 +219,7 @@ namespace Tetris
                     DrawColer(y, x);
                 }
 
-            LineClearEvent?.Invoke(this, new TetrisEventArgs(lineClearCount: _clearLineList.Count, combo: _combo));
+            LineClearEvent?.Invoke(this, TetrisEventArgs.LineClearEvent(_clearLineList.Count, _combo));
         }
 
         private bool CanClearLine()
@@ -408,8 +408,11 @@ namespace Tetris
                 {
                     if (_currentY + y < 0 || _currentY + y >= HEIGHT) continue;
                     for (var x = 0; x < _block.Block.GetLength(0); x++)
+                    {
+                        if (_currentX + x < 0 || _currentX + x >= WIDTH) continue;
                         if (_block.Block[y, x] == 1 && _tetrisBoard[_currentY + y, _currentX + x] > 10)
                             _currentX -= _block.Block.GetLength(0) - y;
+                    }
                 }
 
                 if (highLine - cnt < 0) GamePlaying = false;

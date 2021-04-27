@@ -80,7 +80,6 @@
     <Compile Include="GamePlay\GameController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AI\AiInitEventArgs.cs" />
     <Compile Include="Tetris\Tetris.cs" />
     <Compile Include="Tetris\TetrisBlock.cs" />
     <Compile Include="Tetris\TetrisEventArgs.cs" />
