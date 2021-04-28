@@ -6,12 +6,12 @@ namespace Tetris
 {
     public class TetrisAI : Tetris
     {
-        private Weight _weight;
+        public Weight Weight { get; }
 
         public TetrisAI(Form1 f, int offsetX, Label label, int id, Weight weight) 
             : base(f, offsetX, label, null, id)
         {
-            _weight = weight;
+            Weight = weight;
         }
 
         protected override void ReSetBlock()
@@ -140,8 +140,8 @@ namespace Tetris
                 return true;
             }
 
-            value += blockHeightValue * _weight.BlockHeightValue;
-            value += lineClearValue * _weight.LineClearValue;
+            value += blockHeightValue * Weight.BlockHeightValue;
+            value += lineClearValue * Weight.LineClearValue;
             return value;
         }
 
@@ -177,8 +177,8 @@ namespace Tetris
                 }
             }
 
-            value += holeValue * _weight.HoleValue;
-            value += blockedValue * _weight.BlockedValue;
+            value += holeValue * Weight.HoleValue;
+            value += blockedValue * Weight.BlockedValue;
             return value;
         }
 
@@ -211,9 +211,9 @@ namespace Tetris
                                 blockValue++;
                 }
 
-            value += sideValue * _weight.SideValue;
-            value += blockValue * _weight.BlockValue;
-            value += floorValue * _weight.FloorValue;
+            value += sideValue * Weight.SideValue;
+            value += blockValue * Weight.BlockValue;
+            value += floorValue * Weight.FloorValue;
             return value;
         }
     }

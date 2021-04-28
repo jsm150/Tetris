@@ -42,6 +42,7 @@ namespace Tetris
             this.label6 = new System.Windows.Forms.Label();
             this.tBar_Volume = new System.Windows.Forms.TrackBar();
             this.btn_AIPlay = new System.Windows.Forms.Button();
+            this.lbl_Generation = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.tBar_Volume)).BeginInit();
             this.SuspendLayout();
             // 
@@ -152,6 +153,15 @@ namespace Tetris
             this.btn_AIPlay.UseVisualStyleBackColor = true;
             this.btn_AIPlay.Click += new System.EventHandler(this.btn_AIPlay_Click);
             // 
+            // lbl_Generation
+            // 
+            this.lbl_Generation.AutoSize = true;
+            this.lbl_Generation.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_Generation.Location = new System.Drawing.Point(87, 74);
+            this.lbl_Generation.Name = "lbl_Generation";
+            this.lbl_Generation.Size = new System.Drawing.Size(0, 12);
+            this.lbl_Generation.TabIndex = 3;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -164,6 +174,7 @@ namespace Tetris
             this.Controls.Add(this.label6);
             this.Controls.Add(this.btn_1vs1);
             this.Controls.Add(this.lbl_BestScore);
+            this.Controls.Add(this.lbl_Generation);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.lbl_Score);
             this.Controls.Add(this.label1);
@@ -192,6 +203,7 @@ namespace Tetris
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TrackBar tBar_Volume;
         private System.Windows.Forms.Button btn_AIPlay;
+        private System.Windows.Forms.Label lbl_Generation;
     }
 }
 
