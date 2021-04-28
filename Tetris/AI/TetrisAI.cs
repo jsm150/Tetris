@@ -1,90 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Tetris
 {
-    public class TetrisAI
+    public class TetrisAI : Tetris
     {
-        private TetrisBlock _block;
-        private IKeyboardSetting _keyboardSetting;
         private Weight _weight;
 
-        private Func<int, int, int[,], int> DownLocationCalc;
-
-        private TetrisAI(Tetris tetris, Weight weight)
+        public TetrisAI(Form1 f, int offsetX, Label label, int id, Weight weight) 
+            : base(f, offsetX, label, null, id)
         {
-            tetris.ReSetBlockEvent += FindOptimalPosAsync;
-            tetris.ConnectingToAi += ConnectingToTetris;
-            tetris.GameEndEvent += DisconnectToTetris;
             _weight = weight;
         }
 
-        private static Dictionary<int, TetrisAI> TetrisAi { get; } = new Dictionary<int, TetrisAI>();
-
-        private static void DeBugging(int[,] board, Func<bool> condition)
+        protected override void ReSetBlock()
         {
-            if (!condition.Invoke()) return;
-            Console.Clear();
-            int width = board.GetLength(1);
-            int height = board.GetLength(0);
-            for (var y = 0; y < height; y++)
-            {
-                for (var x = 0; x < width; x++) Console.Write($"{board[y, x],2} ");
-
-                Console.WriteLine();
-            }
+            base.ReSetBlock();
+            FindOptimalPosAsync();
         }
 
-        public static void AutoPlay(Tetris tetris, Weight weight = null)
+        private async Task AutoPlaying(int optimalX, int optimalRotation)
         {
-            if (weight == null)
-                weight = new Weight();
-            TetrisAi.Add(tetris.PlayerId, new TetrisAI(tetris, weight));
-        }
-
-        private static void DisconnectToTetris(object sender, EventArgs e)
-        {
-            var tetris = sender as Tetris;
-            TetrisAi.Remove(tetris.PlayerId);
-        }
-
-        private void ConnectingToTetris(object sender, TetrisEventArgs e)
-        {
-            DownLocationCalc = e.DownLocationCalc;
-            _block = e.TetrisBlock;
-            _keyboardSetting = e.KeyboardSetting;
-        }
-
-        private async Task AutoPlaying(Tetris tetris, TetrisEventArgs e, int optimalX, int optimalRotation)
-        {
-            int delay = GetDelay(e.TetrisBoard);
-            Keys keyData = e.CurrentX < optimalX ? _keyboardSetting.RightCode : _keyboardSetting.LeftCode;
-            int end = Math.Abs(e.CurrentX - optimalX);
+            int delay = GetDelay(_tetrisBoard);
+            Action direction = _currentX < optimalX ? new Action(MoveRight) : new Action(MoveLeft);
+            int end = Math.Abs(_currentX - optimalX);
             for (var i = 0; i < optimalRotation; i++)
             {
                 await Task.Delay(delay);
-                tetris.KeyBoardAction(new KeyEventArgs(_keyboardSetting.RotationCode));
+                RotationBlock();
             }
 
             for (var i = 0; i < end; i++)
             {
                 await Task.Delay(delay);
-                tetris.KeyBoardAction(new KeyEventArgs(keyData));
+                direction.Invoke();
             }
 
-            tetris.KeyBoardAction(new KeyEventArgs(_keyboardSetting.HardDownCode));
+            HardDown();
 
             int GetDelay(int[,] board)
             {
                 for (var y = 0; y < board.GetLength(0); y++)
-                for (var x = 0; x < board.GetLength(1); x++)
-                    if (board[y, x] > 10)
-                    {
-                        int h = Math.Min(board.GetLength(0) - y, 16);
-                        return GameController.GetPlayers().Count <= 1 ? 0 : (16 - h) * 19;
-                    }
+                    for (var x = 0; x < board.GetLength(1); x++)
+                        if (board[y, x] > 10)
+                        {
+                            int h = Math.Min(board.GetLength(0) - y, 16);
+                            return GameController.GetPlayers().Count <= 1 ? 0 : (16 - h) * 19;
+                        }
                 return 0;
             }
         }
@@ -93,18 +56,18 @@ namespace Tetris
         {
             int size = block.GetLength(0);
             for (var y = 0; y < size; y++)
-            for (var x = 0; x < size; x++)
-                if (block[y, x] == 1 && (currentX + x < 0 || currentX + x >= 10))
-                    return false;
+                for (var x = 0; x < size; x++)
+                    if (block[y, x] == 1 && (currentX + x < 0 || currentX + x >= 10))
+                        return false;
 
             return true;
         }
 
-        private async void FindOptimalPosAsync(object sender, TetrisEventArgs e)
+        private async void FindOptimalPosAsync()
         {
             await Task.Delay(1);
             (int X, int RotationNum) pos = (0, 0);
-            int width = e.TetrisBoard.GetLength(1);
+            int width = _tetrisBoard.GetLength(1);
             double max = int.MinValue;
 
             for (var i = 0; i < _block.BlockRotationCount[_block.BlockNum]; i++)
@@ -115,7 +78,7 @@ namespace Tetris
                     if (!CanPutBlock(x, block)) continue;
 
                     int y = DownLocationCalc(-block.GetLength(0), x, block);
-                    int[,] board = AttachToBoard(y, x, e.TetrisBoard, block);
+                    int[,] board = AttachToBoard(y, x, _tetrisBoard, block);
                     double temp = GetBestCaseValue(y, x, board, block);
 
                     if (max >= temp) continue;
@@ -124,16 +87,16 @@ namespace Tetris
                 }
             }
 
-            await AutoPlaying(sender as Tetris, e, pos.X, pos.RotationNum);
+            await AutoPlaying(pos.X, pos.RotationNum);
         }
 
         private int[,] AttachToBoard(int currentY, int currentX, int[,] board, int[,] block)
         {
-            var newBoard = (int[,]) board.Clone();
+            var newBoard = (int[,])board.Clone();
             for (var y = 0; y < block.GetLength(0); y++)
-            for (var x = 0; x < block.GetLength(0); x++)
-                if (block[y, x] == 1 && currentY + y >= 0)
-                    newBoard[currentY + y, currentX + x] = _block.BlockNum + 10;
+                for (var x = 0; x < block.GetLength(0); x++)
+                    if (block[y, x] == 1 && currentY + y >= 0)
+                        newBoard[currentY + y, currentX + x] = _block.BlockNum + 10;
 
             return newBoard;
         }
@@ -165,9 +128,9 @@ namespace Tetris
             }
 
             for (var y = 0; y < -currentY; y++)
-            for (var x = 0; x < block.GetLength(1); x++)
-                if (block[y, x] == 1)
-                    blockHeightValue += height + (-currentY - y);
+                for (var x = 0; x < block.GetLength(1); x++)
+                    if (block[y, x] == 1)
+                        blockHeightValue += height + (-currentY - y);
 
             bool HasLineClear(int y)
             {
@@ -230,23 +193,23 @@ namespace Tetris
             int width = block.GetLength(1);
             int size = block.GetLength(0);
 
-            int[] dy = {-1, 0, 1, 0};
-            int[] dx = {0, 1, 0, -1};
+            int[] dy = { -1, 0, 1, 0 };
+            int[] dx = { 0, 1, 0, -1 };
 
             for (var y = 0; y < height; y++)
-            for (var x = 0; x < width; x++)
-            {
-                if (block[y, x] != 1) continue;
-                for (var i = 0; i < dy.Length; i++)
-                    if (currentX + x + dx[i] < 0 || currentX + x + dx[i] >= board.GetLength(1))
-                        sideValue++;
-                    else if (currentY + y + dy[i] >= board.GetLength(0))
-                        floorValue++;
-                    else if (currentY + y + dy[i] >= 0 && board[currentY + y + dy[i], currentX + x + dx[i]] > 10)
-                        if (y + dy[i] >= size || y + dy[i] < 0 || x + dx[i] >= size || x + dx[i] < 0
-                            || block[y + dy[i], x + dx[i]] != 1)
-                            blockValue++;
-            }
+                for (var x = 0; x < width; x++)
+                {
+                    if (block[y, x] != 1) continue;
+                    for (var i = 0; i < dy.Length; i++)
+                        if (currentX + x + dx[i] < 0 || currentX + x + dx[i] >= board.GetLength(1))
+                            sideValue++;
+                        else if (currentY + y + dy[i] >= board.GetLength(0))
+                            floorValue++;
+                        else if (currentY + y + dy[i] >= 0 && board[currentY + y + dy[i], currentX + x + dx[i]] > 10)
+                            if (y + dy[i] >= size || y + dy[i] < 0 || x + dx[i] >= size || x + dx[i] < 0
+                                || block[y + dy[i], x + dx[i]] != 1)
+                                blockValue++;
+                }
 
             value += sideValue * _weight.SideValue;
             value += blockValue * _weight.BlockValue;

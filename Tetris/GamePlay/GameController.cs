@@ -25,9 +25,7 @@ namespace Tetris
 
         public static void KeyBoardAction(KeyEventArgs e)
         {
-            foreach (Tetris t in Players)
-                if (!t.AiPlaying)
-                    t.KeyBoardAction(e);
+            Players.ForEach(t => t.KeyBoardAction(e));
         }
 
         public static async Task GameStart()

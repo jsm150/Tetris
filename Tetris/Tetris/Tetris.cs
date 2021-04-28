@@ -12,15 +12,15 @@ namespace Tetris
         private const int HEIGHT = 20;
         private const int DELAY = 360;
         private static readonly Random Random = new Random();
-        private readonly TetrisBlock _block = new TetrisBlock();
+        protected readonly TetrisBlock _block = new TetrisBlock();
         private readonly List<int> _clearLineList = new List<int>();
         private readonly Form1 _form;
-        private readonly IKeyboardSetting _keyboardSetting;
+        protected readonly IKeyboardSetting _keyboardSetting;
         private readonly Label _label;
         private readonly object _locker = new object();
         private readonly int _offsetX;
-        private readonly int[,] _tetrisBoard = new int[HEIGHT, WIDTH];
-        private int _currentX;
+        protected readonly int[,] _tetrisBoard = new int[HEIGHT, WIDTH];
+        protected int _currentX;
         private int _currentY = -1;
         private int _combo;
 
@@ -36,16 +36,12 @@ namespace Tetris
         public int Score { get; private set; }
         public int PlayerId { get; }
         public bool GamePlaying { get; set; } = true;
-        public bool AiPlaying { get; private set; }
 
-        public event EventHandler<TetrisEventArgs> ConnectingToAi;
-        public event EventHandler<TetrisEventArgs> ReSetBlockEvent;
+
         public event EventHandler<TetrisEventArgs> LineClearEvent;
-        public event EventHandler GameEndEvent;
 
         public async Task GameStart()
         {
-            ConnectingToAi?.Invoke(this, TetrisEventArgs.GameStartEvent(DownLocationCalc, _block, _keyboardSetting, HasPlayingAi));
             for (var y = 0; y < HEIGHT; y++)
             for (var x = 0; x < WIDTH; x++)
                 DrawColer(y, x);
@@ -59,25 +55,16 @@ namespace Tetris
             {
                 await Task.Delay(DELAY);
                 MoveDown();
-                if (GamePlaying) continue;
-
-                GameEndEvent?.Invoke(this, EventArgs.Empty);
-                break;
+                if (!GamePlaying) break;
             }
         }
 
-        private void HasPlayingAi()
-        {
-            AiPlaying = true;
-        }
-
-        private void ReSetBlock()
+        protected virtual void ReSetBlock()
         {
             _block.NewBlock();
             NextBlockPreview();
             _currentY = 0 - _block.Block.GetLength(0);
             _currentX = Random.Next(0, 11 - _block.Block.GetLength(0));
-            ReSetBlockEvent?.Invoke(this, TetrisEventArgs.ReSetBlockEvent(_tetrisBoard, _currentX));
         }
 
         protected virtual void DrawColer(int y, int x, int offsetY = 7, int sizeX = 30, int sizeY = 30)
@@ -217,7 +204,7 @@ namespace Tetris
                     DrawColer(y, x);
                 }
 
-            LineClearEvent?.Invoke(this, TetrisEventArgs.LineClearEvent(_clearLineList.Count, _combo));
+            LineClearEvent?.Invoke(this, new TetrisEventArgs(_clearLineList.Count, _combo));
         }
 
         private bool CanClearLine()
@@ -266,7 +253,7 @@ namespace Tetris
             return DownLocationCalc(nowY, currentX, _block.Block);
         }
 
-        private int DownLocationCalc(int nowY, int currentX, int[,] block)
+        protected int DownLocationCalc(int nowY, int currentX, int[,] block)
         {
             int size = block.GetLength(0);
             for (int currentY = nowY; currentY <= HEIGHT; currentY++)
@@ -308,7 +295,7 @@ namespace Tetris
                 }
         }
 
-        private void RotationBlock()
+        protected void RotationBlock()
         {
             int[,] block = _block.BlockCreate(_block.BlockNum, _block.RotationNum + 1);
 
@@ -333,7 +320,7 @@ namespace Tetris
             }
         }
 
-        private void HardDown()
+        protected void HardDown()
         {
             lock (_locker)
             {
@@ -368,6 +355,8 @@ namespace Tetris
 
         public void KeyBoardAction(KeyEventArgs e)
         {
+            if (_keyboardSetting == null) return;
+
             if (_keyboardSetting.IsKeyDownAction(e))
                 MoveDown();
             if (_keyboardSetting.IsKeyHardDownAction(e))
@@ -455,23 +444,18 @@ namespace Tetris
             }
         }
 
-        private void MoveRight()
+        protected void MoveRight()
         {
             if (!CanMoveBlock(_block.Block, _currentY, _currentX + 1)) return;
             _currentX++;
             ReDrawBlock();
         }
 
-        private void MoveLeft()
+        protected void MoveLeft()
         {
             if (!CanMoveBlock(_block.Block, _currentY, _currentX - 1)) return;
             _currentX--;
             ReDrawBlock();
-        }
-
-        protected void OnGameEnd()
-        {
-            GameEndEvent?.Invoke(this, EventArgs.Empty);
         }
     }
 }

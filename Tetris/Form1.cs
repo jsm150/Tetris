@@ -31,10 +31,9 @@ namespace Tetris
             Size = new Size(700, 880);
             StartSetting();
             var player1 = new Tetris(this, 1, lbl_Score, KeyboardPlayer1.GetInstance, 1);
-            var player2 = new Tetris(this, 12, lbl_2pScore, KeyboardPlayer1.GetInstance, 2);
+            var player2 = new TetrisAI(this, 12, lbl_2pScore, 2, new Weight());
             GameController.PlayerAdd(player1);
             GameController.PlayerAdd(player2);
-            TetrisAI.AutoPlay(player2);
             await GameController.GameStart();
         }
 
