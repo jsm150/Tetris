@@ -27,8 +27,12 @@ namespace Tetris
             if (File.Exists(@".\WeightList.json"))
                 _weightArr = WeightFileReader<Weight[]>(@".\WeightList.json");
             else
+            {
                 for (var i = 0; i < _weightArr.Length; i++)
                     _weightArr[i] = GetRandomWeight();
+                if (File.Exists(@".\Weight.json"))
+                    _weightArr[0] = WeightFileReader<Weight>(@".\Weight.json");
+            }
         }
 
         public static async Task AlgorithmStart()
@@ -72,15 +76,16 @@ namespace Tetris
             for (var i = 0; i < 3; i++)
             for (var j = 3; j < 6; j++)
             {
+                if (Random.Next(0, 10) == 0)
+                {
+                    _weightArr[cnt] = GetRandomWeight();
+                    _weightArr[cnt + 1] = GetRandomWeight();
+                    cnt += 2;
+                    continue;
+                }
                 for (var k = 0; k < 7; k++)
                 {
-                    if (Random.Next(0, 10) == 0)
-                    {
-                        _weightArr[cnt] = GetRandomWeight();
-                        _weightArr[cnt + 1] = GetRandomWeight();
-
-                    }
-                    else if (Random.NextDouble() > 0.6)
+                    if (Random.NextDouble() > 0.6)
                     {
                         _weightArr[cnt][k] = Players[i].Weight[k];
                         _weightArr[cnt + 1][k] = Players[j].Weight[k];
@@ -96,8 +101,11 @@ namespace Tetris
             }
 
             for (var i = 0; i < 6; i++)
-            for (var j = 0; j < 7; j++)
-                _weightArr[cnt++][j] = Players[i].Weight[j];
+            {
+                for (var j = 0; j < 7; j++)
+                    _weightArr[cnt][j] = Players[i].Weight[j];
+                cnt++;
+            }
 
             WeightFileWriter(_weightArr, @".\WeightList.json");
         }

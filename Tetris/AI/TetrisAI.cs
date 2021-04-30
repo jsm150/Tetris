@@ -14,11 +14,11 @@ namespace Tetris
             Weight = weight;
         }
 
-        protected override async void ReSetBlock()
+        protected override void ReSetBlock()
         {
             base.ReSetBlock();
             (int x, int rotationNum) = FindOptimalPosAsync();
-            await AutoPlaying(x, rotationNum);
+            Task.Run(() => AutoPlaying(x, rotationNum));
         }
 
         private async Task AutoPlaying(int optimalX, int optimalRotation)
