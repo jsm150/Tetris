@@ -14,10 +14,11 @@ namespace Tetris
             Weight = weight;
         }
 
-        protected override void ReSetBlock()
+        protected override async void ReSetBlock()
         {
             base.ReSetBlock();
-            FindOptimalPosAsync();
+            (int x, int rotationNum) = FindOptimalPosAsync();
+            await AutoPlaying(x, rotationNum);
         }
 
         private async Task AutoPlaying(int optimalX, int optimalRotation)
@@ -63,9 +64,8 @@ namespace Tetris
             return true;
         }
 
-        private async void FindOptimalPosAsync()
+        private (int, int) FindOptimalPosAsync()
         {
-            await Task.Delay(1);
             (int X, int RotationNum) pos = (0, 0);
             int width = _tetrisBoard.GetLength(1);
             double max = int.MinValue;
@@ -78,7 +78,7 @@ namespace Tetris
                     if (!CanPutBlock(x, block)) continue;
 
                     int y = DownLocationCalc(-block.GetLength(0), x, block);
-                    int[,] board = AttachToBoard(y, x, _tetrisBoard, block);
+                    int[,] board = AttachToBoard(y, x, (int[,])_tetrisBoard.Clone(), block);
                     double temp = GetBestCaseValue(y, x, board, block);
 
                     if (max >= temp) continue;
@@ -87,18 +87,17 @@ namespace Tetris
                 }
             }
 
-            await AutoPlaying(pos.X, pos.RotationNum);
+            return pos;
         }
 
         private int[,] AttachToBoard(int currentY, int currentX, int[,] board, int[,] block)
         {
-            var newBoard = (int[,])board.Clone();
             for (var y = 0; y < block.GetLength(0); y++)
                 for (var x = 0; x < block.GetLength(0); x++)
                     if (block[y, x] == 1 && currentY + y >= 0)
-                        newBoard[currentY + y, currentX + x] = _block.BlockNum + 10;
+                        board[currentY + y, currentX + x] = _block.BlockNum + 10;
 
-            return newBoard;
+            return board;
         }
 
         private double GetBestCaseValue(int currentY, int currentX, int[,] board, int[,] block)

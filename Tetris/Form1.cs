@@ -39,7 +39,7 @@ namespace Tetris
 
         private async void btn_AIPlay_Click(object sender, EventArgs e)
         {
-            Size = new Size(470, 620);
+            Size = new Size(690, 1030);
             StartSetting();
             GeneticAlgorithm.Initialization(this, lbl_BestScore, lbl_Generation);
             await GeneticAlgorithm.AlgorithmStart();

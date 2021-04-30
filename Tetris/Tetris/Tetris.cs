@@ -93,17 +93,17 @@ namespace Tetris
                         g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
                         break;
                     default:
-                    {
-                        if (_tetrisBoard[y, x] > 10 && _tetrisBoard[y, x] <= 17)
                         {
-                            // _block.BlockColor[_tetrisBoard[y, x] - 10]
-                            // Brushes.White
-                            g.FillRectangle(Brushes.White, offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                        }
+                            if (_tetrisBoard[y, x] > 10 && _tetrisBoard[y, x] <= 17)
+                            {
+                                // _block.BlockColor[_tetrisBoard[y, x] - 10]
+                                // Brushes.White
+                                g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                                g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                            }
 
-                        break;
-                    }
+                            break;
+                        }
                 }
             }
         }

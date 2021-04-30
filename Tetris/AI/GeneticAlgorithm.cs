@@ -27,68 +27,100 @@ namespace Tetris
             if (File.Exists(@".\WeightList.json"))
                 _weightArr = WeightFileReader<Weight[]>(@".\WeightList.json");
             else
+                for (var i = 0; i < _weightArr.Length; i++)
+                    _weightArr[i] = GetRandomWeight();
+        }
+
+        public static async Task AlgorithmStart()
+        {
+            while (true)
             {
-                for (var i = 1; i < _weightArr.Length; i++)
+                _generation++;
+                Players.Clear();
+
+                lbl_Generation.Text = $@"{_generation} 세대";
+                for (var i = 0; i < _weightArr.Length; i++)
                 {
-                    _weightArr[i] = new Weight()
-                    {
-                        LineClearValue = Random.Next(0, 100) + (float) Random.NextDouble(),
-                        BlockHeightValue = Random.Next(-100, 0) + (float) Random.NextDouble(),
-                        HoleValue = Random.Next(-100, 0) + (float) Random.NextDouble(),
-                        BlockedValue = Random.Next(-100, 0) + (float) Random.NextDouble(),
-                        BlockValue = Random.Next(0, 100) + (float) Random.NextDouble(),
-                        FloorValue = Random.Next(0, 100) + (float) Random.NextDouble(),
-                        SideValue = Random.Next(0, 100) + (float) Random.NextDouble(),
-                    };
+                    int offsetX = 1 + i % 6 * 11;
+                    int offsetY = 15 + i / 6 * 21;
+                    int id = i + 1;
+
+                    var player = new GeneticTetris(Form1, offsetX, offsetY, id, _weightArr[i].Clone());
+                    Players.Add(player);
                 }
 
-                _weightArr[0] = WeightFileReader<Weight>(@".\Weight.json");
+                await GameStart();
+                _bestScore = Math.Max(_bestScore, Players.Max(t => t.Score));
+                lbl_BestScore.Text = _bestScore.ToString();
+
+                MixParents();
             }
         }
 
         private static async Task GameStart()
         {
-            await Task.Delay(1);
-            await Task.WhenAll(Players.Select(t => t.GameStart()));
+            await Task.WhenAll(Players.Select(t => Task.Run(t.GameStart)));
         }
 
-        public static async Task AlgorithmStart()
-        {
-            _generation++;
-            Players.Clear();
-            for (int j = 0; j < 3; j++)
-            {
-                lbl_Generation.Text = $@"{_generation} - {j + 1} 세대";
-                for (int i = 0; i < 8; i++)
-                {
-                    var player = new GeneticTetris(Form1, 1 + (i % 4 * 11),
-                        15 + (i / 4 * 21), j * 8 + i + 1, _weightArr[j * 8 + i]);
-                    Players.Add(player);
-                }
-
-                await GameStart();
-                _bestScore = Math.Max(_bestScore, Players.Skip(j * 8).Max(t => t.Score));
-                lbl_BestScore.Text = _bestScore.ToString();
-            }
-            
-            await MixParents();
-        }
-
-        private static async Task MixParents()
+        private static void MixParents()
         {
             Players.Sort((i, j) => i.Score > j.Score ? -1 : 1);
             WeightFileWriter(Players[0].Weight, @".\Weight.json");
+
+            // 상위 개체 6개를 뽑아서 교배
+            var cnt = 0;
+            for (var i = 0; i < 3; i++)
+            for (var j = 3; j < 6; j++)
+            {
+                for (var k = 0; k < 7; k++)
+                {
+                    if (Random.Next(0, 10) == 0)
+                    {
+                        _weightArr[cnt] = GetRandomWeight();
+                        _weightArr[cnt + 1] = GetRandomWeight();
+
+                    }
+                    else if (Random.NextDouble() > 0.6)
+                    {
+                        _weightArr[cnt][k] = Players[i].Weight[k];
+                        _weightArr[cnt + 1][k] = Players[j].Weight[k];
+                    }
+                    else
+                    {
+                        _weightArr[cnt + 1][k] = Players[i].Weight[k];
+                        _weightArr[cnt][k] = Players[j].Weight[k];
+                    }
+                }
+
+                cnt += 2;
+            }
+
+            for (var i = 0; i < 6; i++)
+            for (var j = 0; j < 7; j++)
+                _weightArr[cnt++][j] = Players[i].Weight[j];
+
             WeightFileWriter(_weightArr, @".\WeightList.json");
+        }
 
+        private static Weight GetRandomWeight()
+        {
+            var weight = new Weight();
+            for (int i = 0; i < 7; i++)
+            {
+                weight[i] = i <= 2 ? Random.Next(-100, 0) : Random.Next(0, 100);
+                weight[i] += (float)Random.NextDouble();
+            }
 
-            await AlgorithmStart();
+            return weight;
         }
 
         private static void WeightFileWriter<T>(T weight, string path)
         {
             using (var stream = new StreamWriter(path))
             using (var writer = new JsonTextWriter(stream))
+            {
                 new JsonSerializer().Serialize(writer, weight);
+            }
         }
 
         private static T WeightFileReader<T>(string path)
@@ -100,5 +132,10 @@ namespace Tetris
             }
         }
 
+        private static T Clone<T>(this T obj)
+        {
+            string temp = JsonConvert.SerializeObject(obj);
+            return JsonConvert.DeserializeObject<T>(temp);
+        }
     }
 }
