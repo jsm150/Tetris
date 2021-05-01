@@ -37,12 +37,21 @@ namespace Tetris
             await GameController.GameStart();
         }
 
-        private async void btn_AIPlay_Click(object sender, EventArgs e)
+        private async void btn_GeneticAlgorithm_Click(object sender, EventArgs e)
         {
             Size = new Size(690, 1030);
             StartSetting();
             GeneticAlgorithm.Initialization(this, lbl_BestScore, lbl_Generation);
             await GeneticAlgorithm.AlgorithmStart();
+        }
+
+        private async void btn_AI_Click(object sender, EventArgs e)
+        {
+            Size = new Size(380, 880);
+            StartSetting();
+            GameController.PlayerAdd(new TetrisAI(this, 1, lbl_Score, 1, 
+                File.Exists(@".\Weight.json") ? GeneticAlgorithm.WeightFileReader<Weight>(@".\Weight.json") : new Weight()));
+            await GameController.GameStart();
         }
 
         private async void btn_1vs1_Click(object sender, EventArgs e)
@@ -60,7 +69,7 @@ namespace Tetris
             _mediaPlayer.controls.play();
             btn_GameStart.Enabled = false;
             btn_1vs1.Enabled = false;
-            btn_AIPlay.Enabled = false;
+            btn_GeneticAlgorithm.Enabled = false;
         }
 
         private void GameEnd(string gameAlertMsg)
@@ -69,7 +78,7 @@ namespace Tetris
             _mediaPlayer.controls.stop();
             btn_GameStart.Enabled = true;
             btn_1vs1.Enabled = true;
-            btn_AIPlay.Enabled = true;
+            btn_GeneticAlgorithm.Enabled = true;
 
             lbl_BestScore.Text = int.Parse(lbl_Score.Text) > int.Parse(lbl_BestScore.Text)
                 ? lbl_Score.Text

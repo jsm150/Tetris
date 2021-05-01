@@ -41,8 +41,9 @@ namespace Tetris
             this.lbl_2pScore = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.tBar_Volume = new System.Windows.Forms.TrackBar();
-            this.btn_AIPlay = new System.Windows.Forms.Button();
+            this.btn_GeneticAlgorithm = new System.Windows.Forms.Button();
             this.lbl_Generation = new System.Windows.Forms.Label();
+            this.btn_AI = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.tBar_Volume)).BeginInit();
             this.SuspendLayout();
             // 
@@ -143,32 +144,43 @@ namespace Tetris
             this.tBar_Volume.Value = 10;
             this.tBar_Volume.Scroll += new System.EventHandler(this.tBar_Volume_Scroll);
             // 
-            // btn_AIPlay
+            // btn_GeneticAlgorithm
             // 
-            this.btn_AIPlay.Location = new System.Drawing.Point(35, 69);
-            this.btn_AIPlay.Name = "btn_AIPlay";
-            this.btn_AIPlay.Size = new System.Drawing.Size(46, 23);
-            this.btn_AIPlay.TabIndex = 11;
-            this.btn_AIPlay.Text = "AI";
-            this.btn_AIPlay.UseVisualStyleBackColor = true;
-            this.btn_AIPlay.Click += new System.EventHandler(this.btn_AIPlay_Click);
+            this.btn_GeneticAlgorithm.Location = new System.Drawing.Point(12, 72);
+            this.btn_GeneticAlgorithm.Name = "btn_GeneticAlgorithm";
+            this.btn_GeneticAlgorithm.Size = new System.Drawing.Size(123, 23);
+            this.btn_GeneticAlgorithm.TabIndex = 11;
+            this.btn_GeneticAlgorithm.Text = "GeneticAlgorithm";
+            this.btn_GeneticAlgorithm.UseVisualStyleBackColor = true;
+            this.btn_GeneticAlgorithm.Click += new System.EventHandler(this.btn_GeneticAlgorithm_Click);
             // 
             // lbl_Generation
             // 
             this.lbl_Generation.AutoSize = true;
             this.lbl_Generation.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.lbl_Generation.Location = new System.Drawing.Point(87, 74);
+            this.lbl_Generation.Location = new System.Drawing.Point(128, 23);
             this.lbl_Generation.Name = "lbl_Generation";
             this.lbl_Generation.Size = new System.Drawing.Size(0, 12);
             this.lbl_Generation.TabIndex = 3;
+            // 
+            // btn_AI
+            // 
+            this.btn_AI.Location = new System.Drawing.Point(157, 72);
+            this.btn_AI.Name = "btn_AI";
+            this.btn_AI.Size = new System.Drawing.Size(33, 23);
+            this.btn_AI.TabIndex = 11;
+            this.btn_AI.Text = "AI";
+            this.btn_AI.UseVisualStyleBackColor = true;
+            this.btn_AI.Click += new System.EventHandler(this.btn_AI_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(361, 104);
-            this.Controls.Add(this.btn_AIPlay);
+            this.ClientSize = new System.Drawing.Size(361, 107);
+            this.Controls.Add(this.btn_AI);
+            this.Controls.Add(this.btn_GeneticAlgorithm);
             this.Controls.Add(this.tBar_Volume);
             this.Controls.Add(this.lbl_2pScore);
             this.Controls.Add(this.label6);
@@ -202,8 +214,9 @@ namespace Tetris
         private System.Windows.Forms.Label lbl_2pScore;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TrackBar tBar_Volume;
-        private System.Windows.Forms.Button btn_AIPlay;
+        private System.Windows.Forms.Button btn_GeneticAlgorithm;
         private System.Windows.Forms.Label lbl_Generation;
+        private System.Windows.Forms.Button btn_AI;
     }
 }
 

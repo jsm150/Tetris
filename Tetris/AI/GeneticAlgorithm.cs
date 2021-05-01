@@ -132,7 +132,7 @@ namespace Tetris
             }
         }
 
-        private static T WeightFileReader<T>(string path)
+        public static T WeightFileReader<T>(string path)
         {
             using (var stream = new StreamReader(path))
             using (var reader = new JsonTextReader(stream))
