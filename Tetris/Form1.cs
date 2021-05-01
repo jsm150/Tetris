@@ -26,12 +26,19 @@ namespace Tetris
             GameController.GameEndAction = GameEnd;
         }
 
+        private Weight GetWeight()
+        {
+            return File.Exists(@".\Weight.json")
+                ? GeneticAlgorithm.WeightFileReader<Weight>(@".\Weight.json")
+                : new Weight();
+        }
+
         private async void btn_GameStart_Click(object sender, EventArgs e)
         {
             Size = new Size(700, 880);
             StartSetting();
             var player1 = new Tetris(this, 1, lbl_Score, KeyboardPlayer1.GetInstance, 1);
-            var player2 = new TetrisAI(this, 12, lbl_2pScore, 2, new Weight());
+            var player2 = new TetrisAI(this, 12, lbl_2pScore, 2, GetWeight());
             GameController.PlayerAdd(player1);
             GameController.PlayerAdd(player2);
             await GameController.GameStart();
@@ -49,8 +56,7 @@ namespace Tetris
         {
             Size = new Size(380, 880);
             StartSetting();
-            GameController.PlayerAdd(new TetrisAI(this, 1, lbl_Score, 1, 
-                File.Exists(@".\Weight.json") ? GeneticAlgorithm.WeightFileReader<Weight>(@".\Weight.json") : new Weight()));
+            GameController.PlayerAdd(new TetrisAI(this, 1, lbl_Score, 1, GetWeight()));
             await GameController.GameStart();
         }
 

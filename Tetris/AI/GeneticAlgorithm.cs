@@ -87,7 +87,7 @@ namespace Tetris
                 }
 
                 for (var k = 0; k < 7; k++)
-                    if (Random.NextDouble() > 0.6)
+                    if (Random.NextDouble() > 0.5)
                     {
                         _weightArr[cnt][k] = Players[i].Weight[k];
                         _weightArr[cnt + 1][k] = Players[j].Weight[k];
