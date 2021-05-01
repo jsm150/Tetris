@@ -25,7 +25,9 @@ namespace Tetris
             lbl_BestScore = bs;
             lbl_Generation = ge;
             if (File.Exists(@".\WeightList.json"))
+            {
                 _weightArr = WeightFileReader<Weight[]>(@".\WeightList.json");
+            }
             else
             {
                 for (var i = 0; i < _weightArr.Length; i++)
@@ -83,8 +85,8 @@ namespace Tetris
                     cnt += 2;
                     continue;
                 }
+
                 for (var k = 0; k < 7; k++)
-                {
                     if (Random.NextDouble() > 0.6)
                     {
                         _weightArr[cnt][k] = Players[i].Weight[k];
@@ -95,7 +97,6 @@ namespace Tetris
                         _weightArr[cnt + 1][k] = Players[i].Weight[k];
                         _weightArr[cnt][k] = Players[j].Weight[k];
                     }
-                }
 
                 cnt += 2;
             }
@@ -113,10 +114,10 @@ namespace Tetris
         private static Weight GetRandomWeight()
         {
             var weight = new Weight();
-            for (int i = 0; i < 7; i++)
+            for (var i = 0; i < 7; i++)
             {
                 weight[i] = i <= 2 ? Random.Next(-100, 0) : Random.Next(0, 100);
-                weight[i] += (float)Random.NextDouble();
+                weight[i] += (float) Random.NextDouble();
             }
 
             return weight;

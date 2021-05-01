@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Tetris
@@ -9,7 +8,7 @@ namespace Tetris
     {
         private readonly int _offsetY;
 
-        public GeneticTetris(Form1 f, int offsetX, int offsetY, int id, Weight weight) 
+        public GeneticTetris(Form1 f, int offsetX, int offsetY, int id, Weight weight)
             : base(f, offsetX, new Label(), id, weight)
         {
             _offsetY = offsetY;

@@ -9,7 +9,7 @@ namespace Tetris
             LineClearCount = lineClearCount;
             Combo = combo;
         }
-        
+
         public int LineClearCount { get; }
         public int Combo { get; }
     }

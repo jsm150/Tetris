@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,18 +12,18 @@ namespace Tetris
         private const int HEIGHT = 20;
         private const int DELAY = 360;
         private static readonly Random Random = new Random();
+        private static readonly object _drawLocker = new object();
         protected readonly TetrisBlock _block = new TetrisBlock();
         private readonly List<int> _clearLineList = new List<int>();
         private readonly Form1 _form;
         protected readonly IKeyboardSetting _keyboardSetting;
         private readonly Label _label;
         private readonly object _locker = new object();
-        private static readonly object _drawLocker = new object();
         private readonly int _offsetX;
         protected readonly int[,] _tetrisBoard = new int[HEIGHT, WIDTH];
+        private int _combo;
         protected int _currentX;
         private int _currentY = -1;
-        private int _combo;
 
         public Tetris(Form1 f, int offsetX, Label label, IKeyboardSetting key, int id)
         {
@@ -92,26 +91,25 @@ namespace Tetris
                             g.DrawRectangle(new Pen(Brushes.DarkGray), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
                             break;
                         case 18:
-                            g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], offsetX * sizeX, offsetY * sizeY,
+                            g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], offsetX * sizeX,
+                                offsetY * sizeY,
                                 sizeX, sizeY);
                             g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
                             break;
                         default:
+                        {
+                            if (_tetrisBoard[y, x] > 10 && _tetrisBoard[y, x] <= 17)
                             {
-                                if (_tetrisBoard[y, x] > 10 && _tetrisBoard[y, x] <= 17)
-                                {
-                                    // _block.BlockColor[_tetrisBoard[y, x] - 10]
-                                    // Brushes.White
-                                    g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                                    g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                                }
-
-                                break;
+                                g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], offsetX * sizeX,
+                                    offsetY * sizeY, sizeX, sizeY);
+                                g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
                             }
+
+                            break;
+                        }
                     }
                 }
             }
-            
         }
 
         protected virtual void NextBlockPreview()
@@ -147,7 +145,7 @@ namespace Tetris
         }
 
         // 블럭 이동이 가능한지 체크, 게임오버 체크
-        private bool CanMoveBlock(int[,] block, int ny, int nx, bool callByMoveDown = false) 
+        private bool CanMoveBlock(int[,] block, int ny, int nx, bool callByMoveDown = false)
         {
             int size = block.GetLength(0);
 
@@ -358,6 +356,7 @@ namespace Tetris
 
                 LOOP_EXIT: ;
             }
+
             MoveDown();
         }
 
@@ -440,10 +439,13 @@ namespace Tetris
                     if (CanClearLine())
                     {
                         _combo++;
-                        Score += 300 * (int)Math.Pow(_clearLineList.Count, 2);
+                        Score += 300 * (int) Math.Pow(_clearLineList.Count, 2);
                         ClearLine();
                     }
-                    else _combo = 0;
+                    else
+                    {
+                        _combo = 0;
+                    }
 
                     ReSetBlock();
                 }
@@ -469,9 +471,7 @@ namespace Tetris
         private void SetScoreText()
         {
             if (_label.InvokeRequired)
-            {
-                _label.Invoke((MethodInvoker)SetScoreText);
-            }
+                _label.Invoke((MethodInvoker) SetScoreText);
             else
                 _label.Text = Score.ToString();
         }
