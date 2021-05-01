@@ -8,7 +8,6 @@ namespace Tetris
     public class GeneticTetris : TetrisAI
     {
         private readonly int _offsetY;
-        private static readonly object _locker = new object();
 
         public GeneticTetris(Form1 f, int offsetX, int offsetY, int id, Weight weight) 
             : base(f, offsetX, new Label(), id, weight)
@@ -18,10 +17,7 @@ namespace Tetris
 
         protected override void DrawColer(int y, int x, int offsetY, int sizeX, int sizeY)
         {
-            lock (_locker)
-            {
-                base.DrawColer(y, x, _offsetY, 10, 10);
-            }
+            base.DrawColer(y, x, _offsetY, 10, 10);
         }
 
         protected override void NextBlockPreview()

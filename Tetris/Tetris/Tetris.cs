@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -18,6 +19,7 @@ namespace Tetris
         protected readonly IKeyboardSetting _keyboardSetting;
         private readonly Label _label;
         private readonly object _locker = new object();
+        private static readonly object _drawLocker = new object();
         private readonly int _offsetX;
         protected readonly int[,] _tetrisBoard = new int[HEIGHT, WIDTH];
         protected int _currentX;
@@ -33,7 +35,7 @@ namespace Tetris
             _keyboardSetting = key;
         }
 
-        public int Score { get; private set; }
+        public long Score { get; private set; }
         public int PlayerId { get; }
         public bool GamePlaying { get; set; } = true;
 
@@ -69,69 +71,76 @@ namespace Tetris
 
         protected virtual void DrawColer(int y, int x, int offsetY = 7, int sizeX = 30, int sizeY = 30)
         {
-            using (Graphics g = _form.CreateGraphics())
+            lock (_drawLocker)
             {
-                int offsetX = x + _offsetX;
-                offsetY += y;
-                switch (_tetrisBoard[y, x])
+                using (Graphics g = _form.CreateGraphics())
                 {
-                    case 0:
-                        g.FillRectangle(Brushes.Black, offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                        g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                        break;
-                    case 1:
-                        g.FillRectangle(_block.BlockColor[_block.BlockNum], offsetX * sizeX, offsetY * sizeY, sizeX,
-                            sizeY);
-                        g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                        break;
-                    case 3:
-                        g.DrawRectangle(new Pen(Brushes.DarkGray), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                        break;
-                    case 18:
-                        g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], offsetX * sizeX, offsetY * sizeY,
-                            sizeX, sizeY);
-                        g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                        break;
-                    default:
-                        {
-                            if (_tetrisBoard[y, x] > 10 && _tetrisBoard[y, x] <= 17)
-                            {
-                                // _block.BlockColor[_tetrisBoard[y, x] - 10]
-                                // Brushes.White
-                                g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                                g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                            }
-
+                    int offsetX = x + _offsetX;
+                    offsetY += y;
+                    switch (_tetrisBoard[y, x])
+                    {
+                        case 0:
+                            g.FillRectangle(Brushes.Black, offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
                             break;
-                        }
+                        case 1:
+                            g.FillRectangle(_block.BlockColor[_block.BlockNum], offsetX * sizeX, offsetY * sizeY, sizeX,
+                                sizeY);
+                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                            break;
+                        case 3:
+                            g.DrawRectangle(new Pen(Brushes.DarkGray), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                            break;
+                        case 18:
+                            g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], offsetX * sizeX, offsetY * sizeY,
+                                sizeX, sizeY);
+                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                            break;
+                        default:
+                            {
+                                if (_tetrisBoard[y, x] > 10 && _tetrisBoard[y, x] <= 17)
+                                {
+                                    // _block.BlockColor[_tetrisBoard[y, x] - 10]
+                                    // Brushes.White
+                                    g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                                    g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                                }
+
+                                break;
+                            }
+                    }
                 }
             }
+            
         }
 
         protected virtual void NextBlockPreview()
         {
-            const int sizeX = 30;
-            const int sizeY = 30;
-            int nextBlockNum = _block.NextBlockNum();
-            int[,] block = _block.BlockCreate(nextBlockNum, 0);
-            using (Graphics g = _form.CreateGraphics())
+            lock (_drawLocker)
             {
-                int size = block.GetLength(0);
-                for (var y = 0; y < 2; y++)
-                for (var x = 0; x < 4; x++)
+                const int sizeX = 30;
+                const int sizeY = 30;
+                int nextBlockNum = _block.NextBlockNum();
+                int[,] block = _block.BlockCreate(nextBlockNum, 0);
+                using (Graphics g = _form.CreateGraphics())
                 {
-                    int offsetX = x + _offsetX + 3;
-                    int offsetY = y + 4;
-                    if (x >= size || y >= size || block[y, x] != 1)
+                    int size = block.GetLength(0);
+                    for (var y = 0; y < 2; y++)
+                    for (var x = 0; x < 4; x++)
                     {
-                        g.FillRectangle(Brushes.Black, offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                        g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                    }
-                    else
-                    {
-                        g.FillRectangle(_block.BlockColor[nextBlockNum], offsetX * sizeX, offsetY * sizeY, sizeX,
-                            sizeY);
-                        g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                        int offsetX = x + _offsetX + 3;
+                        int offsetY = y + 4;
+                        if (x >= size || y >= size || block[y, x] != 1)
+                        {
+                            g.FillRectangle(Brushes.Black, offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                        }
+                        else
+                        {
+                            g.FillRectangle(_block.BlockColor[nextBlockNum], offsetX * sizeX, offsetY * sizeY, sizeX,
+                                sizeY);
+                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                        }
                     }
                 }
             }
@@ -340,7 +349,6 @@ namespace Tetris
                     {
                         Score += 2 * (currentY - 1 - _currentY);
                         _currentY = currentY - 1;
-                        _label.Text = Score.ToString();
                         RemoveRedBlock();
                         MoveRedBlock();
                     }
@@ -348,9 +356,9 @@ namespace Tetris
                     goto LOOP_EXIT;
                 }
 
-                LOOP_EXIT:
-                MoveDown();
+                LOOP_EXIT: ;
             }
+            MoveDown();
         }
 
         public void KeyBoardAction(KeyEventArgs e)
@@ -432,16 +440,16 @@ namespace Tetris
                     if (CanClearLine())
                     {
                         _combo++;
-                        Score += 300 * (int) Math.Pow(_clearLineList.Count, 2);
+                        Score += 300 * (int)Math.Pow(_clearLineList.Count, 2);
                         ClearLine();
                     }
                     else _combo = 0;
 
                     ReSetBlock();
                 }
-
-                _label.Text = Score.ToString();
             }
+
+            SetScoreText();
         }
 
         protected void MoveRight()
@@ -456,6 +464,16 @@ namespace Tetris
             if (!CanMoveBlock(_block.Block, _currentY, _currentX - 1)) return;
             _currentX--;
             ReDrawBlock();
+        }
+
+        private void SetScoreText()
+        {
+            if (_label.InvokeRequired)
+            {
+                _label.Invoke((MethodInvoker)SetScoreText);
+            }
+            else
+                _label.Text = Score.ToString();
         }
     }
 }

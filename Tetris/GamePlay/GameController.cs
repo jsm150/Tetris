@@ -31,7 +31,7 @@ namespace Tetris
         public static async Task GameStart()
         {
             MultiPlay.Access(Players);
-            await Task.WhenAny(Players.Select(t => t.GameStart()));
+            await Task.WhenAny(Players.Select(t => Task.Run(t.GameStart)));
             GameEnd();
         }
 

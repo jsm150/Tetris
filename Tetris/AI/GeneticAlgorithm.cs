@@ -17,7 +17,7 @@ namespace Tetris
         private static Label lbl_BestScore;
         private static Label lbl_Generation;
         private static int _generation;
-        private static int _bestScore;
+        private static long _bestScore;
 
         public static void Initialization(Form1 form1, Label bs, Label ge)
         {

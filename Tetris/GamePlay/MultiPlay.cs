@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace Tetris
 {
@@ -10,7 +11,7 @@ namespace Tetris
             players.ForEach(t => t.LineClearEvent += SendBlockToPlayer);
         }
 
-        private static void SendBlockToPlayer(object sender, TetrisEventArgs e)
+        private static async void SendBlockToPlayer(object sender, TetrisEventArgs e)
         {
             ReadOnlyCollection<Tetris> players = GameController.GetPlayers();
             if (players.Count <= 1) return;
@@ -20,7 +21,7 @@ namespace Tetris
 
             foreach (Tetris player in players)
                 if (player.PlayerId != tetris?.PlayerId)
-                    player.SetGarbageLine(garbageLine);
+                    await Task.Run(() => player.SetGarbageLine(garbageLine));
         }
 
         private static int GetGarbageLine(TetrisEventArgs e)
