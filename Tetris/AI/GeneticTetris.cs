@@ -14,6 +14,14 @@ namespace Tetris
             _offsetY = offsetY;
         }
 
+        protected override Task AutoPlaying(int optimalX, int optimalRotation)
+        {
+            _block.SetRotationBlock(optimalRotation);
+            _currentX = optimalX;
+            HardDown();
+            return Task.CompletedTask;
+        }
+
         protected override void DrawColer(int y, int x, int offsetY, int sizeX, int sizeY)
         {
             base.DrawColer(y, x, _offsetY, 10, 10);

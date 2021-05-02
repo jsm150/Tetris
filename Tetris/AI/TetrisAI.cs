@@ -21,8 +21,12 @@ namespace Tetris
             await AutoPlaying(x, rotationNum);
         }
 
-        private async Task AutoPlaying(int optimalX, int optimalRotation)
+        protected virtual async Task AutoPlaying(int optimalX, int optimalRotation)
         {
+            //_block.SetRotationBlock(optimalRotation);
+            //_currentX = optimalX;
+            //HardDown();
+            //return Task.CompletedTask;
             int delay = GetDelay(_tetrisBoard);
             Action direction = _currentX < optimalX ? MoveRight : new Action(MoveLeft);
             int end = Math.Abs(_currentX - optimalX);

@@ -57,9 +57,15 @@ namespace Tetris
             return _saveBlock.Peek();
         }
 
-        public void RotationBlockCreate()
+        public void SetRotationBlock()
         {
             Block = BlockCreate(BlockNum, ++RotationNum);
+        }
+
+        public void SetRotationBlock(int rotationNum)
+        {
+            RotationNum = rotationNum;
+            Block = BlockCreate(BlockNum, RotationNum);
         }
 
         public void NewBlock()

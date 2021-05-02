@@ -193,7 +193,7 @@ namespace Tetris
                 if (_tetrisBoard[y, x] > 10)
                     return y;
 
-            return -1;
+            return 20;
         }
 
         private void ClearLine()
@@ -284,7 +284,7 @@ namespace Tetris
             int size = _block.Block.GetLength(0);
             for (var y = 0; y < size; y++)
             for (var x = 0; x < size; x++)
-                if (y + currentY >= 0 && y + currentY < HEIGHT && 
+                if (y + currentY >= 0 && y + currentY < HEIGHT &&
                     _block.Block[y, x] == 1 && _tetrisBoard[y + currentY, x + _currentX] == 0)
                 {
                     _tetrisBoard[y + currentY, x + _currentX] = 3;
@@ -323,7 +323,7 @@ namespace Tetris
 
             void RotationBlockAction()
             {
-                _block.RotationBlockCreate();
+                _block.SetRotationBlock();
                 ReDrawBlock();
             }
         }
