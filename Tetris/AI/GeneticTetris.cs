@@ -14,7 +14,7 @@ namespace Tetris
             _offsetY = offsetY;
         }
 
-        protected override Task AutoPlaying(int optimalX, int optimalRotation)
+        protected override Task DoBlockMove(int optimalX, int optimalRotation)
         {
             _block.SetRotationBlock(optimalRotation);
             _currentX = optimalX;
@@ -31,13 +31,9 @@ namespace Tetris
         {
         }
 
-        protected override async Task LoopDownAsync()
+        protected override Task LoopDownAsync()
         {
-            while (true)
-            {
-                await Task.Delay(500);
-                if (!GamePlaying) break;
-            }
+            return Task.CompletedTask;
         }
 
         protected override void ReDrawBlock()

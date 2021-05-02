@@ -8,8 +8,8 @@ namespace Tetris
 {
     public class Tetris
     {
-        private const int WIDTH = 10;
-        private const int HEIGHT = 20;
+        protected const int WIDTH = 10;
+        protected const int HEIGHT = 20;
         private const int DELAY = 360;
         private static readonly Random Random = new Random();
         private static readonly object _drawLocker = new object();
@@ -41,7 +41,7 @@ namespace Tetris
 
         public event EventHandler<TetrisEventArgs> LineClearEvent;
 
-        public async Task GameStart()
+        public virtual async Task GameStart()
         {
             for (var y = 0; y < HEIGHT; y++)
             for (var x = 0; x < WIDTH; x++)
@@ -60,7 +60,7 @@ namespace Tetris
             }
         }
 
-        protected virtual void ReSetBlock()
+        private void ReSetBlock()
         {
             _block.NewBlock();
             NextBlockPreview();
@@ -208,8 +208,11 @@ namespace Tetris
                         _tetrisBoard[y, x] = _tetrisBoard[y - 1, x];
                     else
                         _tetrisBoard[y, x] = 0;
-                    DrawColer(y, x);
                 }
+
+            for (int y = highLine; y < HEIGHT; y++)
+            for (var x = 0; x < WIDTH; x++)
+                DrawColer(y, x);
 
             LineClearEvent?.Invoke(this, new TetrisEventArgs(_clearLineList.Count, _combo));
         }

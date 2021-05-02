@@ -14,19 +14,26 @@ namespace Tetris
 
         public Weight Weight { get; }
 
-        protected override async void ReSetBlock()
+        public override async Task GameStart()
         {
-            base.ReSetBlock();
-            (int x, int rotationNum) = await Task.Run(FindOptimalPosAsync);
-            await AutoPlaying(x, rotationNum);
+#pragma warning disable 4014
+            base.GameStart();
+#pragma warning restore 4014
+            await AutoPlaying();
         }
 
-        protected virtual async Task AutoPlaying(int optimalX, int optimalRotation)
+        private async Task AutoPlaying()
         {
-            //_block.SetRotationBlock(optimalRotation);
-            //_currentX = optimalX;
-            //HardDown();
-            //return Task.CompletedTask;
+            while (GamePlaying)
+            {
+                (int x, int rotationNum) = FindOptimalPosAsync();
+                await DoBlockMove(x, rotationNum);
+            }
+        }
+        
+
+        protected virtual async Task DoBlockMove(int optimalX, int optimalRotation)
+        {
             int delay = GetDelay(_tetrisBoard);
             Action direction = _currentX < optimalX ? MoveRight : new Action(MoveLeft);
             int end = Math.Abs(_currentX - optimalX);
