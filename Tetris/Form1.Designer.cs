@@ -44,6 +44,7 @@ namespace Tetris
             this.btn_GeneticAlgorithm = new System.Windows.Forms.Button();
             this.lbl_Generation = new System.Windows.Forms.Label();
             this.btn_AI = new System.Windows.Forms.Button();
+            this.lbl_bestNum = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.tBar_Volume)).BeginInit();
             this.SuspendLayout();
             // 
@@ -158,7 +159,7 @@ namespace Tetris
             // 
             this.lbl_Generation.AutoSize = true;
             this.lbl_Generation.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.lbl_Generation.Location = new System.Drawing.Point(128, 23);
+            this.lbl_Generation.Location = new System.Drawing.Point(33, 109);
             this.lbl_Generation.Name = "lbl_Generation";
             this.lbl_Generation.Size = new System.Drawing.Size(0, 12);
             this.lbl_Generation.TabIndex = 3;
@@ -173,12 +174,21 @@ namespace Tetris
             this.btn_AI.UseVisualStyleBackColor = true;
             this.btn_AI.Click += new System.EventHandler(this.btn_AI_Click);
             // 
+            // lbl_bestNum
+            // 
+            this.lbl_bestNum.AutoSize = true;
+            this.lbl_bestNum.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_bestNum.Location = new System.Drawing.Point(110, 109);
+            this.lbl_bestNum.Name = "lbl_bestNum";
+            this.lbl_bestNum.Size = new System.Drawing.Size(0, 12);
+            this.lbl_bestNum.TabIndex = 3;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(361, 107);
+            this.ClientSize = new System.Drawing.Size(361, 109);
             this.Controls.Add(this.btn_AI);
             this.Controls.Add(this.btn_GeneticAlgorithm);
             this.Controls.Add(this.tBar_Volume);
@@ -186,6 +196,7 @@ namespace Tetris
             this.Controls.Add(this.label6);
             this.Controls.Add(this.btn_1vs1);
             this.Controls.Add(this.lbl_BestScore);
+            this.Controls.Add(this.lbl_bestNum);
             this.Controls.Add(this.lbl_Generation);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.lbl_Score);
@@ -217,6 +228,7 @@ namespace Tetris
         private System.Windows.Forms.Button btn_GeneticAlgorithm;
         private System.Windows.Forms.Label lbl_Generation;
         private System.Windows.Forms.Button btn_AI;
+        private System.Windows.Forms.Label lbl_bestNum;
     }
 }
 

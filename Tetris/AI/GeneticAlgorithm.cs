@@ -14,16 +14,12 @@ namespace Tetris
         private static readonly List<TetrisAI> Players = new List<TetrisAI>();
         private static Weight[] _weightArr = new Weight[24];
         private static Form1 Form1;
-        private static Label lbl_BestScore;
-        private static Label lbl_Generation;
         private static int _generation;
         private static long _bestScore;
 
         public static void Initialization(Form1 form1, Label bs, Label ge)
         {
             Form1 = form1;
-            lbl_BestScore = bs;
-            lbl_Generation = ge;
             if (File.Exists(@".\WeightList.json"))
             {
                 _weightArr = WeightFileReader<Weight[]>(@".\WeightList.json");
@@ -37,7 +33,8 @@ namespace Tetris
             }
         }
 
-        public static async Task AlgorithmStart()
+        public static async Task AlgorithmStart(Label lbl_Score, Label lbl_BestScore, Label lbl_Generation,
+            Label lblBestNum)
         {
             while (true)
             {
@@ -51,13 +48,15 @@ namespace Tetris
                     int offsetY = 15 + i / 6 * 21;
                     int id = i + 1;
 
-                    var player = new GeneticTetris(Form1, offsetX, offsetY, id, _weightArr[i].Clone());
+                    TetrisAI player = TetrisAI.GeneticMode(Form1, offsetX, offsetY, lbl_Score, lblBestNum, id,
+                        _weightArr[i].Clone());
                     Players.Add(player);
                 }
 
                 await GameStart();
                 _bestScore = Math.Max(_bestScore, Players.Max(t => t.Score));
                 lbl_BestScore.Text = _bestScore.ToString();
+                lbl_Score.Text = "0";
 
                 MixParents();
             }
@@ -78,7 +77,7 @@ namespace Tetris
             for (var i = 0; i < 3; i++)
             for (var j = 3; j < 6; j++)
             {
-                if (Random.Next(0, 10) == 0)
+                if (Random.Next(0, 10) == 1)
                 {
                     _weightArr[cnt] = GetRandomWeight();
                     _weightArr[cnt + 1] = GetRandomWeight();
@@ -87,6 +86,7 @@ namespace Tetris
                 }
 
                 for (var k = 0; k < 7; k++)
+                {
                     if (Random.NextDouble() > 0.5)
                     {
                         _weightArr[cnt][k] = Players[i].Weight[k];
@@ -98,17 +98,29 @@ namespace Tetris
                         _weightArr[cnt][k] = Players[j].Weight[k];
                     }
 
+                    if (Random.NextDouble() < 0.2)
+                    {
+                        _weightArr[cnt + 1][k] = GetRandom(k);
+                        _weightArr[cnt][k] = GetRandom(k);
+                    }
+                }
+
+
                 cnt += 2;
             }
 
             for (var i = 0; i < 6; i++)
-            {
-                for (var j = 0; j < 7; j++)
-                    _weightArr[cnt][j] = Players[i].Weight[j];
-                cnt++;
-            }
+            for (var j = 0; j < 7; j++)
+                _weightArr[cnt + i][j] = Players[i].Weight[j];
 
             WeightFileWriter(_weightArr, @".\WeightList.json");
+
+            float GetRandom(int k)
+            {
+                float value = k <= 2 ? Random.Next(-100, 0) : Random.Next(0, 100);
+                value += (float) Random.NextDouble();
+                return value;
+            }
         }
 
         private static Weight GetRandomWeight()

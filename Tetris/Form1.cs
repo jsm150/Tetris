@@ -38,7 +38,7 @@ namespace Tetris
             Size = new Size(700, 880);
             StartSetting();
             var player1 = new Tetris(this, 1, lbl_Score, KeyboardPlayer1.GetInstance, 1);
-            var player2 = new TetrisAI(this, 12, lbl_2pScore, 2, GetWeight());
+            TetrisAI player2 = TetrisAI.GeneralMode(this, 12, lbl_2pScore, 2, GetWeight());
             GameController.PlayerAdd(player1);
             GameController.PlayerAdd(player2);
             await GameController.GameStart();
@@ -49,14 +49,14 @@ namespace Tetris
             Size = new Size(690, 1030);
             StartSetting();
             GeneticAlgorithm.Initialization(this, lbl_BestScore, lbl_Generation);
-            await GeneticAlgorithm.AlgorithmStart();
+            await GeneticAlgorithm.AlgorithmStart(lbl_Score, lbl_BestScore, lbl_Generation, lbl_bestNum);
         }
 
         private async void btn_AI_Click(object sender, EventArgs e)
         {
             Size = new Size(380, 880);
             StartSetting();
-            GameController.PlayerAdd(new TetrisAI(this, 1, lbl_Score, 1, GetWeight()));
+            GameController.PlayerAdd(TetrisAI.AITestMode(this, 1, lbl_Score, 1, GetWeight()));
             await GameController.GameStart();
         }
 

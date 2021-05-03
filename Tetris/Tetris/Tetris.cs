@@ -8,29 +8,29 @@ namespace Tetris
 {
     public class Tetris
     {
-        protected const int WIDTH = 10;
-        protected const int HEIGHT = 20;
+        private const int WIDTH = 10;
+        private const int HEIGHT = 20;
         private const int DELAY = 360;
-        private static readonly Random Random = new Random();
         private static readonly object _drawLocker = new object();
+        protected static readonly Random Random = new Random();
         protected readonly TetrisBlock _block = new TetrisBlock();
         private readonly List<int> _clearLineList = new List<int>();
         private readonly Form1 _form;
-        protected readonly IKeyboardSetting _keyboardSetting;
-        private readonly Label _label;
+        private readonly KeyboardSetting _keyboardSetting;
         private readonly object _locker = new object();
         private readonly int _offsetX;
         protected readonly int[,] _tetrisBoard = new int[HEIGHT, WIDTH];
+        protected readonly Label lbl_Score;
         private int _combo;
         protected int _currentX;
-        private int _currentY = -1;
+        protected int _currentY = -1;
 
-        public Tetris(Form1 f, int offsetX, Label label, IKeyboardSetting key, int id)
+        public Tetris(Form1 f, int offsetX, Label lblScore, KeyboardSetting key, int id)
         {
             PlayerId = id;
             _offsetX = offsetX;
             _form = f;
-            _label = label;
+            lbl_Score = lblScore;
             _keyboardSetting = key;
         }
 
@@ -60,7 +60,7 @@ namespace Tetris
             }
         }
 
-        private void ReSetBlock()
+        protected virtual void ReSetBlock()
         {
             _block.NewBlock();
             NextBlockPreview();
@@ -112,7 +112,7 @@ namespace Tetris
             }
         }
 
-        protected virtual void NextBlockPreview()
+        private void NextBlockPreview()
         {
             lock (_drawLocker)
             {
@@ -203,12 +203,10 @@ namespace Tetris
             foreach (int i in _clearLineList)
                 for (int y = i; y >= highLine; y--)
                 for (var x = 0; x < WIDTH; x++)
-                {
                     if (y > 0 && _tetrisBoard[y - 1, x] > 10)
                         _tetrisBoard[y, x] = _tetrisBoard[y - 1, x];
                     else
                         _tetrisBoard[y, x] = 0;
-                }
 
             for (int y = highLine; y < HEIGHT; y++)
             for (var x = 0; x < WIDTH; x++)
@@ -472,12 +470,12 @@ namespace Tetris
             ReDrawBlock();
         }
 
-        private void SetScoreText()
+        protected virtual void SetScoreText()
         {
-            if (_label.InvokeRequired)
-                _label.Invoke((MethodInvoker) SetScoreText);
+            if (lbl_Score.InvokeRequired)
+                lbl_Score.Invoke((MethodInvoker) SetScoreText);
             else
-                _label.Text = Score.ToString();
+                lbl_Score.Text = Score.ToString();
         }
     }
 }
