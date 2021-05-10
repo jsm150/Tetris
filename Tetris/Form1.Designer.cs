@@ -25,8 +25,8 @@ namespace Tetris
         #region Windows Form 디자이너에서 생성한 코드
 
         /// <summary>
-        /// 디자이너 지원에 필요한 메서드입니다. 
-        /// 이 메서드의 내용을 코드 편집기로 수정하지 마세요.
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
@@ -45,7 +45,7 @@ namespace Tetris
             this.lbl_Generation = new System.Windows.Forms.Label();
             this.btn_AI = new System.Windows.Forms.Button();
             this.lbl_bestNum = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.tBar_Volume)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.tBar_Volume)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_GameStart
@@ -62,7 +62,7 @@ namespace Tetris
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
             this.label1.Location = new System.Drawing.Point(33, 23);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(48, 12);
@@ -72,7 +72,7 @@ namespace Tetris
             // lbl_Score
             // 
             this.lbl_Score.AutoSize = true;
-            this.lbl_Score.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_Score.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
             this.lbl_Score.Location = new System.Drawing.Point(87, 23);
             this.lbl_Score.Name = "lbl_Score";
             this.lbl_Score.Size = new System.Drawing.Size(12, 12);
@@ -87,7 +87,7 @@ namespace Tetris
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label2.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
             this.label2.Location = new System.Drawing.Point(33, 45);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(77, 12);
@@ -97,7 +97,7 @@ namespace Tetris
             // lbl_BestScore
             // 
             this.lbl_BestScore.AutoSize = true;
-            this.lbl_BestScore.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_BestScore.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
             this.lbl_BestScore.Location = new System.Drawing.Point(116, 45);
             this.lbl_BestScore.Name = "lbl_BestScore";
             this.lbl_BestScore.Size = new System.Drawing.Size(12, 12);
@@ -118,7 +118,7 @@ namespace Tetris
             // lbl_2pScore
             // 
             this.lbl_2pScore.AutoSize = true;
-            this.lbl_2pScore.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_2pScore.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
             this.lbl_2pScore.Location = new System.Drawing.Point(422, 23);
             this.lbl_2pScore.Name = "lbl_2pScore";
             this.lbl_2pScore.Size = new System.Drawing.Size(12, 12);
@@ -128,7 +128,7 @@ namespace Tetris
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label6.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
             this.label6.Location = new System.Drawing.Point(368, 23);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(48, 12);
@@ -158,7 +158,7 @@ namespace Tetris
             // lbl_Generation
             // 
             this.lbl_Generation.AutoSize = true;
-            this.lbl_Generation.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_Generation.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
             this.lbl_Generation.Location = new System.Drawing.Point(33, 109);
             this.lbl_Generation.Name = "lbl_Generation";
             this.lbl_Generation.Size = new System.Drawing.Size(0, 12);
@@ -177,7 +177,7 @@ namespace Tetris
             // lbl_bestNum
             // 
             this.lbl_bestNum.AutoSize = true;
-            this.lbl_bestNum.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_bestNum.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
             this.lbl_bestNum.Location = new System.Drawing.Point(110, 109);
             this.lbl_bestNum.Name = "lbl_bestNum";
             this.lbl_bestNum.Size = new System.Drawing.Size(0, 12);
@@ -207,10 +207,9 @@ namespace Tetris
             this.Name = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
-            ((System.ComponentModel.ISupportInitialize)(this.tBar_Volume)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.tBar_Volume)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion

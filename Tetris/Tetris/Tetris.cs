@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -25,6 +26,10 @@ namespace Tetris
         protected int _currentX;
         protected int _currentY = -1;
 
+        public long Score { get; private set; }
+        public int PlayerId { get; }
+        public bool GamePlaying { get; set; } = true;
+
         public Tetris(Form1 f, int offsetX, Label lblScore, KeyboardSetting key, int id)
         {
             PlayerId = id;
@@ -33,10 +38,6 @@ namespace Tetris
             lbl_Score = lblScore;
             _keyboardSetting = key;
         }
-
-        public long Score { get; private set; }
-        public int PlayerId { get; }
-        public bool GamePlaying { get; set; } = true;
 
 
         public event EventHandler<TetrisEventArgs> LineClearEvent;
@@ -208,7 +209,8 @@ namespace Tetris
                     else
                         _tetrisBoard[y, x] = 0;
 
-            for (int y = highLine; y < HEIGHT; y++)
+            int max = _clearLineList.Max();
+            for (int y = highLine; y <= max; y++)
             for (var x = 0; x < WIDTH; x++)
                 DrawColer(y, x);
 

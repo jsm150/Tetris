@@ -13,13 +13,11 @@ namespace Tetris
         private static readonly Random Random = new Random();
         private static readonly List<TetrisAI> Players = new List<TetrisAI>();
         private static Weight[] _weightArr = new Weight[24];
-        private static Form1 Form1;
         private static int _generation;
         private static long _bestScore;
 
-        public static void Initialization(Form1 form1, Label bs, Label ge)
+        public static void Initialization()
         {
-            Form1 = form1;
             if (File.Exists(@".\WeightList.json"))
             {
                 _weightArr = WeightFileReader<Weight[]>(@".\WeightList.json");
@@ -33,7 +31,7 @@ namespace Tetris
             }
         }
 
-        public static async Task AlgorithmStart(Label lbl_Score, Label lbl_BestScore, Label lbl_Generation,
+        public static async Task AlgorithmStart(Form1 form1, Label lbl_Score, Label lbl_BestScore, Label lbl_Generation,
             Label lblBestNum)
         {
             while (true)
@@ -48,7 +46,7 @@ namespace Tetris
                     int offsetY = 15 + i / 6 * 21;
                     int id = i + 1;
 
-                    TetrisAI player = TetrisAI.GeneticMode(Form1, offsetX, offsetY, lbl_Score, lblBestNum, id,
+                    TetrisAI player = TetrisAI.GeneticMode(form1, offsetX, offsetY, lbl_Score, lblBestNum, id,
                         _weightArr[i].Clone());
                     Players.Add(player);
                 }
@@ -86,25 +84,21 @@ namespace Tetris
                 }
 
                 for (var k = 0; k < 7; k++)
-                {
-                    if (Random.NextDouble() > 0.5)
+                    if (Random.NextDouble() < 0.2)
+                    {
+                        _weightArr[cnt][k] = GetRandom(k);
+                        _weightArr[cnt + 1][k] = GetRandom(k);
+                    }
+                    else if (Random.NextDouble() > 0.5)
                     {
                         _weightArr[cnt][k] = Players[i].Weight[k];
                         _weightArr[cnt + 1][k] = Players[j].Weight[k];
                     }
                     else
                     {
-                        _weightArr[cnt + 1][k] = Players[i].Weight[k];
                         _weightArr[cnt][k] = Players[j].Weight[k];
+                        _weightArr[cnt + 1][k] = Players[i].Weight[k];
                     }
-
-                    if (Random.NextDouble() < 0.2)
-                    {
-                        _weightArr[cnt + 1][k] = GetRandom(k);
-                        _weightArr[cnt][k] = GetRandom(k);
-                    }
-                }
-
 
                 cnt += 2;
             }

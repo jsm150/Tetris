@@ -4,10 +4,6 @@ namespace Tetris
 {
     internal class KeyboardPlayer2 : KeyboardSetting
     {
-        private KeyboardPlayer2()
-        {
-        }
-
         public override Keys DownCode => Keys.S;
         public override Keys LeftCode => Keys.A;
         public override Keys RightCode => Keys.D;
@@ -15,5 +11,9 @@ namespace Tetris
         public override Keys HardDownCode => Keys.E;
 
         public static KeyboardPlayer2 GetInstance { get; } = new KeyboardPlayer2();
+
+        private KeyboardPlayer2()
+        {
+        }
     }
 }

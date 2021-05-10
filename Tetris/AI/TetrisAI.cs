@@ -17,6 +17,8 @@ namespace Tetris
         private Action ReSetBlockAction;
         private Action SetScoreTextAction;
 
+        public Weight Weight { get; }
+
         private TetrisAI(Form1 f, int offsetX, int offsetY, Label lblScore, Label lblBestNum, int id, Weight weight)
             : base(f, offsetX, lblScore, null, id)
         {
@@ -30,8 +32,6 @@ namespace Tetris
             LoopDownAsyncFunc = base.LoopDownAsync;
             ReDrawBlockAction = base.ReDrawBlock;
         }
-
-        public Weight Weight { get; }
 
         protected override void SetScoreText()
         {
@@ -241,6 +241,8 @@ namespace Tetris
             return value;
         }
 
+        #region SetMode
+
         private async Task DoBlockMoveNormal(int optimalX, int optimalRotation)
         {
             int delay = GetDelay(_tetrisBoard);
@@ -291,7 +293,7 @@ namespace Tetris
                 if (!lbl_Score.InvokeRequired)
                 {
                     lbl_Score.Text = Score.ToString();
-                    lbl_BestNum.Text = $"현재 번호: {PlayerId}번";
+                    lbl_BestNum.Text = $@"현재 번호: {PlayerId}번";
                     return;
                 }
             }
@@ -299,9 +301,13 @@ namespace Tetris
             lbl_Score.Invoke((MethodInvoker) SetScoreText);
         }
 
-        private void DrawColerAtGenetic(int y, int x, int offsetY, int sizeX, int sizeY)
+        private void DrawColerAtGenetic(int y, int x)
         {
             base.DrawColer(y, x, _offsetY, 10, 10);
+        }
+
+        private void DrawColerAtNone(int y, int x, int offsetY, int sizeX, int sizeY)
+        {
         }
 
         private void ReSetBlockAtGenetic()
@@ -334,7 +340,7 @@ namespace Tetris
             ReDrawBlockAction = ReDrawBlockAtGenetic;
             DoBlockMoveFunc = DoBlockMoveAtGenetic;
             ReSetBlockAction = ReSetBlockAtGenetic;
-            DrawColorAction = DrawColerAtGenetic;
+            DrawColorAction = DrawColerAtNone;
             LoopDownAsyncFunc = LoopDownAsyncAtGenetic;
             SetScoreTextAction = SetScoreTextAtGenetic;
         }
@@ -358,5 +364,7 @@ namespace Tetris
         {
             return new TetrisAI(f, offsetX, 0, lblScore, null, id, weight);
         }
+
+        #endregion
     }
 }

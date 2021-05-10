@@ -48,8 +48,8 @@ namespace Tetris
         {
             Size = new Size(690, 1030);
             StartSetting();
-            GeneticAlgorithm.Initialization(this, lbl_BestScore, lbl_Generation);
-            await GeneticAlgorithm.AlgorithmStart(lbl_Score, lbl_BestScore, lbl_Generation, lbl_bestNum);
+            GeneticAlgorithm.Initialization();
+            await GeneticAlgorithm.AlgorithmStart(this, lbl_Score, lbl_BestScore, lbl_Generation, lbl_bestNum);
         }
 
         private async void btn_AI_Click(object sender, EventArgs e)

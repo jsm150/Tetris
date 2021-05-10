@@ -13,17 +13,17 @@ namespace Tetris
         private readonly Queue<int> _saveBlock = new Queue<int>();
         private int _blockNumPoint = 8;
 
-        public TetrisBlock()
-        {
-            BlockRotationCount = Array.AsReadOnly(SetBlockRotationCountInit());
-            BlockColor = Array.AsReadOnly(SetBlockColorInit());
-        }
-
         public int[,] Block { get; private set; }
         public ReadOnlyCollection<int> BlockRotationCount { get; }
         public ReadOnlyCollection<Brush> BlockColor { get; }
         public int BlockNum { get; private set; }
         public int RotationNum { get; private set; }
+
+        public TetrisBlock()
+        {
+            BlockRotationCount = Array.AsReadOnly(SetBlockRotationCountInit());
+            BlockColor = Array.AsReadOnly(SetBlockColorInit());
+        }
 
         private static int[] SetBlockRotationCountInit()
         {
