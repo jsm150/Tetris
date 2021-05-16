@@ -69,7 +69,7 @@ namespace Tetris
             _currentX = Random.Next(0, 11 - _block.Block.GetLength(0));
         }
 
-        protected virtual void DrawColer(int y, int x, int offsetY = 7, int sizeX = 30, int sizeY = 30)
+        protected virtual void DrawColer(int y, int x, int offsetY = 8, int sizeX = 30, int sizeY = 30)
         {
             lock (_drawLocker)
             {
@@ -128,7 +128,7 @@ namespace Tetris
                     for (var x = 0; x < 4; x++)
                     {
                         int offsetX = x + _offsetX + 3;
-                        int offsetY = y + 4;
+                        int offsetY = y + 5;
                         if (x >= size || y >= size || block[y, x] != 1)
                         {
                             g.FillRectangle(Brushes.Black, offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);

@@ -2,7 +2,7 @@
 
 namespace Tetris
 {
-    partial class Form1
+    sealed partial class Form1
     {
         /// <summary>
         /// 필수 디자이너 변수입니다.
@@ -45,12 +45,12 @@ namespace Tetris
             this.lbl_Generation = new System.Windows.Forms.Label();
             this.btn_AI = new System.Windows.Forms.Button();
             this.lbl_bestNum = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize) (this.tBar_Volume)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tBar_Volume)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_GameStart
             // 
-            this.btn_GameStart.Location = new System.Drawing.Point(253, 12);
+            this.btn_GameStart.Location = new System.Drawing.Point(253, 32);
             this.btn_GameStart.Name = "btn_GameStart";
             this.btn_GameStart.Size = new System.Drawing.Size(99, 35);
             this.btn_GameStart.TabIndex = 0;
@@ -62,8 +62,8 @@ namespace Tetris
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
-            this.label1.Location = new System.Drawing.Point(33, 23);
+            this.label1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label1.Location = new System.Drawing.Point(33, 43);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(48, 12);
             this.label1.TabIndex = 1;
@@ -72,8 +72,8 @@ namespace Tetris
             // lbl_Score
             // 
             this.lbl_Score.AutoSize = true;
-            this.lbl_Score.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
-            this.lbl_Score.Location = new System.Drawing.Point(87, 23);
+            this.lbl_Score.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_Score.Location = new System.Drawing.Point(87, 43);
             this.lbl_Score.Name = "lbl_Score";
             this.lbl_Score.Size = new System.Drawing.Size(12, 12);
             this.lbl_Score.TabIndex = 2;
@@ -87,8 +87,8 @@ namespace Tetris
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
-            this.label2.Location = new System.Drawing.Point(33, 45);
+            this.label2.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label2.Location = new System.Drawing.Point(33, 65);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(77, 12);
             this.label2.TabIndex = 3;
@@ -97,8 +97,8 @@ namespace Tetris
             // lbl_BestScore
             // 
             this.lbl_BestScore.AutoSize = true;
-            this.lbl_BestScore.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
-            this.lbl_BestScore.Location = new System.Drawing.Point(116, 45);
+            this.lbl_BestScore.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_BestScore.Location = new System.Drawing.Point(116, 65);
             this.lbl_BestScore.Name = "lbl_BestScore";
             this.lbl_BestScore.Size = new System.Drawing.Size(12, 12);
             this.lbl_BestScore.TabIndex = 4;
@@ -106,7 +106,7 @@ namespace Tetris
             // 
             // btn_1vs1
             // 
-            this.btn_1vs1.Location = new System.Drawing.Point(196, 12);
+            this.btn_1vs1.Location = new System.Drawing.Point(196, 32);
             this.btn_1vs1.Name = "btn_1vs1";
             this.btn_1vs1.Size = new System.Drawing.Size(51, 35);
             this.btn_1vs1.TabIndex = 5;
@@ -118,8 +118,8 @@ namespace Tetris
             // lbl_2pScore
             // 
             this.lbl_2pScore.AutoSize = true;
-            this.lbl_2pScore.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
-            this.lbl_2pScore.Location = new System.Drawing.Point(422, 23);
+            this.lbl_2pScore.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_2pScore.Location = new System.Drawing.Point(422, 43);
             this.lbl_2pScore.Name = "lbl_2pScore";
             this.lbl_2pScore.Size = new System.Drawing.Size(12, 12);
             this.lbl_2pScore.TabIndex = 7;
@@ -128,8 +128,8 @@ namespace Tetris
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
-            this.label6.Location = new System.Drawing.Point(368, 23);
+            this.label6.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label6.Location = new System.Drawing.Point(368, 43);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(48, 12);
             this.label6.TabIndex = 6;
@@ -137,7 +137,7 @@ namespace Tetris
             // 
             // tBar_Volume
             // 
-            this.tBar_Volume.Location = new System.Drawing.Point(196, 53);
+            this.tBar_Volume.Location = new System.Drawing.Point(196, 73);
             this.tBar_Volume.Maximum = 100;
             this.tBar_Volume.Name = "tBar_Volume";
             this.tBar_Volume.Size = new System.Drawing.Size(156, 45);
@@ -147,7 +147,7 @@ namespace Tetris
             // 
             // btn_GeneticAlgorithm
             // 
-            this.btn_GeneticAlgorithm.Location = new System.Drawing.Point(12, 72);
+            this.btn_GeneticAlgorithm.Location = new System.Drawing.Point(12, 92);
             this.btn_GeneticAlgorithm.Name = "btn_GeneticAlgorithm";
             this.btn_GeneticAlgorithm.Size = new System.Drawing.Size(123, 23);
             this.btn_GeneticAlgorithm.TabIndex = 11;
@@ -158,15 +158,15 @@ namespace Tetris
             // lbl_Generation
             // 
             this.lbl_Generation.AutoSize = true;
-            this.lbl_Generation.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
-            this.lbl_Generation.Location = new System.Drawing.Point(33, 109);
+            this.lbl_Generation.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_Generation.Location = new System.Drawing.Point(33, 132);
             this.lbl_Generation.Name = "lbl_Generation";
             this.lbl_Generation.Size = new System.Drawing.Size(0, 12);
             this.lbl_Generation.TabIndex = 3;
             // 
             // btn_AI
             // 
-            this.btn_AI.Location = new System.Drawing.Point(157, 72);
+            this.btn_AI.Location = new System.Drawing.Point(157, 92);
             this.btn_AI.Name = "btn_AI";
             this.btn_AI.Size = new System.Drawing.Size(33, 23);
             this.btn_AI.TabIndex = 11;
@@ -177,8 +177,8 @@ namespace Tetris
             // lbl_bestNum
             // 
             this.lbl_bestNum.AutoSize = true;
-            this.lbl_bestNum.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (129)));
-            this.lbl_bestNum.Location = new System.Drawing.Point(110, 109);
+            this.lbl_bestNum.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.lbl_bestNum.Location = new System.Drawing.Point(110, 132);
             this.lbl_bestNum.Name = "lbl_bestNum";
             this.lbl_bestNum.Size = new System.Drawing.Size(0, 12);
             this.lbl_bestNum.TabIndex = 3;
@@ -188,7 +188,7 @@ namespace Tetris
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(361, 109);
+            this.ClientSize = new System.Drawing.Size(362, 125);
             this.Controls.Add(this.btn_AI);
             this.Controls.Add(this.btn_GeneticAlgorithm);
             this.Controls.Add(this.tBar_Volume);
@@ -207,9 +207,10 @@ namespace Tetris
             this.Name = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
-            ((System.ComponentModel.ISupportInitialize) (this.tBar_Volume)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tBar_Volume)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         #endregion

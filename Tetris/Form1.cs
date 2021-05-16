@@ -2,12 +2,13 @@
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using MetroFramework.Forms;
 using Tetris.Properties;
 using WMPLib;
 
 namespace Tetris
 {
-    public partial class Form1 : Form
+    public sealed partial class Form1 : MetroForm
     {
         private readonly WindowsMediaPlayer _mediaPlayer = new WindowsMediaPlayer();
 
@@ -35,7 +36,7 @@ namespace Tetris
 
         private async void btn_GameStart_Click(object sender, EventArgs e)
         {
-            Size = new Size(700, 880);
+            Size = new Size(690, 870);
             StartSetting();
             var player1 = new Tetris(this, 1, lbl_Score, KeyboardPlayer1.GetInstance, 1);
             TetrisAI player2 = TetrisAI.GeneralMode(this, 12, lbl_2pScore, 2, GetWeight());
@@ -46,7 +47,7 @@ namespace Tetris
 
         private async void btn_GeneticAlgorithm_Click(object sender, EventArgs e)
         {
-            Size = new Size(690, 1030);
+            Size = new Size(670, 1000);
             StartSetting();
             GeneticAlgorithm.Initialization();
             await GeneticAlgorithm.AlgorithmStart(this, lbl_Score, lbl_BestScore, lbl_Generation, lbl_bestNum);
@@ -54,7 +55,7 @@ namespace Tetris
 
         private async void btn_AI_Click(object sender, EventArgs e)
         {
-            Size = new Size(380, 880);
+            Size = new Size(360, 870);
             StartSetting();
             GameController.PlayerAdd(TetrisAI.AITestMode(this, 1, lbl_Score, 1, GetWeight()));
             await GameController.GameStart();
@@ -62,7 +63,7 @@ namespace Tetris
 
         private async void btn_1vs1_Click(object sender, EventArgs e)
         {
-            Size = new Size(700, 880);
+            Size = new Size(690, 870);
             StartSetting();
             GameController.PlayerAdd(new Tetris(this, 1, lbl_Score, KeyboardPlayer2.GetInstance, 1));
             GameController.PlayerAdd(new Tetris(this, 12, lbl_2pScore, KeyboardPlayer1.GetInstance, 2));

@@ -43,7 +43,7 @@ namespace Tetris
                 for (var i = 0; i < _weightArr.Length; i++)
                 {
                     int offsetX = 1 + i % 6 * 11;
-                    int offsetY = 15 + i / 6 * 21;
+                    int offsetY = 16 + i / 6 * 21;
                     int id = i + 1;
 
                     TetrisAI player = TetrisAI.GeneticMode(form1, offsetX, offsetY, lbl_Score, lblBestNum, id,

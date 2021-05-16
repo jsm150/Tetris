@@ -48,7 +48,7 @@ namespace Tetris
             ReSetBlockAction.Invoke();
         }
 
-        protected override void DrawColer(int y, int x, int offsetY = 7, int sizeX = 30, int sizeY = 30)
+        protected override void DrawColer(int y, int x, int offsetY = 8, int sizeX = 30, int sizeY = 30)
         {
             DrawColorAction.Invoke(y, x, offsetY, sizeX, sizeY);
         }
@@ -58,7 +58,7 @@ namespace Tetris
             await LoopDownAsyncFunc.Invoke();
         }
 
-        protected virtual async Task DoBlockMove(int optimalX, int optimalRotation)
+        private async Task DoBlockMove(int optimalX, int optimalRotation)
         {
             await DoBlockMoveFunc.Invoke(optimalX, optimalRotation);
         }
@@ -301,7 +301,7 @@ namespace Tetris
             lbl_Score.Invoke((MethodInvoker) SetScoreText);
         }
 
-        private void DrawColerAtGenetic(int y, int x)
+        private void DrawColerAtGenetic(int y, int x, int offsetY, int sizeX, int sizeY)
         {
             base.DrawColer(y, x, _offsetY, 10, 10);
         }
@@ -340,7 +340,7 @@ namespace Tetris
             ReDrawBlockAction = ReDrawBlockAtGenetic;
             DoBlockMoveFunc = DoBlockMoveAtGenetic;
             ReSetBlockAction = ReSetBlockAtGenetic;
-            DrawColorAction = DrawColerAtNone;
+            DrawColorAction = DrawColerAtGenetic;
             LoopDownAsyncFunc = LoopDownAsyncAtGenetic;
             SetScoreTextAction = SetScoreTextAtGenetic;
         }
