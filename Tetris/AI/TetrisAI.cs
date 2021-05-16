@@ -96,6 +96,7 @@ namespace Tetris
             (int X, int RotationNum) pos = (0, 0);
             int width = _tetrisBoard.GetLength(1);
             double max = int.MinValue;
+            var board = _tetrisBoard.Clone() as int[,];
 
             for (var i = 0; i < _block.BlockRotationCount[_block.BlockNum]; i++)
             {
@@ -105,9 +106,10 @@ namespace Tetris
                     if (!CanPutBlock(x, block)) continue;
 
                     int y = DownLocationCalc(-block.GetLength(0), x, block);
-                    int[,] board = AttachToBoard(y, x, (int[,]) _tetrisBoard.Clone(), block);
+                    SetBoard(y, x, board, block, _block.BlockNum + 10);
                     double temp = GetBestCaseValue(y, x, board, block);
 
+                    SetBoard(y, x, board, block, 0);
                     if (max >= temp) continue;
                     max = temp;
                     pos = (x, i);
@@ -117,14 +119,12 @@ namespace Tetris
             return pos;
         }
 
-        private int[,] AttachToBoard(int currentY, int currentX, int[,] board, int[,] block)
+        private void SetBoard(int currentY, int currentX, int[,] board, int[,] block, int value)
         {
             for (var y = 0; y < block.GetLength(0); y++)
             for (var x = 0; x < block.GetLength(0); x++)
                 if (block[y, x] == 1 && currentY + y >= 0)
-                    board[currentY + y, currentX + x] = _block.BlockNum + 10;
-
-            return board;
+                    board[currentY + y, currentX + x] = value;
         }
 
         private double GetBestCaseValue(int currentY, int currentX, int[,] board, int[,] block)
