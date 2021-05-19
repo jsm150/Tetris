@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MetroFramework.Controls;
 
 namespace Tetris
 {
     public class TetrisAI : Tetris
     {
         private static readonly object _labelLocker = new object();
-        private readonly int _offsetY;
         private readonly Label lbl_BestNum;
 
         private Func<int, int, Task> DoBlockMoveFunc;
-        private Action<int, int, int, int, int> DrawColorAction;
+        private Action<int, int, int> DrawColorAction;
         private Func<Task> LoopDownAsyncFunc;
         private Action ReDrawBlockAction;
         private Action ReSetBlockAction;
@@ -19,11 +19,10 @@ namespace Tetris
 
         public Weight Weight { get; }
 
-        private TetrisAI(Form1 f, int offsetX, int offsetY, Label lblScore, Label lblBestNum, int id, Weight weight)
-            : base(f, offsetX, lblScore, null, id)
+        private TetrisAI(MetroPanel p, Label lblScore, Label lblBestNum, int id, Weight weight)
+            : base(p, lblScore, null, id)
         {
             Weight = weight;
-            _offsetY = offsetY;
             lbl_BestNum = lblBestNum;
             DoBlockMoveFunc = DoBlockMoveNormal;
             SetScoreTextAction = base.SetScoreText;
@@ -48,9 +47,9 @@ namespace Tetris
             ReSetBlockAction.Invoke();
         }
 
-        protected override void DrawColer(int y, int x, int offsetY = 8, int sizeX = 30, int sizeY = 30)
+        protected override void DrawColer(int y, int x, int size = 30)
         {
-            DrawColorAction.Invoke(y, x, offsetY, sizeX, sizeY);
+            DrawColorAction.Invoke(y, x, size);
         }
 
         protected override async Task LoopDownAsync()
@@ -288,25 +287,25 @@ namespace Tetris
         {
             lock (_labelLocker)
             {
-                if (!long.TryParse(lbl_Score.Text, out long i)) return;
+                if (!long.TryParse(_lblScore.Text, out long i)) return;
                 if (i > Score) return;
-                if (!lbl_Score.InvokeRequired)
+                if (!_lblScore.InvokeRequired)
                 {
-                    lbl_Score.Text = Score.ToString();
+                    _lblScore.Text = Score.ToString();
                     lbl_BestNum.Text = $@"현재 번호: {PlayerId}번";
                     return;
                 }
             }
 
-            lbl_Score.Invoke((MethodInvoker) SetScoreText);
+            _lblScore.Invoke((MethodInvoker) SetScoreText);
         }
 
-        private void DrawColerAtGenetic(int y, int x, int offsetY, int sizeX, int sizeY)
+        private void DrawColerAtGenetic(int y, int x, int size)
         {
-            base.DrawColer(y, x, _offsetY, 10, 10);
+            base.DrawColer(y, x, 10);
         }
 
-        private void DrawColerAtNone(int y, int x, int offsetY, int sizeX, int sizeY)
+        private void DrawColerAtNone(int y, int x, int size)
         {
         }
 
@@ -314,7 +313,7 @@ namespace Tetris
         {
             _block.NewBlock();
             _currentY = 0 - _block.Block.GetLength(0);
-            _currentX = Random.Next(0, 11 - _block.Block.GetLength(0));
+            _currentX = _random.Next(0, 11 - _block.Block.GetLength(0));
         }
 
         private Task LoopDownAsyncAtGenetic()
@@ -345,24 +344,24 @@ namespace Tetris
             SetScoreTextAction = SetScoreTextAtGenetic;
         }
 
-        public static TetrisAI AITestMode(Form1 f, int offsetX, Label lblScore, int id, Weight weight)
+        public static TetrisAI AITestMode(MetroPanel p, Label lblScore, int id, Weight weight)
         {
-            var t = new TetrisAI(f, offsetX, 0, lblScore, null, id, weight);
+            var t = new TetrisAI(p, lblScore, null, id, weight);
             t.SetAiTestMode();
             return t;
         }
 
-        public static TetrisAI GeneticMode(Form1 f, int offsetX, int offsetY, Label lblScore, Label lblBestNum, int id,
+        public static TetrisAI GeneticMode(MetroPanel p, Label lblScore, Label lblBestNum, int id,
             Weight weight)
         {
-            var t = new TetrisAI(f, offsetX, offsetY, lblScore, lblBestNum, id, weight);
+            var t = new TetrisAI(p, lblScore, lblBestNum, id, weight);
             t.SetGeneticMode();
             return t;
         }
 
-        public static TetrisAI GeneralMode(Form1 f, int offsetX, Label lblScore, int id, Weight weight)
+        public static TetrisAI GeneralMode(MetroPanel p, Label lblScore, int id, Weight weight)
         {
-            return new TetrisAI(f, offsetX, 0, lblScore, null, id, weight);
+            return new TetrisAI(p, lblScore, null, id, weight);
         }
 
         #endregion

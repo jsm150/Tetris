@@ -34,5 +34,17 @@ namespace Tetris.Properties {
                 this["Volume"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool RenderingState {
+            get {
+                return ((bool)(this["RenderingState"]));
+            }
+            set {
+                this["RenderingState"] = value;
+            }
+        }
     }
 }

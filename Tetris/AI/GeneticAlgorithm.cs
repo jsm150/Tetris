@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MetroFramework.Controls;
+using MetroFramework.Forms;
 using Newtonsoft.Json;
 
 namespace Tetris
@@ -12,42 +15,63 @@ namespace Tetris
     {
         private static readonly Random Random = new Random();
         private static readonly List<TetrisAI> Players = new List<TetrisAI>();
-        private static Weight[] _weightArr = new Weight[24];
+        private static Weight[] _weights = new Weight[24];
+        private static MetroPanel[] _panels = new MetroPanel[24];
         private static int _generation;
         private static long _bestScore;
 
-        public static void Initialization()
+        private static void Initialization(Control form)
+        {
+            SetWeights();
+            SetPanels(form);
+        }
+
+        private static void SetWeights()
         {
             if (File.Exists(@".\WeightList.json"))
             {
-                _weightArr = WeightFileReader<Weight[]>(@".\WeightList.json");
+                _weights = WeightFileReader<Weight[]>(@".\WeightList.json");
             }
             else
             {
-                for (var i = 0; i < _weightArr.Length; i++)
-                    _weightArr[i] = GetRandomWeight();
+                for (var i = 0; i < _weights.Length; i++)
+                    _weights[i] = GetRandomWeight();
                 if (File.Exists(@".\Weight.json"))
-                    _weightArr[0] = WeightFileReader<Weight>(@".\Weight.json");
+                    _weights[0] = WeightFileReader<Weight>(@".\Weight.json");
             }
         }
 
-        public static async Task AlgorithmStart(Form1 form1, Label lbl_Score, Label lbl_BestScore, Label lbl_Generation,
+        private static void SetPanels(Control form)
+        {
+            for (var i = 0; i < _weights.Length; i++)
+            {
+                _panels[i] = new MetroPanel()
+                {
+                    Location = new Point((1 + i % 6 * 11) * 10, (16 + i / 6 * 21) * 10),
+                    Size = new Size(105, 205),
+                    Name = i.ToString(),
+                    BorderStyle = BorderStyle.Fixed3D,
+                    BackColor = Color.Black
+                };
+            }
+            
+            form.Controls.AddRange(_panels);
+        }
+
+        public static async Task AlgorithmStart(MetroForm form, Label lbl_Score, Label lbl_BestScore, Label lbl_Generation,
             Label lblBestNum)
         {
+            Initialization(form);
             while (true)
             {
                 _generation++;
                 Players.Clear();
 
                 lbl_Generation.Text = $@"{_generation} 세대";
-                for (var i = 0; i < _weightArr.Length; i++)
+                for (var i = 0; i < _weights.Length; i++)
                 {
-                    int offsetX = 1 + i % 6 * 11;
-                    int offsetY = 16 + i / 6 * 21;
-                    int id = i + 1;
-
-                    TetrisAI player = TetrisAI.GeneticMode(form1, offsetX, offsetY, lbl_Score, lblBestNum, id,
-                        _weightArr[i].Clone());
+                    TetrisAI player = TetrisAI.GeneticMode(_panels[i], lbl_Score, lblBestNum, i + 1,
+                        _weights[i].Clone());
                     Players.Add(player);
                 }
 
@@ -77,8 +101,8 @@ namespace Tetris
             {
                 if (Random.Next(0, 10) == 1)
                 {
-                    _weightArr[cnt] = GetRandomWeight();
-                    _weightArr[cnt + 1] = GetRandomWeight();
+                    _weights[cnt] = GetRandomWeight();
+                    _weights[cnt + 1] = GetRandomWeight();
                     cnt += 2;
                     continue;
                 }
@@ -86,18 +110,18 @@ namespace Tetris
                 for (var k = 0; k < 7; k++)
                     if (Random.NextDouble() < 0.2)
                     {
-                        _weightArr[cnt][k] = GetRandom(k);
-                        _weightArr[cnt + 1][k] = GetRandom(k);
+                        _weights[cnt][k] = GetRandom(k);
+                        _weights[cnt + 1][k] = GetRandom(k);
                     }
                     else if (Random.NextDouble() > 0.5)
                     {
-                        _weightArr[cnt][k] = Players[i].Weight[k];
-                        _weightArr[cnt + 1][k] = Players[j].Weight[k];
+                        _weights[cnt][k] = Players[i].Weight[k];
+                        _weights[cnt + 1][k] = Players[j].Weight[k];
                     }
                     else
                     {
-                        _weightArr[cnt][k] = Players[j].Weight[k];
-                        _weightArr[cnt + 1][k] = Players[i].Weight[k];
+                        _weights[cnt][k] = Players[j].Weight[k];
+                        _weights[cnt + 1][k] = Players[i].Weight[k];
                     }
 
                 cnt += 2;
@@ -105,9 +129,9 @@ namespace Tetris
 
             for (var i = 0; i < 6; i++)
             for (var j = 0; j < 7; j++)
-                _weightArr[cnt + i][j] = Players[i].Weight[j];
+                _weights[cnt + i][j] = Players[i].Weight[j];
 
-            WeightFileWriter(_weightArr, @".\WeightList.json");
+            WeightFileWriter(_weights, @".\WeightList.json");
 
             float GetRandom(int k)
             {

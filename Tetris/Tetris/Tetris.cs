@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MetroFramework.Controls;
 
 namespace Tetris
 {
@@ -12,16 +14,15 @@ namespace Tetris
         private const int WIDTH = 10;
         private const int HEIGHT = 20;
         private const int DELAY = 360;
-        private static readonly object _drawLocker = new object();
-        protected static readonly Random Random = new Random();
+        private static readonly Semaphore _drawLocker = new Semaphore(1, 1);
+        protected static readonly Random _random = new Random();
         protected readonly TetrisBlock _block = new TetrisBlock();
         private readonly List<int> _clearLineList = new List<int>();
-        private readonly Form1 _form;
+        private readonly MetroPanel _panel;
         private readonly KeyboardSetting _keyboardSetting;
         private readonly object _locker = new object();
-        private readonly int _offsetX;
         protected readonly int[,] _tetrisBoard = new int[HEIGHT, WIDTH];
-        protected readonly Label lbl_Score;
+        protected readonly Label _lblScore;
         private int _combo;
         protected int _currentX;
         protected int _currentY = -1;
@@ -30,12 +31,11 @@ namespace Tetris
         public int PlayerId { get; }
         public bool GamePlaying { get; set; } = true;
 
-        public Tetris(Form1 f, int offsetX, Label lblScore, KeyboardSetting key, int id)
+        public Tetris(MetroPanel p, Label lblScore, KeyboardSetting key, int id)
         {
             PlayerId = id;
-            _offsetX = offsetX;
-            _form = f;
-            lbl_Score = lblScore;
+            _panel = p;
+            _lblScore = lblScore;
             _keyboardSetting = key;
         }
 
@@ -66,83 +66,80 @@ namespace Tetris
             _block.NewBlock();
             NextBlockPreview();
             _currentY = 0 - _block.Block.GetLength(0);
-            _currentX = Random.Next(0, 11 - _block.Block.GetLength(0));
+            _currentX = _random.Next(0, 11 - _block.Block.GetLength(0));
         }
 
-        protected virtual void DrawColer(int y, int x, int offsetY = 8, int sizeX = 30, int sizeY = 30)
+        protected virtual void DrawColer(int y, int x, int size = 30)
         {
-            lock (_drawLocker)
+            _drawLocker.WaitOne();
+            using (Graphics g = _panel.CreateGraphics())
             {
-                using (Graphics g = _form.CreateGraphics())
+                switch (_tetrisBoard[y, x])
                 {
-                    int offsetX = x + _offsetX;
-                    offsetY += y;
-                    switch (_tetrisBoard[y, x])
-                    {
-                        case 0:
-                            g.FillRectangle(Brushes.Black, offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                            break;
-                        case 1:
-                            g.FillRectangle(_block.BlockColor[_block.BlockNum], offsetX * sizeX, offsetY * sizeY, sizeX,
-                                sizeY);
-                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                            break;
-                        case 3:
-                            g.DrawRectangle(new Pen(Brushes.DarkGray), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                            break;
-                        case 18:
-                            g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], offsetX * sizeX,
-                                offsetY * sizeY,
-                                sizeX, sizeY);
-                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                            break;
-                        default:
+                    case 0:
+                        g.FillRectangle(Brushes.Black, x * size, y * size, size, size);
+                        g.DrawRectangle(new Pen(Brushes.Black), x * size, y * size, size, size);
+                        break;
+                    case 1:
+                        g.FillRectangle(_block.BlockColor[_block.BlockNum], x * size, y * size, size,
+                            size);
+                        g.DrawRectangle(new Pen(Brushes.Black), x * size, y * size, size, size);
+                        break;
+                    case 3:
+                        g.DrawRectangle(new Pen(Brushes.DarkGray), x * size, y * size, size, size);
+                        break;
+                    case 18:
+                        g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], x * size,
+                            y * size,
+                            size, size);
+                        g.DrawRectangle(new Pen(Brushes.Black), x * size, y * size, size, size);
+                        break;
+                    default:
                         {
                             if (_tetrisBoard[y, x] > 10 && _tetrisBoard[y, x] <= 17)
                             {
-                                g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], offsetX * sizeX,
-                                    offsetY * sizeY, sizeX, sizeY);
-                                g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                                g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], x * size,
+                                    y * size, size, size);
+                                g.DrawRectangle(new Pen(Brushes.Black), x * size, y * size, size, size);
                             }
 
                             break;
                         }
-                    }
                 }
             }
+
+            _drawLocker.Release();
         }
 
         private void NextBlockPreview()
         {
-            lock (_drawLocker)
+            _drawLocker.WaitOne();
+            const int size = 30;
+            int nextBlockNum = _block.NextBlockNum();
+            int[,] block = _block.BlockCreate(nextBlockNum, 0);
+            using (Graphics g = _panel.CreateGraphics())
             {
-                const int sizeX = 30;
-                const int sizeY = 30;
-                int nextBlockNum = _block.NextBlockNum();
-                int[,] block = _block.BlockCreate(nextBlockNum, 0);
-                using (Graphics g = _form.CreateGraphics())
-                {
-                    int size = block.GetLength(0);
-                    for (var y = 0; y < 2; y++)
+                int blockLen = block.GetLength(0);
+                for (var y = 0; y < 2; y++)
                     for (var x = 0; x < 4; x++)
                     {
-                        int offsetX = x + _offsetX + 3;
+                        int offsetX = x + 3;
                         int offsetY = y + 5;
-                        if (x >= size || y >= size || block[y, x] != 1)
+                        if (x >= blockLen || y >= blockLen || block[y, x] != 1)
                         {
-                            g.FillRectangle(Brushes.Black, offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
-                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                            g.FillRectangle(Brushes.Black, offsetX * size, offsetY * size, size, size);
+                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * size, offsetY * size, size, size);
                         }
                         else
                         {
-                            g.FillRectangle(_block.BlockColor[nextBlockNum], offsetX * sizeX, offsetY * sizeY, sizeX,
-                                sizeY);
-                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * sizeX, offsetY * sizeY, sizeX, sizeY);
+                            g.FillRectangle(_block.BlockColor[nextBlockNum], offsetX * size, offsetY * size, size,
+                                size);
+                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * size, offsetY * size, size, size);
                         }
                     }
-                }
             }
+
+            _drawLocker.Release();
         }
 
         // 블럭 이동이 가능한지 체크, 게임오버 체크
@@ -387,7 +384,7 @@ namespace Tetris
                 if (cnt <= 0) return;
 
                 int highLine = GetHighLine();
-                int blank = Random.Next(0, WIDTH);
+                int blank = _random.Next(0, WIDTH);
                 for (int y = Math.Max(highLine - cnt, 0); y < HEIGHT - cnt; y++)
                 for (var x = 0; x < WIDTH; x++)
                 {
@@ -474,10 +471,10 @@ namespace Tetris
 
         protected virtual void SetScoreText()
         {
-            if (lbl_Score.InvokeRequired)
-                lbl_Score.Invoke((MethodInvoker) SetScoreText);
+            if (_lblScore.InvokeRequired)
+                _lblScore.Invoke((MethodInvoker) SetScoreText);
             else
-                lbl_Score.Text = Score.ToString();
+                _lblScore.Text = Score.ToString();
         }
     }
 }

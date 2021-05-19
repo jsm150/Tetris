@@ -2,7 +2,7 @@
 
 namespace Tetris
 {
-    sealed partial class Form1
+    sealed partial class MainMenuForm
     {
         /// <summary>
         /// 필수 디자이너 변수입니다.
@@ -31,33 +31,21 @@ namespace Tetris
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.btn_GameStart = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lbl_Score = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label2 = new System.Windows.Forms.Label();
             this.lbl_BestScore = new System.Windows.Forms.Label();
-            this.btn_1vs1 = new System.Windows.Forms.Button();
             this.lbl_2pScore = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.tBar_Volume = new System.Windows.Forms.TrackBar();
-            this.btn_GeneticAlgorithm = new System.Windows.Forms.Button();
             this.lbl_Generation = new System.Windows.Forms.Label();
-            this.btn_AI = new System.Windows.Forms.Button();
             this.lbl_bestNum = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.tBar_Volume)).BeginInit();
+            this.btn_GameStart = new MetroFramework.Controls.MetroButton();
+            this.btn_1vs1 = new MetroFramework.Controls.MetroButton();
+            this.btn_AI = new MetroFramework.Controls.MetroButton();
+            this.btn_GeneticAlgorithm = new MetroFramework.Controls.MetroButton();
+            this.btn_Setting = new MetroFramework.Controls.MetroButton();
             this.SuspendLayout();
-            // 
-            // btn_GameStart
-            // 
-            this.btn_GameStart.Location = new System.Drawing.Point(253, 32);
-            this.btn_GameStart.Name = "btn_GameStart";
-            this.btn_GameStart.Size = new System.Drawing.Size(99, 35);
-            this.btn_GameStart.TabIndex = 0;
-            this.btn_GameStart.TabStop = false;
-            this.btn_GameStart.Text = "Game Start!";
-            this.btn_GameStart.UseVisualStyleBackColor = true;
-            this.btn_GameStart.Click += new System.EventHandler(this.btn_GameStart_Click);
             // 
             // label1
             // 
@@ -104,17 +92,6 @@ namespace Tetris
             this.lbl_BestScore.TabIndex = 4;
             this.lbl_BestScore.Text = "0";
             // 
-            // btn_1vs1
-            // 
-            this.btn_1vs1.Location = new System.Drawing.Point(196, 32);
-            this.btn_1vs1.Name = "btn_1vs1";
-            this.btn_1vs1.Size = new System.Drawing.Size(51, 35);
-            this.btn_1vs1.TabIndex = 5;
-            this.btn_1vs1.TabStop = false;
-            this.btn_1vs1.Text = "1 vs 1";
-            this.btn_1vs1.UseVisualStyleBackColor = true;
-            this.btn_1vs1.Click += new System.EventHandler(this.btn_1vs1_Click);
-            // 
             // lbl_2pScore
             // 
             this.lbl_2pScore.AutoSize = true;
@@ -135,26 +112,6 @@ namespace Tetris
             this.label6.TabIndex = 6;
             this.label6.Text = "Score:";
             // 
-            // tBar_Volume
-            // 
-            this.tBar_Volume.Location = new System.Drawing.Point(196, 73);
-            this.tBar_Volume.Maximum = 100;
-            this.tBar_Volume.Name = "tBar_Volume";
-            this.tBar_Volume.Size = new System.Drawing.Size(156, 45);
-            this.tBar_Volume.TabIndex = 10;
-            this.tBar_Volume.Value = 10;
-            this.tBar_Volume.Scroll += new System.EventHandler(this.tBar_Volume_Scroll);
-            // 
-            // btn_GeneticAlgorithm
-            // 
-            this.btn_GeneticAlgorithm.Location = new System.Drawing.Point(12, 92);
-            this.btn_GeneticAlgorithm.Name = "btn_GeneticAlgorithm";
-            this.btn_GeneticAlgorithm.Size = new System.Drawing.Size(123, 23);
-            this.btn_GeneticAlgorithm.TabIndex = 11;
-            this.btn_GeneticAlgorithm.Text = "GeneticAlgorithm";
-            this.btn_GeneticAlgorithm.UseVisualStyleBackColor = true;
-            this.btn_GeneticAlgorithm.Click += new System.EventHandler(this.btn_GeneticAlgorithm_Click);
-            // 
             // lbl_Generation
             // 
             this.lbl_Generation.AutoSize = true;
@@ -163,16 +120,6 @@ namespace Tetris
             this.lbl_Generation.Name = "lbl_Generation";
             this.lbl_Generation.Size = new System.Drawing.Size(0, 12);
             this.lbl_Generation.TabIndex = 3;
-            // 
-            // btn_AI
-            // 
-            this.btn_AI.Location = new System.Drawing.Point(157, 92);
-            this.btn_AI.Name = "btn_AI";
-            this.btn_AI.Size = new System.Drawing.Size(33, 23);
-            this.btn_AI.TabIndex = 11;
-            this.btn_AI.Text = "AI";
-            this.btn_AI.UseVisualStyleBackColor = true;
-            this.btn_AI.Click += new System.EventHandler(this.btn_AI_Click);
             // 
             // lbl_bestNum
             // 
@@ -183,52 +130,105 @@ namespace Tetris
             this.lbl_bestNum.Size = new System.Drawing.Size(0, 12);
             this.lbl_bestNum.TabIndex = 3;
             // 
-            // Form1
+            // btn_GameStart
+            // 
+            this.btn_GameStart.Location = new System.Drawing.Point(253, 32);
+            this.btn_GameStart.Name = "btn_GameStart";
+            this.btn_GameStart.Size = new System.Drawing.Size(99, 35);
+            this.btn_GameStart.TabIndex = 12;
+            this.btn_GameStart.TabStop = false;
+            this.btn_GameStart.Text = "Game Start!";
+            this.btn_GameStart.UseSelectable = true;
+            this.btn_GameStart.Click += new System.EventHandler(this.btn_GameStart_Click);
+            // 
+            // btn_1vs1
+            // 
+            this.btn_1vs1.Location = new System.Drawing.Point(196, 32);
+            this.btn_1vs1.Name = "btn_1vs1";
+            this.btn_1vs1.Size = new System.Drawing.Size(51, 35);
+            this.btn_1vs1.TabIndex = 13;
+            this.btn_1vs1.TabStop = false;
+            this.btn_1vs1.Text = "1 vs 1";
+            this.btn_1vs1.UseSelectable = true;
+            this.btn_1vs1.Click += new System.EventHandler(this.btn_1vs1_Click);
+            // 
+            // btn_AI
+            // 
+            this.btn_AI.Location = new System.Drawing.Point(157, 92);
+            this.btn_AI.Name = "btn_AI";
+            this.btn_AI.Size = new System.Drawing.Size(33, 23);
+            this.btn_AI.TabIndex = 14;
+            this.btn_AI.TabStop = false;
+            this.btn_AI.Text = "AI";
+            this.btn_AI.UseSelectable = true;
+            this.btn_AI.Click += new System.EventHandler(this.btn_AI_Click);
+            // 
+            // btn_GeneticAlgorithm
+            // 
+            this.btn_GeneticAlgorithm.Location = new System.Drawing.Point(14, 92);
+            this.btn_GeneticAlgorithm.Name = "btn_GeneticAlgorithm";
+            this.btn_GeneticAlgorithm.Size = new System.Drawing.Size(123, 23);
+            this.btn_GeneticAlgorithm.TabIndex = 15;
+            this.btn_GeneticAlgorithm.TabStop = false;
+            this.btn_GeneticAlgorithm.Text = "GeneticAlgorithm";
+            this.btn_GeneticAlgorithm.UseSelectable = true;
+            this.btn_GeneticAlgorithm.Click += new System.EventHandler(this.btn_GeneticAlgorithm_Click);
+            // 
+            // btn_Setting
+            // 
+            this.btn_Setting.Location = new System.Drawing.Point(212, 92);
+            this.btn_Setting.Name = "btn_Setting";
+            this.btn_Setting.Size = new System.Drawing.Size(127, 22);
+            this.btn_Setting.TabIndex = 17;
+            this.btn_Setting.TabStop = false;
+            this.btn_Setting.Text = "Setting";
+            this.btn_Setting.UseSelectable = true;
+            this.btn_Setting.Click += new System.EventHandler(this.btn_Setting_Click);
+            // 
+            // MainMenuForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(362, 125);
-            this.Controls.Add(this.btn_AI);
+            this.Controls.Add(this.btn_Setting);
             this.Controls.Add(this.btn_GeneticAlgorithm);
-            this.Controls.Add(this.tBar_Volume);
+            this.Controls.Add(this.btn_AI);
+            this.Controls.Add(this.btn_1vs1);
+            this.Controls.Add(this.btn_GameStart);
             this.Controls.Add(this.lbl_2pScore);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.btn_1vs1);
             this.Controls.Add(this.lbl_BestScore);
             this.Controls.Add(this.lbl_bestNum);
             this.Controls.Add(this.lbl_Generation);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.lbl_Score);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.btn_GameStart);
             this.KeyPreview = true;
             this.MaximizeBox = false;
-            this.Name = "Form1";
+            this.Name = "MainMenuForm";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
-            ((System.ComponentModel.ISupportInitialize)(this.tBar_Volume)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Button btn_GameStart;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lbl_Score;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lbl_BestScore;
-        private System.Windows.Forms.Button btn_1vs1;
         private System.Windows.Forms.Label lbl_2pScore;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TrackBar tBar_Volume;
-        private System.Windows.Forms.Button btn_GeneticAlgorithm;
         private System.Windows.Forms.Label lbl_Generation;
-        private System.Windows.Forms.Button btn_AI;
         private System.Windows.Forms.Label lbl_bestNum;
+        private MetroFramework.Controls.MetroButton btn_GameStart;
+        private MetroFramework.Controls.MetroButton btn_1vs1;
+        private MetroFramework.Controls.MetroButton btn_AI;
+        private MetroFramework.Controls.MetroButton btn_GeneticAlgorithm;
+        private MetroFramework.Controls.MetroButton btn_Setting;
     }
 }
 
