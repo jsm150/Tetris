@@ -35,7 +35,7 @@ namespace Tetris
             GameEnd();
         }
 
-        private static void GameEnd()
+        public static void GameEnd()
         {
             string mag = GameEndAlertMsg();
             Players.ForEach(t => t.GamePlaying = false);

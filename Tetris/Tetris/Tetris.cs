@@ -188,6 +188,20 @@ namespace Tetris
                 }
         }
 
+        protected void MoveRedBlock()
+        {
+            int size = _block.Block.GetLength(0);
+            for (var y = 0; y < size; y++)
+            for (var x = 0; x < size; x++)
+                if (_block.Block[y, x] == 1)
+                {
+                    if (_currentY + y < 0)
+                        continue;
+                    _tetrisBoard[y + _currentY, x + _currentX] = 1;
+                    DrawColer(y + _currentY, x + _currentX);
+                }
+        }
+
         private int GetHighLine()
         {
             for (var y = 0; y < HEIGHT; y++)
@@ -243,20 +257,6 @@ namespace Tetris
                         return false;
                 return true;
             }
-        }
-
-        protected void MoveRedBlock()
-        {
-            int size = _block.Block.GetLength(0);
-            for (var y = 0; y < size; y++)
-            for (var x = 0; x < size; x++)
-                if (_block.Block[y, x] == 1)
-                {
-                    if (_currentY + y < 0)
-                        continue;
-                    _tetrisBoard[y + _currentY, x + _currentX] = 1;
-                    DrawColer(y + _currentY, x + _currentX);
-                }
         }
 
         private int DownLocationCalc(int nowY, int currentX)
@@ -332,6 +332,22 @@ namespace Tetris
             }
         }
 
+        public void KeyBoardAction(KeyEventArgs e)
+        {
+            if (_keyboardSetting == null) return;
+
+            if (_keyboardSetting.IsKeyDownAction(e))
+                MoveDown();
+            if (_keyboardSetting.IsKeyHardDownAction(e))
+                HardDown();
+            if (_keyboardSetting.IsKeyLeftAction(e))
+                MoveLeft();
+            if (_keyboardSetting.IsKeyRightAction(e))
+                MoveRight();
+            if (_keyboardSetting.IsKeyRotationAction(e))
+                RotationBlock();
+        }
+
         protected void HardDown()
         {
             lock (_locker)
@@ -365,22 +381,6 @@ namespace Tetris
             MoveDown();
         }
 
-        public void KeyBoardAction(KeyEventArgs e)
-        {
-            if (_keyboardSetting == null) return;
-
-            if (_keyboardSetting.IsKeyDownAction(e))
-                MoveDown();
-            if (_keyboardSetting.IsKeyHardDownAction(e))
-                HardDown();
-            if (_keyboardSetting.IsKeyLeftAction(e))
-                MoveLeft();
-            if (_keyboardSetting.IsKeyRightAction(e))
-                MoveRight();
-            if (_keyboardSetting.IsKeyRotationAction(e))
-                RotationBlock();
-        }
-
         public void SetGarbageLine(int cnt)
         {
             lock (_locker)
@@ -389,6 +389,8 @@ namespace Tetris
 
                 int highLine = GetHighLine();
                 int blank = Random.Next(0, WIDTH);
+
+                // 블럭 이동
                 for (int y = Math.Max(highLine - cnt, 0); y < HEIGHT - cnt; y++)
                 for (var x = 0; x < WIDTH; x++)
                 {
@@ -396,6 +398,7 @@ namespace Tetris
                     DrawColer(y, x);
                 }
 
+                // 블럭 생성
                 for (int y = HEIGHT - cnt; y < HEIGHT; y++)
                 for (var x = 0; x < WIDTH; x++)
                 {
@@ -403,17 +406,8 @@ namespace Tetris
                     DrawColer(y, x);
                 }
 
-                for (var y = 0; y < _block.Block.GetLength(0); y++)
-                {
-                    if (_currentY + y < 0 || _currentY + y >= HEIGHT) continue;
-                    for (var x = 0; x < _block.Block.GetLength(0); x++)
-                    {
-                        if (_currentX + x < 0 || _currentX + x >= WIDTH) continue;
-                        if (_block.Block[y, x] == 1 && _tetrisBoard[_currentY + y, _currentX + x] > 10)
-                            _currentX -= _block.Block.GetLength(0) - y;
-                    }
-                }
-
+                _currentY -= cnt;
+                ReDrawBlock();
                 if (highLine - cnt < 0) GamePlaying = false;
             }
         }

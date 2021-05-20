@@ -68,7 +68,7 @@ namespace Tetris
         {
             Size = new Size(690, 870);
             StartSetting(btn_GameStart);
-            var player1 = new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer1()), NewPanel(PanelValue.GetNextBlockPanelToPlayer1()), 
+            Tetris player1 = new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer1()), NewPanel(PanelValue.GetNextBlockPanelToPlayer1()), 
                 lbl_Score, KeyboardPlayer1.GetInstance, 1);
             TetrisAI player2 = TetrisAI.GeneralMode(NewPanel(PanelValue.GetTetrisPanelToPlayer2()), NewPanel(PanelValue.GetNextBlockPanelToPlayer2()),
                 lbl_2pScore, 2, GetWeight());
@@ -107,6 +107,9 @@ namespace Tetris
 
         private void StartSetting(MetroButton button)
         {
+            if (GameController.GetPlayers().Count > 0)
+                GameController.GameEnd();
+
             while (_panels.Count > 0) 
                 Controls.Remove(_panels.Pop());
 
