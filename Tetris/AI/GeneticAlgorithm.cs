@@ -16,7 +16,7 @@ namespace Tetris
         private static readonly Random Random = new Random();
         private static readonly List<TetrisAI> Players = new List<TetrisAI>();
         private static Weight[] _weights = new Weight[24];
-        private static MetroPanel[] _panels = new MetroPanel[24];
+        private static TetrisPanel[] _panels = new TetrisPanel[24];
         private static int _generation;
         private static long _bestScore;
 
@@ -45,11 +45,10 @@ namespace Tetris
         {
             for (var i = 0; i < _weights.Length; i++)
             {
-                _panels[i] = new MetroPanel()
+                _panels[i] = new TetrisPanel(10)
                 {
                     Location = new Point((1 + i % 6 * 11) * 10, (16 + i / 6 * 21) * 10),
                     Size = new Size(105, 205),
-                    Name = i.ToString(),
                     BorderStyle = BorderStyle.Fixed3D,
                     BackColor = Color.Black
                 };

@@ -14,11 +14,10 @@ namespace Tetris
         private const int WIDTH = 10;
         private const int HEIGHT = 20;
         private const int DELAY = 360;
-        private static readonly Semaphore DrawLocker = new Semaphore(1, 1);
         protected static readonly Random Random = new Random();
         protected readonly TetrisBlock _block = new TetrisBlock();
         private readonly List<int> _clearLineList = new List<int>();
-        private readonly MetroPanel _tetrisPanel;
+        private readonly TetrisPanel _tetrisPanel;
         private readonly MetroPanel _nextBlockPanel;
         private readonly KeyboardSetting _keyboardSetting;
         private readonly object _locker = new object();
@@ -32,13 +31,14 @@ namespace Tetris
         public int PlayerId { get; }
         public bool GamePlaying { get; set; } = true;
 
-        public Tetris(MetroPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, KeyboardSetting key, int id)
+        public Tetris(TetrisPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, KeyboardSetting key, int id)
         {
             PlayerId = id;
             _nextBlockPanel = nextBlockPanel;
             _tetrisPanel = tetrisPanel;
             _lblScore = lblScore;
             _keyboardSetting = key;
+            _tetrisPanel.SetValue(_tetrisBoard, _block);
         }
 
 
@@ -71,53 +71,18 @@ namespace Tetris
             _currentX = Random.Next(0, 11 - _block.Block.GetLength(0));
         }
 
-        protected virtual void DrawColer(int y, int x, int size = 30)
+        protected virtual void DrawColer(int y, int x)
         {
-            DrawLocker.WaitOne();
             using (Graphics g = _tetrisPanel.CreateGraphics())
-            {
-                switch (_tetrisBoard[y, x])
-                {
-                    case 0:
-                        g.FillRectangle(Brushes.Black, x * size, y * size, size, size);
-                        g.DrawRectangle(new Pen(Brushes.Black), x * size, y * size, size, size);
-                        break;
-                    case 1:
-                        g.FillRectangle(_block.BlockColor[_block.BlockNum], x * size, y * size, size,
-                            size);
-                        g.DrawRectangle(new Pen(Brushes.Black), x * size, y * size, size, size);
-                        break;
-                    case 3:
-                        g.DrawRectangle(new Pen(Brushes.DarkGray), x * size, y * size, size, size);
-                        break;
-                    case 18:
-                        g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], x * size,
-                            y * size,
-                            size, size);
-                        g.DrawRectangle(new Pen(Brushes.Black), x * size, y * size, size, size);
-                        break;
-                    default:
-                        {
-                            if (_tetrisBoard[y, x] > 10 && _tetrisBoard[y, x] <= 17)
-                            {
-                                g.FillRectangle(_block.BlockColor[_tetrisBoard[y, x] - 10], x * size,
-                                    y * size, size, size);
-                                g.DrawRectangle(new Pen(Brushes.Black), x * size, y * size, size, size);
-                            }
-
-                            break;
-                        }
-                }
-            }
-
-            DrawLocker.Release();
+                _tetrisPanel.DrawColer(y, x, g);
         }
 
         private void NextBlockPreview()
         {
             if (_nextBlockPanel == null) return;
 
-            DrawLocker.WaitOne();
+            TetrisPanel.DrawLocker.WaitOne();
+
             const int size = 30;
             int nextBlockNum = _block.NextBlockNum();
             int[,] block = _block.BlockCreate(nextBlockNum, 0);
@@ -127,8 +92,6 @@ namespace Tetris
                 for (var y = 0; y < 2; y++)
                     for (var x = 0; x < 4; x++)
                     {
-                        int offsetX = x + 3;
-                        int offsetY = y + 5;
                         if (x >= blockLen || y >= blockLen || block[y, x] != 1)
                         {
                             g.FillRectangle(Brushes.Black, x * size, y * size, size, size);
@@ -143,7 +106,8 @@ namespace Tetris
                     }
             }
 
-            DrawLocker.Release();
+            TetrisPanel.DrawLocker.Release();
+
         }
 
         // 블럭 이동이 가능한지 체크, 게임오버 체크

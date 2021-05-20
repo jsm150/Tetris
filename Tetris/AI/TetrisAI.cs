@@ -11,7 +11,7 @@ namespace Tetris
         private readonly Label lbl_BestNum;
 
         private Func<int, int, Task> DoBlockMoveFunc;
-        private Action<int, int, int> DrawColorAction;
+        private Action<int, int> DrawColorAction;
         private Func<Task> LoopDownAsyncFunc;
         private Action ReDrawBlockAction;
         private Action ReSetBlockAction;
@@ -19,7 +19,7 @@ namespace Tetris
 
         public Weight Weight { get; }
 
-        private TetrisAI(MetroPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, Label lblBestNum, int id, Weight weight)
+        private TetrisAI(TetrisPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, Label lblBestNum, int id, Weight weight)
             : base(tetrisPanel, nextBlockPanel, lblScore, null, id)
         {
             Weight = weight;
@@ -47,9 +47,9 @@ namespace Tetris
             ReSetBlockAction.Invoke();
         }
 
-        protected override void DrawColer(int y, int x, int size = 30)
+        protected override void DrawColer(int y, int x)
         {
-            DrawColorAction.Invoke(y, x, size);
+            DrawColorAction.Invoke(y, x);
         }
 
         protected override async Task LoopDownAsync()
@@ -300,12 +300,7 @@ namespace Tetris
             _lblScore.Invoke((MethodInvoker) SetScoreText);
         }
 
-        private void DrawColerAtGenetic(int y, int x, int size)
-        {
-            base.DrawColer(y, x, 10);
-        }
-
-        private void DrawColerAtNone(int y, int x, int size)
+        private void DrawColerAtNone(int y, int x)
         {
         }
 
@@ -339,19 +334,18 @@ namespace Tetris
             ReDrawBlockAction = ReDrawBlockAtGenetic;
             DoBlockMoveFunc = DoBlockMoveAtGenetic;
             ReSetBlockAction = ReSetBlockAtGenetic;
-            DrawColorAction = DrawColerAtGenetic;
             LoopDownAsyncFunc = LoopDownAsyncAtGenetic;
             SetScoreTextAction = SetScoreTextAtGenetic;
         }
 
-        public static TetrisAI AITestMode(MetroPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, int id, Weight weight)
+        public static TetrisAI AITestMode(TetrisPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, int id, Weight weight)
         {
             var t = new TetrisAI(tetrisPanel, nextBlockPanel, lblScore, null, id, weight);
             t.SetAiTestMode();
             return t;
         }
 
-        public static TetrisAI GeneticMode(MetroPanel tetrisPanel, Label lblScore, Label lblBestNum, int id,
+        public static TetrisAI GeneticMode(TetrisPanel tetrisPanel, Label lblScore, Label lblBestNum, int id,
             Weight weight)
         {
             var t = new TetrisAI(tetrisPanel, null, lblScore, lblBestNum, id, weight);
@@ -359,7 +353,7 @@ namespace Tetris
             return t;
         }
 
-        public static TetrisAI GeneralMode(MetroPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, int id, Weight weight)
+        public static TetrisAI GeneralMode(TetrisPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, int id, Weight weight)
         {
             return new TetrisAI(tetrisPanel, nextBlockPanel, lblScore, null, id, weight);
         }

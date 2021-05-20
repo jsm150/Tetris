@@ -60,6 +60,9 @@
     <Compile Include="Form\MainMenuForm.Designer.cs">
       <DependentUpon>MainMenuForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form\TetrisPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GamePlay\MultiPlay.cs" />
     <Compile Include="KeyBoardAction\KeyboardSetting.cs" />
     <Compile Include="KeyBoardAction\KeyboardPlayer1.cs" />
@@ -73,7 +76,7 @@
     <Compile Include="Form\SettingForm.Designer.cs">
       <DependentUpon>SettingForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Tetris\PanelValue.cs" />
+    <Compile Include="Form\PanelValue.cs" />
     <Compile Include="Tetris\Tetris.cs" />
     <Compile Include="Tetris\TetrisBlock.cs" />
     <Compile Include="Tetris\TetrisEventArgs.cs" />

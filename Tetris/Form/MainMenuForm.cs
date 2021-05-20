@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -14,7 +13,12 @@ namespace Tetris
     public sealed partial class MainMenuForm : MetroForm
     {
         private readonly WindowsMediaPlayer _mediaPlayer = new WindowsMediaPlayer();
-        private readonly Stack<MetroPanel> _panels = new Stack<MetroPanel>();
+        private readonly Stack<TetrisPanel> _panels = new Stack<TetrisPanel>();
+
+        public MainMenuForm()
+        {
+            InitializeComponent();
+        }
 
         protected override bool IsInputKey(Keys keyData)
         {
@@ -26,12 +30,8 @@ namespace Tetris
                 case Keys.Down:
                     return true;
             }
-            return base.IsInputKey(keyData);
-        }
 
-        public MainMenuForm()
-        {
-            InitializeComponent();
+            return base.IsInputKey(keyData);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -43,9 +43,9 @@ namespace Tetris
             GameController.GameEndAction = GameEnd;
         }
 
-        private MetroPanel NewPanel(PanelValue panelValue)
+        private TetrisPanel NewPanel(PanelValue panelValue)
         {
-            var p =  new MetroPanel()
+            TetrisPanel p = new TetrisPanel(30)
             {
                 Location = new Point(panelValue.PointX, panelValue.PointY),
                 Size = new Size(panelValue.Width, panelValue.Height),
@@ -66,11 +66,13 @@ namespace Tetris
 
         private async void btn_GameStart_Click(object sender, EventArgs e)
         {
-            Size = new Size(690, 870);
             StartSetting(btn_GameStart);
-            Tetris player1 = new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer1()), NewPanel(PanelValue.GetNextBlockPanelToPlayer1()), 
+            Size = new Size(690, 870);
+            Tetris player1 = new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer1()),
+                NewPanel(PanelValue.GetNextBlockPanelToPlayer1()),
                 lbl_Score, KeyboardPlayer1.GetInstance, 1);
-            TetrisAI player2 = TetrisAI.GeneralMode(NewPanel(PanelValue.GetTetrisPanelToPlayer2()), NewPanel(PanelValue.GetNextBlockPanelToPlayer2()),
+            TetrisAI player2 = TetrisAI.GeneralMode(NewPanel(PanelValue.GetTetrisPanelToPlayer2()),
+                NewPanel(PanelValue.GetNextBlockPanelToPlayer2()),
                 lbl_2pScore, 2, GetWeight());
             GameController.PlayerAdd(player1);
             GameController.PlayerAdd(player2);
@@ -79,38 +81,41 @@ namespace Tetris
 
         private async void btn_GeneticAlgorithm_Click(object sender, EventArgs e)
         {
-            Size = new Size(675, 1000);
             StartSetting(btn_GeneticAlgorithm);
+            Size = new Size(675, 1000);
             await GeneticAlgorithm.AlgorithmStart(this, lbl_Score, lbl_BestScore, lbl_Generation, lbl_bestNum);
         }
 
         private async void btn_AI_Click(object sender, EventArgs e)
         {
-            Size = new Size(360, 870);
             StartSetting(btn_AI);
-            GameController.PlayerAdd(TetrisAI.AITestMode(NewPanel(PanelValue.GetTetrisPanelToPlayer1()), NewPanel(PanelValue.GetNextBlockPanelToPlayer1()),
+            Size = new Size(360, 870);
+            GameController.PlayerAdd(TetrisAI.AITestMode(NewPanel(PanelValue.GetTetrisPanelToPlayer1()),
+                NewPanel(PanelValue.GetNextBlockPanelToPlayer1()),
                 lbl_Score, 1, GetWeight()));
             await GameController.GameStart();
         }
 
         private async void btn_1vs1_Click(object sender, EventArgs e)
         {
-            Size = new Size(690, 870);
             StartSetting(btn_1vs1);
-            GameController.PlayerAdd(new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer1()), NewPanel(PanelValue.GetNextBlockPanelToPlayer1()), 
+            Size = new Size(690, 870);
+            GameController.PlayerAdd(new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer1()),
+                NewPanel(PanelValue.GetNextBlockPanelToPlayer1()),
                 lbl_Score, KeyboardPlayer2.GetInstance, 1));
-            GameController.PlayerAdd(new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer2()), NewPanel(PanelValue.GetNextBlockPanelToPlayer2()),
+            GameController.PlayerAdd(new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer2()),
+                NewPanel(PanelValue.GetNextBlockPanelToPlayer2()),
                 lbl_2pScore, KeyboardPlayer1.GetInstance, 2));
             await GameController.GameStart();
         }
-        
+
 
         private void StartSetting(MetroButton button)
         {
             if (GameController.GetPlayers().Count > 0)
                 GameController.GameEnd();
 
-            while (_panels.Count > 0) 
+            while (_panels.Count > 0)
                 Controls.Remove(_panels.Pop());
 
             button.Enabled = false;
