@@ -19,8 +19,8 @@ namespace Tetris
 
         public Weight Weight { get; }
 
-        private TetrisAI(MetroPanel p, Label lblScore, Label lblBestNum, int id, Weight weight)
-            : base(p, lblScore, null, id)
+        private TetrisAI(MetroPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, Label lblBestNum, int id, Weight weight)
+            : base(tetrisPanel, nextBlockPanel, lblScore, null, id)
         {
             Weight = weight;
             lbl_BestNum = lblBestNum;
@@ -313,7 +313,7 @@ namespace Tetris
         {
             _block.NewBlock();
             _currentY = 0 - _block.Block.GetLength(0);
-            _currentX = _random.Next(0, 11 - _block.Block.GetLength(0));
+            _currentX = Random.Next(0, 11 - _block.Block.GetLength(0));
         }
 
         private Task LoopDownAsyncAtGenetic()
@@ -344,24 +344,24 @@ namespace Tetris
             SetScoreTextAction = SetScoreTextAtGenetic;
         }
 
-        public static TetrisAI AITestMode(MetroPanel p, Label lblScore, int id, Weight weight)
+        public static TetrisAI AITestMode(MetroPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, int id, Weight weight)
         {
-            var t = new TetrisAI(p, lblScore, null, id, weight);
+            var t = new TetrisAI(tetrisPanel, nextBlockPanel, lblScore, null, id, weight);
             t.SetAiTestMode();
             return t;
         }
 
-        public static TetrisAI GeneticMode(MetroPanel p, Label lblScore, Label lblBestNum, int id,
+        public static TetrisAI GeneticMode(MetroPanel tetrisPanel, Label lblScore, Label lblBestNum, int id,
             Weight weight)
         {
-            var t = new TetrisAI(p, lblScore, lblBestNum, id, weight);
+            var t = new TetrisAI(tetrisPanel, null, lblScore, lblBestNum, id, weight);
             t.SetGeneticMode();
             return t;
         }
 
-        public static TetrisAI GeneralMode(MetroPanel p, Label lblScore, int id, Weight weight)
+        public static TetrisAI GeneralMode(MetroPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, int id, Weight weight)
         {
-            return new TetrisAI(p, lblScore, null, id, weight);
+            return new TetrisAI(tetrisPanel, nextBlockPanel, lblScore, null, id, weight);
         }
 
         #endregion

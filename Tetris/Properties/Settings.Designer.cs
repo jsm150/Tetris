@@ -38,12 +38,12 @@ namespace Tetris.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool RenderingState {
+        public bool CanRendering {
             get {
-                return ((bool)(this["RenderingState"]));
+                return ((bool)(this["CanRendering"]));
             }
             set {
-                this["RenderingState"] = value;
+                this["CanRendering"] = value;
             }
         }
     }

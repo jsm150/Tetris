@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -12,6 +14,7 @@ namespace Tetris
     public sealed partial class MainMenuForm : MetroForm
     {
         private readonly WindowsMediaPlayer _mediaPlayer = new WindowsMediaPlayer();
+        private readonly Stack<MetroPanel> _panels = new Stack<MetroPanel>();
 
         protected override bool IsInputKey(Keys keyData)
         {
@@ -40,17 +43,17 @@ namespace Tetris
             GameController.GameEndAction = GameEnd;
         }
 
-        private MetroPanel NewPanel(PanelValue panelValue, string name)
+        private MetroPanel NewPanel(PanelValue panelValue)
         {
             var p =  new MetroPanel()
             {
                 Location = new Point(panelValue.PointX, panelValue.PointY),
                 Size = new Size(panelValue.Width, panelValue.Height),
-                Name = name,
                 BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D,
                 BackColor = Color.Black
             };
             Controls.Add(p);
+            _panels.Push(p);
             return p;
         }
 
@@ -65,8 +68,10 @@ namespace Tetris
         {
             Size = new Size(690, 870);
             StartSetting(btn_GameStart);
-            var player1 = new Tetris(NewPanel(PanelValue.GetPlayer1(), "p1"), lbl_Score, KeyboardPlayer1.GetInstance, 1);
-            TetrisAI player2 = TetrisAI.GeneralMode(NewPanel(PanelValue.GetPlayer2(), "p2"), lbl_2pScore, 2, GetWeight());
+            var player1 = new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer1()), NewPanel(PanelValue.GetNextBlockPanelToPlayer1()), 
+                lbl_Score, KeyboardPlayer1.GetInstance, 1);
+            TetrisAI player2 = TetrisAI.GeneralMode(NewPanel(PanelValue.GetTetrisPanelToPlayer2()), NewPanel(PanelValue.GetNextBlockPanelToPlayer2()),
+                lbl_2pScore, 2, GetWeight());
             GameController.PlayerAdd(player1);
             GameController.PlayerAdd(player2);
             await GameController.GameStart();
@@ -83,7 +88,8 @@ namespace Tetris
         {
             Size = new Size(360, 870);
             StartSetting(btn_AI);
-            GameController.PlayerAdd(TetrisAI.AITestMode(NewPanel(PanelValue.GetPlayer1(), "p1"), lbl_Score, 1, GetWeight()));
+            GameController.PlayerAdd(TetrisAI.AITestMode(NewPanel(PanelValue.GetTetrisPanelToPlayer1()), NewPanel(PanelValue.GetNextBlockPanelToPlayer1()),
+                lbl_Score, 1, GetWeight()));
             await GameController.GameStart();
         }
 
@@ -91,13 +97,19 @@ namespace Tetris
         {
             Size = new Size(690, 870);
             StartSetting(btn_1vs1);
-            GameController.PlayerAdd(new Tetris(NewPanel(PanelValue.GetPlayer1(), "p1"), lbl_Score, KeyboardPlayer2.GetInstance, 1));
-            GameController.PlayerAdd(new Tetris(NewPanel(PanelValue.GetPlayer2(), "p2"), lbl_2pScore, KeyboardPlayer1.GetInstance, 2));
+            GameController.PlayerAdd(new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer1()), NewPanel(PanelValue.GetNextBlockPanelToPlayer1()), 
+                lbl_Score, KeyboardPlayer2.GetInstance, 1));
+            GameController.PlayerAdd(new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer2()), NewPanel(PanelValue.GetNextBlockPanelToPlayer2()),
+                lbl_2pScore, KeyboardPlayer1.GetInstance, 2));
             await GameController.GameStart();
         }
+        
 
         private void StartSetting(MetroButton button)
         {
+            while (_panels.Count > 0) 
+                Controls.Remove(_panels.Pop());
+
             button.Enabled = false;
             button.Enabled = true;
             timer1.Enabled = true;
@@ -130,7 +142,7 @@ namespace Tetris
 
         private void btn_Setting_Click(object sender, EventArgs e)
         {
-            new SettingForm(_mediaPlayer, btn_Setting).ShowDialog();
+            new SettingForm(_mediaPlayer).ShowDialog();
             btn_Setting.Enabled = false;
             btn_Setting.Enabled = true;
         }

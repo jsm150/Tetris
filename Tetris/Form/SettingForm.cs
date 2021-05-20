@@ -21,12 +21,12 @@ namespace Tetris
         private void SettingForm_Load(object sender, EventArgs e)
         {
             tBar_Volume.Value = Settings.Default.Volume;
-            tog_UiRendering.Checked = Settings.Default.RenderingState;
+            tog_UiRendering.Checked = Settings.Default.CanRendering;
         }
 
         private void tog_UiRendering_CheckedChanged(object sender, EventArgs e)
         {
-            Settings.Default.RenderingState = tog_UiRendering.Checked;
+            Settings.Default.CanRendering = tog_UiRendering.Checked;
 
 
             Settings.Default.Save();

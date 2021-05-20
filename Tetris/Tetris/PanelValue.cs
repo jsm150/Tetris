@@ -8,19 +8,25 @@ namespace Tetris
 {
     struct PanelValueData
     {
-        public const int Width = 300;
-        public const int Height = 603;
+        public const int TetrisPanelWidth = 300;
+        public const int TetrisPanelHeight = 603;
+        public const int NextBlockPanelWidth = 120;
+        public const int NextBlockPanelHeight = 63;
 
         public struct Player1
         {
-            public const int PointX = 1 * 30;
-            public const int PointY = 8 * 30;
+            public const int TetrisPanelPointX = 1 * 30;
+            public const int TetrisPanelPointY = 8 * 30;
+            public const int NextBlockPanelPointX = 4 * 30;
+            public const int NextBlockPanelPointY = 5 * 30;
         }
 
         public struct Player2
         {
-            public const int PointX = 12 * 30;
-            public const int PointY = 8 * 30;
+            public const int TetrisPanelPointX = 12 * 30;
+            public const int TetrisPanelPointY = 8 * 30;
+            public const int NextBlockPanelPointX = 15 * 30;
+            public const int NextBlockPanelPointY = 5 * 30;
         }
     }
 
@@ -39,16 +45,28 @@ namespace Tetris
             PointY = pointY;
         }
 
-        public static PanelValue GetPlayer1()
+        public static PanelValue GetTetrisPanelToPlayer1()
         {
-            return new PanelValue(PanelValueData.Width, PanelValueData.Height, PanelValueData.Player1.PointX,
-                PanelValueData.Player1.PointY);
+            return new PanelValue(PanelValueData.TetrisPanelWidth, PanelValueData.TetrisPanelHeight,
+                PanelValueData.Player1.TetrisPanelPointX, PanelValueData.Player1.TetrisPanelPointY);
         }
 
-        public static PanelValue GetPlayer2()
+        public static PanelValue GetTetrisPanelToPlayer2()
         {
-            return new PanelValue(PanelValueData.Width, PanelValueData.Height, PanelValueData.Player2.PointX,
-                PanelValueData.Player2.PointY);
+            return new PanelValue(PanelValueData.TetrisPanelWidth, PanelValueData.TetrisPanelHeight, 
+                PanelValueData.Player2.TetrisPanelPointX, PanelValueData.Player2.TetrisPanelPointY);
+        }
+
+        public static PanelValue GetNextBlockPanelToPlayer1()
+        {
+            return new PanelValue(PanelValueData.NextBlockPanelWidth, PanelValueData.NextBlockPanelHeight,
+                PanelValueData.Player1.NextBlockPanelPointX, PanelValueData.Player1.NextBlockPanelPointY);
+        }
+
+        public static PanelValue GetNextBlockPanelToPlayer2()
+        {
+            return new PanelValue(PanelValueData.NextBlockPanelWidth, PanelValueData.NextBlockPanelHeight,
+                PanelValueData.Player2.NextBlockPanelPointX, PanelValueData.Player2.NextBlockPanelPointY);
         }
     }
 

@@ -14,11 +14,12 @@ namespace Tetris
         private const int WIDTH = 10;
         private const int HEIGHT = 20;
         private const int DELAY = 360;
-        private static readonly Semaphore _drawLocker = new Semaphore(1, 1);
-        protected static readonly Random _random = new Random();
+        private static readonly Semaphore DrawLocker = new Semaphore(1, 1);
+        protected static readonly Random Random = new Random();
         protected readonly TetrisBlock _block = new TetrisBlock();
         private readonly List<int> _clearLineList = new List<int>();
-        private readonly MetroPanel _panel;
+        private readonly MetroPanel _tetrisPanel;
+        private readonly MetroPanel _nextBlockPanel;
         private readonly KeyboardSetting _keyboardSetting;
         private readonly object _locker = new object();
         protected readonly int[,] _tetrisBoard = new int[HEIGHT, WIDTH];
@@ -31,10 +32,11 @@ namespace Tetris
         public int PlayerId { get; }
         public bool GamePlaying { get; set; } = true;
 
-        public Tetris(MetroPanel p, Label lblScore, KeyboardSetting key, int id)
+        public Tetris(MetroPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, KeyboardSetting key, int id)
         {
             PlayerId = id;
-            _panel = p;
+            _nextBlockPanel = nextBlockPanel;
+            _tetrisPanel = tetrisPanel;
             _lblScore = lblScore;
             _keyboardSetting = key;
         }
@@ -66,13 +68,13 @@ namespace Tetris
             _block.NewBlock();
             NextBlockPreview();
             _currentY = 0 - _block.Block.GetLength(0);
-            _currentX = _random.Next(0, 11 - _block.Block.GetLength(0));
+            _currentX = Random.Next(0, 11 - _block.Block.GetLength(0));
         }
 
         protected virtual void DrawColer(int y, int x, int size = 30)
         {
-            _drawLocker.WaitOne();
-            using (Graphics g = _panel.CreateGraphics())
+            DrawLocker.WaitOne();
+            using (Graphics g = _tetrisPanel.CreateGraphics())
             {
                 switch (_tetrisBoard[y, x])
                 {
@@ -108,16 +110,18 @@ namespace Tetris
                 }
             }
 
-            _drawLocker.Release();
+            DrawLocker.Release();
         }
 
         private void NextBlockPreview()
         {
-            _drawLocker.WaitOne();
+            if (_nextBlockPanel == null) return;
+
+            DrawLocker.WaitOne();
             const int size = 30;
             int nextBlockNum = _block.NextBlockNum();
             int[,] block = _block.BlockCreate(nextBlockNum, 0);
-            using (Graphics g = _panel.CreateGraphics())
+            using (Graphics g = _nextBlockPanel.CreateGraphics())
             {
                 int blockLen = block.GetLength(0);
                 for (var y = 0; y < 2; y++)
@@ -127,19 +131,19 @@ namespace Tetris
                         int offsetY = y + 5;
                         if (x >= blockLen || y >= blockLen || block[y, x] != 1)
                         {
-                            g.FillRectangle(Brushes.Black, offsetX * size, offsetY * size, size, size);
-                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * size, offsetY * size, size, size);
+                            g.FillRectangle(Brushes.Black, x * size, y * size, size, size);
+                            g.DrawRectangle(new Pen(Brushes.Black), x * size, y * size, size, size);
                         }
                         else
                         {
-                            g.FillRectangle(_block.BlockColor[nextBlockNum], offsetX * size, offsetY * size, size,
+                            g.FillRectangle(_block.BlockColor[nextBlockNum], x * size, y * size, size,
                                 size);
-                            g.DrawRectangle(new Pen(Brushes.Black), offsetX * size, offsetY * size, size, size);
+                            g.DrawRectangle(new Pen(Brushes.Black), x * size, y * size, size, size);
                         }
                     }
             }
 
-            _drawLocker.Release();
+            DrawLocker.Release();
         }
 
         // 블럭 이동이 가능한지 체크, 게임오버 체크
@@ -384,7 +388,7 @@ namespace Tetris
                 if (cnt <= 0) return;
 
                 int highLine = GetHighLine();
-                int blank = _random.Next(0, WIDTH);
+                int blank = Random.Next(0, WIDTH);
                 for (int y = Math.Max(highLine - cnt, 0); y < HEIGHT - cnt; y++)
                 for (var x = 0; x < WIDTH; x++)
                 {

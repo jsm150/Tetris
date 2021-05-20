@@ -5,7 +5,7 @@
     <Setting Name="Volume" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
-    <Setting Name="RenderingState" Type="System.Boolean" Scope="User">
+    <Setting Name="CanRendering" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
