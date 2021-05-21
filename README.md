@@ -8,8 +8,20 @@ winform으로 만든 테트리스 입니다.
 
 ## 게임 방법 
 
-\122\234\
-테스트1|테스트2|테스트3
+| <center>Key</center> | <center>Action</center> |
+|:--------|:--------|
+| 23 | 1505051551515 |
+
+<table>
+  <tr>
+    <td>내용</td>
+    <td>내용</td>
+  </tr>
+  <tr>
+    <td colspan="2">내용</td>
+  </tr>
+</table>
+
 
 
 ## 개발 환경
