@@ -7,22 +7,48 @@ winform으로 만든 테트리스 입니다.
 - 친구와 1:1 대결
 
 ## 게임 방법 
-
-| <center>Key</center> | <center>Action</center> |
-|:--------|:--------|
-| 23 | 1505051551515 |
-
 <table>
   <tr>
-    <td>내용</td>
-    <td>내용</td>
+    <td colspan="2" align="center">Player 1</td>
+    <td colspan="2" align="center">Player 2</td>
   </tr>
   <tr>
-    <td colspan="2">내용</td>
+    <td align="center">Key</td>
+    <td align="center">Action</td>
+    <td align="center">Key</td>
+    <td align="center">Action</td>
+  </tr>
+  <tr>
+    <td>↑</td>
+    <td>오른쪽 회전</td>
+    <td>W</td>
+    <td>오른쪽 회전</td>
+  </tr>
+  <tr>
+    <td>↓</td>
+    <td>소프트 드롭</td>
+    <td>S</td>
+    <td>소프트 드롭</td>
+  </tr>
+  <tr>
+    <td>←</td>
+    <td>왼쪽 이동</td>
+    <td>A</td>
+    <td>왼쪽 이동</td>
+  </tr>
+  <tr>
+    <td>→</td>
+    <td>오른쪽 이동</td>
+    <td>D</td>
+    <td>오른쪽 이동</td>
+  </tr>
+  <tr>
+    <td>NumPad 0</td>
+    <td>하드 드롭</td>
+    <td>E</td>
+    <td>하드 드롭</td>
   </tr>
 </table>
-
-
 
 ## 개발 환경
 .net framework 4.7.2, Visual Studio 2019
