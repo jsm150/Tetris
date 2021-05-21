@@ -7,10 +7,10 @@ namespace Tetris
 {
     public class TetrisPanel : MetroPanel
     {
-        public static Semaphore DrawLocker { get; } = new Semaphore(1, 1);
         private readonly int _blockSize;
-        private int[,] _tetrisBoard;
         private TetrisBlock _block;
+        private int[,] _tetrisBoard;
+        public static Semaphore DrawLocker { get; } = new Semaphore(1, 1);
 
         public TetrisPanel(int blockSize)
         {
@@ -22,8 +22,8 @@ namespace Tetris
             base.OnPaint(e);
             if (_tetrisBoard is null) return;
 
-            for (var y = 0; y < _tetrisBoard.GetLength(0); y++)
-            for (var x = 0; x < _tetrisBoard.GetLength(1); x++)
+            for (int y = 0; y < _tetrisBoard.GetLength(0); y++)
+            for (int x = 0; x < _tetrisBoard.GetLength(1); x++)
                 DrawColer(y, x, e.Graphics);
         }
 

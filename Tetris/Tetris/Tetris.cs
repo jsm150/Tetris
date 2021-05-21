@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MetroFramework.Controls;
@@ -17,12 +16,12 @@ namespace Tetris
         protected static readonly Random Random = new Random();
         protected readonly TetrisBlock _block = new TetrisBlock();
         private readonly List<int> _clearLineList = new List<int>();
-        private readonly TetrisPanel _tetrisPanel;
-        private readonly MetroPanel _nextBlockPanel;
         private readonly KeyboardSetting _keyboardSetting;
-        private readonly object _locker = new object();
-        protected readonly int[,] _tetrisBoard = new int[HEIGHT, WIDTH];
         protected readonly Label _lblScore;
+        private readonly object _locker = new object();
+        private readonly MetroPanel _nextBlockPanel;
+        protected readonly int[,] _tetrisBoard = new int[HEIGHT, WIDTH];
+        private readonly TetrisPanel _tetrisPanel;
         private int _combo;
         protected int _currentX;
         protected int _currentY = -1;
@@ -46,8 +45,8 @@ namespace Tetris
 
         public virtual async Task GameStart()
         {
-            for (var y = 0; y < HEIGHT; y++)
-            for (var x = 0; x < WIDTH; x++)
+            for (int y = 0; y < HEIGHT; y++)
+            for (int x = 0; x < WIDTH; x++)
                 DrawColer(y, x);
             ReSetBlock();
             await LoopDownAsync();
@@ -74,7 +73,9 @@ namespace Tetris
         protected virtual void DrawColer(int y, int x)
         {
             using (Graphics g = _tetrisPanel.CreateGraphics())
+            {
                 _tetrisPanel.DrawColer(y, x, g);
+            }
         }
 
         private void NextBlockPreview()
@@ -89,25 +90,22 @@ namespace Tetris
             using (Graphics g = _nextBlockPanel.CreateGraphics())
             {
                 int blockLen = block.GetLength(0);
-                for (var y = 0; y < 2; y++)
-                    for (var x = 0; x < 4; x++)
+                for (int y = 0; y < 2; y++)
+                for (int x = 0; x < 4; x++)
+                    if (x >= blockLen || y >= blockLen || block[y, x] != 1)
                     {
-                        if (x >= blockLen || y >= blockLen || block[y, x] != 1)
-                        {
-                            g.FillRectangle(Brushes.Black, x * size, y * size, size, size);
-                            g.DrawRectangle(new Pen(Brushes.Black), x * size, y * size, size, size);
-                        }
-                        else
-                        {
-                            g.FillRectangle(_block.BlockColor[nextBlockNum], x * size, y * size, size,
-                                size);
-                            g.DrawRectangle(new Pen(Brushes.Black), x * size, y * size, size, size);
-                        }
+                        g.FillRectangle(Brushes.Black, x * size, y * size, size, size);
+                        g.DrawRectangle(new Pen(Brushes.Black), x * size, y * size, size, size);
+                    }
+                    else
+                    {
+                        g.FillRectangle(_block.BlockColor[nextBlockNum], x * size, y * size, size,
+                            size);
+                        g.DrawRectangle(new Pen(Brushes.Black), x * size, y * size, size, size);
                     }
             }
 
             TetrisPanel.DrawLocker.Release();
-
         }
 
         // 블럭 이동이 가능한지 체크, 게임오버 체크
@@ -115,8 +113,8 @@ namespace Tetris
         {
             int size = block.GetLength(0);
 
-            for (var y = 0; y < size; y++)
-            for (var x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
                 if (block[y, x] == 1)
                 {
                     if (ny + y >= HEIGHT || nx + x >= WIDTH || nx + x < 0)
@@ -143,8 +141,8 @@ namespace Tetris
 
         protected void RemoveRedBlock()
         {
-            for (var y = 0; y < HEIGHT; y++)
-            for (var x = 0; x < WIDTH; x++)
+            for (int y = 0; y < HEIGHT; y++)
+            for (int x = 0; x < WIDTH; x++)
                 if (_tetrisBoard[y, x] == 1)
                 {
                     _tetrisBoard[y, x] = 0;
@@ -155,8 +153,8 @@ namespace Tetris
         protected void MoveRedBlock()
         {
             int size = _block.Block.GetLength(0);
-            for (var y = 0; y < size; y++)
-            for (var x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
                 if (_block.Block[y, x] == 1)
                 {
                     if (_currentY + y < 0)
@@ -168,8 +166,8 @@ namespace Tetris
 
         private int GetHighLine()
         {
-            for (var y = 0; y < HEIGHT; y++)
-            for (var x = 0; x < WIDTH; x++)
+            for (int y = 0; y < HEIGHT; y++)
+            for (int x = 0; x < WIDTH; x++)
                 if (_tetrisBoard[y, x] > 10)
                     return y;
 
@@ -182,7 +180,7 @@ namespace Tetris
 
             foreach (int i in _clearLineList)
                 for (int y = i; y >= highLine; y--)
-                for (var x = 0; x < WIDTH; x++)
+                for (int x = 0; x < WIDTH; x++)
                     if (y > 0 && _tetrisBoard[y - 1, x] > 10)
                         _tetrisBoard[y, x] = _tetrisBoard[y - 1, x];
                     else
@@ -190,7 +188,7 @@ namespace Tetris
 
             int max = _clearLineList.Max();
             for (int y = highLine; y <= max; y++)
-            for (var x = 0; x < WIDTH; x++)
+            for (int x = 0; x < WIDTH; x++)
                 DrawColer(y, x);
 
             LineClearEvent?.Invoke(this, new TetrisEventArgs(_clearLineList.Count, _combo));
@@ -199,7 +197,7 @@ namespace Tetris
         private bool CanClearLine()
         {
             _clearLineList.Clear();
-            var b = false;
+            bool b = false;
 
             for (int y = _currentY; y < HEIGHT; y++)
             {
@@ -216,7 +214,7 @@ namespace Tetris
 
             bool LineCheck(int y)
             {
-                for (var x = 0; x < WIDTH; x++)
+                for (int x = 0; x < WIDTH; x++)
                     if (_tetrisBoard[y, x] <= 10)
                         return false;
                 return true;
@@ -233,7 +231,7 @@ namespace Tetris
             int size = block.GetLength(0);
             for (int currentY = nowY; currentY <= HEIGHT; currentY++)
             for (int y = size - 1; y >= 0; y--)
-            for (var x = 0; x < size; x++)
+            for (int x = 0; x < size; x++)
             {
                 if (currentY + y < 0)
                     continue;
@@ -250,8 +248,8 @@ namespace Tetris
         private void DrawDownLocation(int currentY)
         {
             int size = _block.Block.GetLength(0);
-            for (var y = 0; y < size; y++)
-            for (var x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
                 if (y + currentY >= 0 && y + currentY < HEIGHT &&
                     _block.Block[y, x] == 1 && _tetrisBoard[y + currentY, x + _currentX] == 0)
                 {
@@ -262,8 +260,8 @@ namespace Tetris
 
         private void DeleteBlockDownPreview()
         {
-            for (var y = 0; y < HEIGHT; y++)
-            for (var x = 0; x < WIDTH; x++)
+            for (int y = 0; y < HEIGHT; y++)
+            for (int x = 0; x < WIDTH; x++)
                 if (_tetrisBoard[y, x] == 3)
                 {
                     _tetrisBoard[y, x] = 0;
@@ -319,7 +317,7 @@ namespace Tetris
                 int size = _block.Block.GetLength(0);
                 for (int currentY = _currentY; currentY <= HEIGHT; currentY++)
                 for (int y = size - 1; y >= 0; y--)
-                for (var x = 0; x < size; x++)
+                for (int x = 0; x < size; x++)
                 {
                     if (_block.Block[y, x] != 1)
                         continue;
@@ -356,7 +354,7 @@ namespace Tetris
 
                 // 블럭 이동
                 for (int y = Math.Max(highLine - cnt, 0); y < HEIGHT - cnt; y++)
-                for (var x = 0; x < WIDTH; x++)
+                for (int x = 0; x < WIDTH; x++)
                 {
                     _tetrisBoard[y, x] = _tetrisBoard[y + cnt, x];
                     DrawColer(y, x);
@@ -364,7 +362,7 @@ namespace Tetris
 
                 // 블럭 생성
                 for (int y = HEIGHT - cnt; y < HEIGHT; y++)
-                for (var x = 0; x < WIDTH; x++)
+                for (int x = 0; x < WIDTH; x++)
                 {
                     _tetrisBoard[y, x] = x == blank ? 0 : 18;
                     DrawColer(y, x);
@@ -391,8 +389,8 @@ namespace Tetris
                     if (!GamePlaying)
                         return;
                     Score += 10;
-                    for (var i = 0; i < HEIGHT; i++)
-                    for (var j = 0; j < WIDTH; j++)
+                    for (int i = 0; i < HEIGHT; i++)
+                    for (int j = 0; j < WIDTH; j++)
                         if (_tetrisBoard[i, j] == 1)
                         {
                             _tetrisBoard[i, j] = _block.BlockNum + 10;

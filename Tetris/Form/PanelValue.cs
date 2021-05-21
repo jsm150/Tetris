@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tetris
+﻿namespace Tetris
 {
-    struct PanelValueData
+    internal struct PanelValueData
     {
         public const int TetrisPanelWidth = 300;
         public const int TetrisPanelHeight = 603;
@@ -30,7 +24,7 @@ namespace Tetris
         }
     }
 
-    readonly struct PanelValue
+    internal readonly struct PanelValue
     {
         public readonly int Width;
         public readonly int Height;
@@ -53,7 +47,7 @@ namespace Tetris
 
         public static PanelValue GetTetrisPanelToPlayer2()
         {
-            return new PanelValue(PanelValueData.TetrisPanelWidth, PanelValueData.TetrisPanelHeight, 
+            return new PanelValue(PanelValueData.TetrisPanelWidth, PanelValueData.TetrisPanelHeight,
                 PanelValueData.Player2.TetrisPanelPointX, PanelValueData.Player2.TetrisPanelPointY);
         }
 
@@ -69,5 +63,4 @@ namespace Tetris
                 PanelValueData.Player2.NextBlockPanelPointX, PanelValueData.Player2.NextBlockPanelPointY);
         }
     }
-
 }

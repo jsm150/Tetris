@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MetroFramework.Controls;
+using Tetris.Properties;
 
 namespace Tetris
 {
@@ -19,7 +20,8 @@ namespace Tetris
 
         public Weight Weight { get; }
 
-        private TetrisAI(TetrisPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, Label lblBestNum, int id, Weight weight)
+        private TetrisAI(TetrisPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, Label lblBestNum, int id,
+            Weight weight)
             : base(tetrisPanel, nextBlockPanel, lblScore, null, id)
         {
             Weight = weight;
@@ -82,8 +84,8 @@ namespace Tetris
         private static bool CanPutBlock(int currentX, int[,] block)
         {
             int size = block.GetLength(0);
-            for (var y = 0; y < size; y++)
-            for (var x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
                 if (block[y, x] == 1 && (currentX + x < 0 || currentX + x >= 10))
                     return false;
 
@@ -95,9 +97,9 @@ namespace Tetris
             (int X, int RotationNum) pos = (0, 0);
             int width = _tetrisBoard.GetLength(1);
             double max = int.MinValue;
-            var board = _tetrisBoard.Clone() as int[,];
+            int[,] board = _tetrisBoard.Clone() as int[,];
 
-            for (var i = 0; i < _block.BlockRotationCount[_block.BlockNum]; i++)
+            for (int i = 0; i < _block.BlockRotationCount[_block.BlockNum]; i++)
             {
                 int[,] block = _block.BlockCreate(_block.BlockNum, i);
                 for (int x = -block.GetLength(0) + 1; x < width; x++)
@@ -120,8 +122,8 @@ namespace Tetris
 
         private void SetBoard(int currentY, int currentX, int[,] board, int[,] block, int value)
         {
-            for (var y = 0; y < block.GetLength(0); y++)
-            for (var x = 0; x < block.GetLength(0); x++)
+            for (int y = 0; y < block.GetLength(0); y++)
+            for (int x = 0; x < block.GetLength(0); x++)
                 if (block[y, x] == 1 && currentY + y >= 0)
                     board[currentY + y, currentX + x] = value;
         }
@@ -142,24 +144,24 @@ namespace Tetris
             double lineClearValue = 0;
             int width = board.GetLength(1);
             int height = board.GetLength(0);
-            for (var y = 0; y < height; y++)
+            for (int y = 0; y < height; y++)
             {
                 if (HasLineClear(y))
                     lineClearValue++;
 
-                for (var x = 0; x < width; x++)
+                for (int x = 0; x < width; x++)
                     if (board[y, x] > 10)
                         blockHeightValue += height - y;
             }
 
-            for (var y = 0; y < -currentY; y++)
-            for (var x = 0; x < block.GetLength(1); x++)
+            for (int y = 0; y < -currentY; y++)
+            for (int x = 0; x < block.GetLength(1); x++)
                 if (block[y, x] == 1)
                     blockHeightValue += height + (-currentY - y);
 
             bool HasLineClear(int y)
             {
-                for (var x = 0; x < width; x++)
+                for (int x = 0; x < width; x++)
                     if (board[y, x] <= 10)
                         return false;
                 return true;
@@ -177,11 +179,11 @@ namespace Tetris
             double blockedValue = 0;
             int height = board.GetLength(0);
             int width = board.GetLength(1);
-            for (var x = 0; x < width; x++)
+            for (int x = 0; x < width; x++)
             for (int y = height - 1; y >= 0; y--)
             {
                 if (board[y, x] > 10) continue;
-                var cnt = 0;
+                int cnt = 0;
 
                 while (y >= 0 && board[y, x] <= 10)
                 {
@@ -219,11 +221,11 @@ namespace Tetris
             int[] dy = {-1, 0, 1, 0};
             int[] dx = {0, 1, 0, -1};
 
-            for (var y = 0; y < size; y++)
-            for (var x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
             {
                 if (block[y, x] != 1) continue;
-                for (var i = 0; i < dy.Length; i++)
+                for (int i = 0; i < dy.Length; i++)
                     if (currentX + x + dx[i] < 0 || currentX + x + dx[i] >= width)
                         sideValue++;
                     else if (currentY + y + dy[i] >= height)
@@ -247,13 +249,13 @@ namespace Tetris
             int delay = GetDelay(_tetrisBoard);
             Action direction = _currentX < optimalX ? MoveRight : new Action(MoveLeft);
             int end = Math.Abs(_currentX - optimalX);
-            for (var i = 0; i < optimalRotation; i++)
+            for (int i = 0; i < optimalRotation; i++)
             {
                 await Task.Delay(delay);
                 RotationBlock();
             }
 
-            for (var i = 0; i < end; i++)
+            for (int i = 0; i < end; i++)
             {
                 await Task.Delay(delay);
                 direction.Invoke();
@@ -263,8 +265,8 @@ namespace Tetris
 
             int GetDelay(int[,] board)
             {
-                for (var y = 0; y < board.GetLength(0); y++)
-                for (var x = 0; x < board.GetLength(1); x++)
+                for (int y = 0; y < board.GetLength(0); y++)
+                for (int x = 0; x < board.GetLength(1); x++)
                     if (board[y, x] > 10)
                     {
                         int h = Math.Min(board.GetLength(0) - y, 16);
@@ -336,11 +338,22 @@ namespace Tetris
             ReSetBlockAction = ReSetBlockAtGenetic;
             LoopDownAsyncFunc = LoopDownAsyncAtGenetic;
             SetScoreTextAction = SetScoreTextAtGenetic;
+            if (!Settings.Default.CanRendering)
+                DrawColorAction = DrawColerAtNone;
         }
 
-        public static TetrisAI AITestMode(TetrisPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, int id, Weight weight)
+        public void SetRenderingAtGenetic()
         {
-            var t = new TetrisAI(tetrisPanel, nextBlockPanel, lblScore, null, id, weight);
+            if (Settings.Default.CanRendering)
+                DrawColorAction = base.DrawColer;
+            else
+                DrawColorAction = DrawColerAtNone;
+        }
+
+        public static TetrisAI AITestMode(TetrisPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, int id,
+            Weight weight)
+        {
+            TetrisAI t = new TetrisAI(tetrisPanel, nextBlockPanel, lblScore, null, id, weight);
             t.SetAiTestMode();
             return t;
         }
@@ -348,12 +361,13 @@ namespace Tetris
         public static TetrisAI GeneticMode(TetrisPanel tetrisPanel, Label lblScore, Label lblBestNum, int id,
             Weight weight)
         {
-            var t = new TetrisAI(tetrisPanel, null, lblScore, lblBestNum, id, weight);
+            TetrisAI t = new TetrisAI(tetrisPanel, null, lblScore, lblBestNum, id, weight);
             t.SetGeneticMode();
             return t;
         }
 
-        public static TetrisAI GeneralMode(TetrisPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, int id, Weight weight)
+        public static TetrisAI GeneralMode(TetrisPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, int id,
+            Weight weight)
         {
             return new TetrisAI(tetrisPanel, nextBlockPanel, lblScore, null, id, weight);
         }

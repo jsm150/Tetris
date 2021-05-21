@@ -16,7 +16,7 @@ namespace Tetris
             ReadOnlyCollection<Tetris> players = GameController.GetPlayers();
             if (players.Count <= 1) return;
 
-            var tetris = sender as Tetris;
+            Tetris tetris = sender as Tetris;
             int garbageLine = GetGarbageLine(e);
 
             foreach (Tetris player in players)
@@ -26,7 +26,7 @@ namespace Tetris
 
         private static int GetGarbageLine(TetrisEventArgs e)
         {
-            var cnt = 0;
+            int cnt = 0;
 
             if (e.LineClearCount >= 4)
                 cnt += 4;

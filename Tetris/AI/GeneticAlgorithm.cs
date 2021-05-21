@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MetroFramework.Controls;
 using MetroFramework.Forms;
 using Newtonsoft.Json;
 
@@ -16,7 +15,7 @@ namespace Tetris
         private static readonly Random Random = new Random();
         private static readonly List<TetrisAI> Players = new List<TetrisAI>();
         private static Weight[] _weights = new Weight[24];
-        private static TetrisPanel[] _panels = new TetrisPanel[24];
+        private static readonly TetrisPanel[] _panels = new TetrisPanel[24];
         private static int _generation;
         private static long _bestScore;
 
@@ -34,7 +33,7 @@ namespace Tetris
             }
             else
             {
-                for (var i = 0; i < _weights.Length; i++)
+                for (int i = 0; i < _weights.Length; i++)
                     _weights[i] = GetRandomWeight();
                 if (File.Exists(@".\Weight.json"))
                     _weights[0] = WeightFileReader<Weight>(@".\Weight.json");
@@ -43,8 +42,7 @@ namespace Tetris
 
         private static void SetPanels(Control form)
         {
-            for (var i = 0; i < _weights.Length; i++)
-            {
+            for (int i = 0; i < _weights.Length; i++)
                 _panels[i] = new TetrisPanel(10)
                 {
                     Location = new Point((1 + i % 6 * 11) * 10, (16 + i / 6 * 21) * 10),
@@ -52,12 +50,17 @@ namespace Tetris
                     BorderStyle = BorderStyle.Fixed3D,
                     BackColor = Color.Black
                 };
-            }
-            
+
             form.Controls.AddRange(_panels);
         }
 
-        public static async Task AlgorithmStart(MetroForm form, Label lbl_Score, Label lbl_BestScore, Label lbl_Generation,
+        public static void SetRendering()
+        {
+            Players.ForEach(t => t.SetRenderingAtGenetic());
+        }
+
+        public static async Task AlgorithmStart(MetroForm form, Label lbl_Score, Label lbl_BestScore,
+            Label lbl_Generation,
             Label lblBestNum)
         {
             Initialization(form);
@@ -67,7 +70,7 @@ namespace Tetris
                 Players.Clear();
 
                 lbl_Generation.Text = $@"{_generation} 세대";
-                for (var i = 0; i < _weights.Length; i++)
+                for (int i = 0; i < _weights.Length; i++)
                 {
                     TetrisAI player = TetrisAI.GeneticMode(_panels[i], lbl_Score, lblBestNum, i + 1,
                         _weights[i].Clone());
@@ -94,9 +97,9 @@ namespace Tetris
             WeightFileWriter(Players[0].Weight, @".\Weight.json");
 
             // 상위 개체 6개를 뽑아서 교배
-            var cnt = 0;
-            for (var i = 0; i < 3; i++)
-            for (var j = 3; j < 6; j++)
+            int cnt = 0;
+            for (int i = 0; i < 3; i++)
+            for (int j = 3; j < 6; j++)
             {
                 if (Random.Next(0, 10) == 1)
                 {
@@ -106,7 +109,7 @@ namespace Tetris
                     continue;
                 }
 
-                for (var k = 0; k < 7; k++)
+                for (int k = 0; k < 7; k++)
                     if (Random.NextDouble() < 0.2)
                     {
                         _weights[cnt][k] = GetRandom(k);
@@ -126,8 +129,8 @@ namespace Tetris
                 cnt += 2;
             }
 
-            for (var i = 0; i < 6; i++)
-            for (var j = 0; j < 7; j++)
+            for (int i = 0; i < 6; i++)
+            for (int j = 0; j < 7; j++)
                 _weights[cnt + i][j] = Players[i].Weight[j];
 
             WeightFileWriter(_weights, @".\WeightList.json");
@@ -142,8 +145,8 @@ namespace Tetris
 
         private static Weight GetRandomWeight()
         {
-            var weight = new Weight();
-            for (var i = 0; i < 7; i++)
+            Weight weight = new Weight();
+            for (int i = 0; i < 7; i++)
             {
                 weight[i] = i <= 2 ? Random.Next(-100, 0) : Random.Next(0, 100);
                 weight[i] += (float) Random.NextDouble();
@@ -154,8 +157,8 @@ namespace Tetris
 
         private static void WeightFileWriter<T>(T weight, string path)
         {
-            using (var stream = new StreamWriter(path))
-            using (var writer = new JsonTextWriter(stream))
+            using (StreamWriter stream = new StreamWriter(path))
+            using (JsonTextWriter writer = new JsonTextWriter(stream))
             {
                 new JsonSerializer().Serialize(writer, weight);
             }
@@ -163,8 +166,8 @@ namespace Tetris
 
         public static T WeightFileReader<T>(string path)
         {
-            using (var stream = new StreamReader(path))
-            using (var reader = new JsonTextReader(stream))
+            using (StreamReader stream = new StreamReader(path))
+            using (JsonTextReader reader = new JsonTextReader(stream))
             {
                 return new JsonSerializer().Deserialize<T>(reader);
             }

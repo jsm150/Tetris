@@ -27,7 +27,7 @@ namespace Tetris
 
         private static int[] SetBlockRotationCountInit()
         {
-            var arr = new int[8];
+            int[] arr = new int[8];
             arr[1] = 2;
             arr[2] = 1;
             arr[3] = 2;
@@ -40,7 +40,7 @@ namespace Tetris
 
         private static Brush[] SetBlockColorInit()
         {
-            var arr = new Brush[9];
+            Brush[] arr = new Brush[9];
             arr[1] = Brushes.Aqua;
             arr[2] = Brushes.Yellow;
             arr[3] = Brushes.Red;
