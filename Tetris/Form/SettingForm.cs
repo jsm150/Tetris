@@ -14,6 +14,7 @@ namespace Tetris
         {
             InitializeComponent();
             _mediaPlayer = mediaPlayer;
+
         }
 
         private void SettingForm_Load(object sender, EventArgs e)
