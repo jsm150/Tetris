@@ -46,5 +46,16 @@ namespace Tetris.Properties {
                 this["CanRendering"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Windows.Forms.AccessibleEvents j {
+            get {
+                return ((global::System.Windows.Forms.AccessibleEvents)(this["설정"]));
+            }
+            set {
+                this["설정"] = value;
+            }
+        }
     }
 }

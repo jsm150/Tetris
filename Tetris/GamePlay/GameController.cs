@@ -37,6 +37,8 @@ namespace Tetris
 
         public static void GameEnd()
         {
+            if (Players.Count == 0) return;
+
             string mag = GameEndAlertMsg();
             Players.ForEach(t => t.GamePlaying = false);
             Players.Clear();

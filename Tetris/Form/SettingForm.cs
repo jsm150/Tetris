@@ -25,14 +25,17 @@ namespace Tetris
         private void tog_UiRendering_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.CanRendering = tog_UiRendering.Checked;
-            Settings.Default.Save();
             GeneticAlgorithm.SetRendering();
         }
 
         private void tBar_Volume_Scroll(object sender, ScrollEventArgs e)
         {
-            _mediaPlayer.settings.volume = tBar_Volume.Value;
             Settings.Default.Volume = tBar_Volume.Value;
+            _mediaPlayer.settings.volume = tBar_Volume.Value;
+        }
+
+        private void SettingForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
             Settings.Default.Save();
         }
     }
