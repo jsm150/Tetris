@@ -63,7 +63,6 @@
     <Compile Include="Form\TetrisPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GamePlay\MultiPlay.cs" />
     <Compile Include="KeyBoardAction\KeyboardSetting.cs" />
     <Compile Include="KeyBoardAction\KeyboardPlayer1.cs" />
     <Compile Include="KeyBoardAction\KeyboardPlayer2.cs" />
@@ -110,6 +109,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Img\Class_Diagram.png" />
+    <Content Include="Img\ezgif.com-gif-maker.gif" />
+    <Content Include="Img\Player_vs_AI.gif" />
     <Content Include="Tetris_BGM.mp3" />
   </ItemGroup>
   <ItemGroup>

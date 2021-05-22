@@ -270,7 +270,7 @@ namespace Tetris
                     if (board[y, x] > 10)
                     {
                         int h = Math.Min(board.GetLength(0) - y, 16);
-                        return GameController.GetPlayers().Count <= 1 ? 0 : (16 - h) * 19;
+                        return (16 - h) * 19;
                     }
 
                 return 0;

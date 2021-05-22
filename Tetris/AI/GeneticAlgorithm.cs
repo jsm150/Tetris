@@ -29,14 +29,14 @@ namespace Tetris
         {
             if (File.Exists(@".\WeightList.json"))
             {
-                _weights = WeightFileReader<Weight[]>(@".\WeightList.json");
+                _weights = WeightLoad<Weight[]>(@".\WeightList.json");
             }
             else
             {
                 for (int i = 0; i < _weights.Length; i++)
                     _weights[i] = GetRandomWeight();
                 if (File.Exists(@".\Weight.json"))
-                    _weights[0] = WeightFileReader<Weight>(@".\Weight.json");
+                    _weights[0] = WeightLoad<Weight>(@".\Weight.json");
             }
         }
 
@@ -94,7 +94,7 @@ namespace Tetris
         private static void MixParents()
         {
             Players.Sort((i, j) => i.Score > j.Score ? -1 : 1);
-            WeightFileWriter(Players[0].Weight, @".\Weight.json");
+            WeightSave(Players[0].Weight, @".\Weight.json");
 
             // 상위 개체 6개를 뽑아서 교배
             int cnt = 0;
@@ -133,7 +133,7 @@ namespace Tetris
             for (int j = 0; j < 7; j++)
                 _weights[cnt + i][j] = Players[i].Weight[j];
 
-            WeightFileWriter(_weights, @".\WeightList.json");
+            WeightSave(_weights, @".\WeightList.json");
 
             float GetRandom(int k)
             {
@@ -155,7 +155,7 @@ namespace Tetris
             return weight;
         }
 
-        private static void WeightFileWriter<T>(T weight, string path)
+        private static void WeightSave<T>(T weight, string path)
         {
             using (StreamWriter stream = new StreamWriter(path))
             using (JsonTextWriter writer = new JsonTextWriter(stream))
@@ -164,7 +164,7 @@ namespace Tetris
             }
         }
 
-        public static T WeightFileReader<T>(string path)
+        public static T WeightLoad<T>(string path)
         {
             using (StreamReader stream = new StreamReader(path))
             using (JsonTextReader reader = new JsonTextReader(stream))

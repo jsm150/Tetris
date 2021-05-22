@@ -4,6 +4,7 @@ namespace Tetris
 {
     public class Weight
     {
+        // AI 학습을 안했을때 사용하기 위한 기본값.
         public float BlockHeightValue { get; set; } = -3.4f;
         public float BlockedValue { get; set; } = -3;
         public float HoleValue { get; set; } = -20;

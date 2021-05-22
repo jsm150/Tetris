@@ -60,7 +60,7 @@ namespace Tetris
         private Weight GetWeight()
         {
             return File.Exists(@".\Weight.json")
-                ? GeneticAlgorithm.WeightFileReader<Weight>(@".\Weight.json")
+                ? GeneticAlgorithm.WeightLoad<Weight>(@".\Weight.json")
                 : new Weight();
         }
 

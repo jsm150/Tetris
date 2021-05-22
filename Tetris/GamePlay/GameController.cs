@@ -30,7 +30,7 @@ namespace Tetris
 
         public static async Task GameStart()
         {
-            MultiPlay.Access(Players);
+            Players.ForEach(t => t.LineClearEvent += SendBlockToPlayer);
             await Task.WhenAny(Players.Select(t => Task.Run(t.GameStart)));
             GameEnd();
         }
@@ -50,6 +50,39 @@ namespace Tetris
             int id = Players.FirstOrDefault(t => t.GamePlaying)?.PlayerId ?? 0;
 
             return id != 0 ? $"플레이어{id} 승리!" : "비겼습니다!";
+        }
+
+        private static async void SendBlockToPlayer(object sender, TetrisEventArgs e)
+        {
+            if (Players.Count <= 1) return;
+
+            Tetris tetris = sender as Tetris;
+            int garbageLine = GetGarbageLine(e);
+
+            foreach (Tetris player in Players)
+                if (player.PlayerId != tetris?.PlayerId)
+                    await Task.Run(() => player.SetGarbageLine(garbageLine));
+        }
+
+        private static int GetGarbageLine(TetrisEventArgs e)
+        {
+            int cnt = 0;
+
+            if (e.LineClearCount >= 4)
+                cnt += 4;
+            else if (e.LineClearCount >= 3)
+                cnt += 2;
+            else if (e.LineClearCount >= 2)
+                cnt += 1;
+
+            if (e.Combo >= 6)
+                cnt += 3;
+            else if (e.Combo >= 4)
+                cnt += 2;
+            else if (e.Combo >= 2)
+                cnt += 1;
+
+            return cnt;
         }
     }
 }
