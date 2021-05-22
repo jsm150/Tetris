@@ -110,7 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Img\Class_Diagram.png" />
-    <Content Include="Img\ezgif.com-gif-maker.gif" />
+    <Content Include="Img\Genetic_Algorithm.gif" />
     <Content Include="Img\Player_vs_AI.gif" />
     <Content Include="Tetris_BGM.mp3" />
   </ItemGroup>
