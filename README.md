@@ -1,6 +1,10 @@
 # Winform Tetris
 winform으로 만든 테트리스 입니다.
 
+| Player vs AI | Genetic Algorithm |
+| --- | --- |
+| ![Player_vs_AI](./Tetris/Img/Player_vs_AI.gif) | ![Genetic_Algorithm](./Tetris/Img/Genetic_Algorithm.gif) |
+
 ## 기능
 - Genetic Algorithm 을 이용한 AI 학습
 - 학습된 AI와 1:1 대결
@@ -49,6 +53,9 @@ winform으로 만든 테트리스 입니다.
     <td>하드 드롭</td>
   </tr>
 </table>
+
+## 클래스 다이어그램
+![Class_Diagram](./Tetris/Img/Class_Diagram.png)
 
 ## 개발 환경
 .net framework 4.7.2, Visual Studio 2019
