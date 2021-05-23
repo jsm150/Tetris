@@ -29,14 +29,14 @@ namespace Tetris
         {
             if (File.Exists(FilePath.WeightList))
             {
-                _weights = FileLoad<Weight[]>(FilePath.WeightList);
+                _weights = MainForm.FileLoad<Weight[]>(FilePath.WeightList);
             }
             else
             {
                 for (int i = 0; i < _weights.Length; i++)
                     _weights[i] = GetRandomWeight();
                 if (File.Exists(FilePath.Weight))
-                    _weights[0] = FileLoad<Weight>(FilePath.Weight);
+                    _weights[0] = MainForm.FileLoad<Weight>(FilePath.Weight);
             }
         }
 
@@ -94,7 +94,7 @@ namespace Tetris
         private static void MixParents()
         {
             Players.Sort((i, j) => i.Score > j.Score ? -1 : 1);
-            FileSave(Players[0].Weight, FilePath.Weight);
+            MainForm.FileSave(Players[0].Weight, FilePath.Weight);
 
             // 상위 개체 6개를 뽑아서 교배
             int cnt = 0;
@@ -133,7 +133,7 @@ namespace Tetris
             for (int j = 0; j < 7; j++)
                 _weights[cnt + i][j] = Players[i].Weight[j];
 
-            FileSave(_weights, FilePath.WeightList);
+            MainForm.FileSave(_weights, FilePath.WeightList);
 
             float GetRandom(int k)
             {
@@ -153,28 +153,6 @@ namespace Tetris
             }
 
             return weight;
-        }
-
-        private static void FileSave<T>(T obj, string path)
-        {
-            string di = Path.GetDirectoryName(path);
-            if (!Directory.Exists(di))
-                Directory.CreateDirectory(di);
-
-            using (StreamWriter stream = new StreamWriter(path))
-            using (JsonTextWriter writer = new JsonTextWriter(stream))
-            {
-                new JsonSerializer().Serialize(writer, obj);
-            }
-        }
-
-        public static T FileLoad<T>(string path)
-        {
-            using (StreamReader stream = new StreamReader(path))
-            using (JsonTextReader reader = new JsonTextReader(stream))
-            {
-                return new JsonSerializer().Deserialize<T>(reader);
-            }
         }
 
         private static T Clone<T>(this T obj)

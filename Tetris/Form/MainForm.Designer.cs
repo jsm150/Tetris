@@ -2,7 +2,7 @@
 
 namespace Tetris
 {
-    sealed partial class MainMenuForm
+    sealed partial class MainForm
     {
         /// <summary>
         /// 필수 디자이너 변수입니다.
@@ -206,7 +206,7 @@ namespace Tetris
             this.Controls.Add(this.label1);
             this.KeyPreview = true;
             this.MaximizeBox = false;
-            this.Name = "MainMenuForm";
+            this.Name = "MainForm";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.ResumeLayout(false);

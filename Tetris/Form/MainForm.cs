@@ -5,17 +5,18 @@ using System.IO;
 using System.Windows.Forms;
 using MetroFramework.Controls;
 using MetroFramework.Forms;
+using Newtonsoft.Json;
 using Tetris.Properties;
 using WMPLib;
 
 namespace Tetris
 {
-    public sealed partial class MainMenuForm : MetroForm
+    public sealed partial class MainForm : MetroForm
     {
         private readonly WindowsMediaPlayer _mediaPlayer = new WindowsMediaPlayer();
         private readonly Stack<TetrisPanel> _panels = new Stack<TetrisPanel>();
 
-        public MainMenuForm()
+        public MainForm()
         {
             InitializeComponent();
         }
@@ -57,26 +58,28 @@ namespace Tetris
             return p;
         }
 
-        private Weight GetWeight()
-        {
-            return File.Exists(FilePath.Weight)
-                ? GeneticAlgorithm.FileLoad<Weight>(FilePath.Weight)
-                : new Weight();
-        }
-
         private async void btn_GameStart_Click(object sender, EventArgs e)
         {
-            StartSetting(btn_GameStart);
-            Size = new Size(690, 870);
-            Tetris player1 = new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer1()),
-                NewPanel(PanelValue.GetNextBlockPanelToPlayer1()),
-                lbl_Score, KeyboardPlayer1.GetInstance, 1);
-            TetrisAI player2 = TetrisAI.GeneralMode(NewPanel(PanelValue.GetTetrisPanelToPlayer2()),
-                NewPanel(PanelValue.GetNextBlockPanelToPlayer2()),
-                lbl_2pScore, 2, GetWeight());
-            GameController.PlayerAdd(player1);
-            GameController.PlayerAdd(player2);
-            await GameController.GameStart();
+            try
+            {
+                StartSetting(btn_GameStart);
+                Size = new Size(690, 870);
+                Tetris player1 = new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer1()),
+                    NewPanel(PanelValue.GetNextBlockPanelToPlayer1()),
+                    lbl_Score, KeyboardPlayer1.GetInstance, 1);
+                TetrisAI player2 = TetrisAI.GeneralMode(NewPanel(PanelValue.GetTetrisPanelToPlayer2()),
+                    NewPanel(PanelValue.GetNextBlockPanelToPlayer2()),
+                    lbl_2pScore, 2, FileLoad<Weight>(FilePath.Weight));
+                GameController.PlayerAdd(player1);
+                GameController.PlayerAdd(player2);
+                await GameController.GameStart();
+            }
+#pragma warning disable 168
+            catch (DirectoryNotFoundException _)
+#pragma warning restore 168
+            {
+                MessageBox.Show(@"학습된 AI가 없습니다!");
+            }
         }
 
         private async void btn_GeneticAlgorithm_Click(object sender, EventArgs e)
@@ -88,12 +91,21 @@ namespace Tetris
 
         private async void btn_AI_Click(object sender, EventArgs e)
         {
-            StartSetting(btn_AI);
-            Size = new Size(360, 870);
-            GameController.PlayerAdd(TetrisAI.AITestMode(NewPanel(PanelValue.GetTetrisPanelToPlayer1()),
-                NewPanel(PanelValue.GetNextBlockPanelToPlayer1()),
-                lbl_Score, 1, GetWeight()));
-            await GameController.GameStart();
+            try
+            {
+                StartSetting(btn_AI);
+                Size = new Size(360, 870);
+                GameController.PlayerAdd(TetrisAI.AITestMode(NewPanel(PanelValue.GetTetrisPanelToPlayer1()),
+                    NewPanel(PanelValue.GetNextBlockPanelToPlayer1()),
+                    lbl_Score, 1, FileLoad<Weight>(FilePath.Weight)));
+                await GameController.GameStart();
+            }
+#pragma warning disable 168
+            catch (DirectoryNotFoundException _)
+#pragma warning restore 168
+            {
+                MessageBox.Show(@"학습된 AI가 없습니다!");
+            }
         }
 
         private async void btn_1vs1_Click(object sender, EventArgs e)
@@ -153,6 +165,28 @@ namespace Tetris
             new SettingForm(_mediaPlayer).ShowDialog();
             btn_Setting.Enabled = false;
             btn_Setting.Enabled = true;
+        }
+
+        public static void FileSave<T>(T obj, string path) where T : class
+        {
+            string di = Path.GetDirectoryName(path);
+            if (!Directory.Exists(di))
+                Directory.CreateDirectory(di);
+
+            using (StreamWriter stream = new StreamWriter(path))
+            using (JsonTextWriter writer = new JsonTextWriter(stream))
+            {
+                new JsonSerializer().Serialize(writer, obj);
+            }
+        }
+
+        public static T FileLoad<T>(string path)
+        {
+            using (StreamReader stream = new StreamReader(path))
+            using (JsonTextReader reader = new JsonTextReader(stream))
+            {
+                return new JsonSerializer().Deserialize<T>(reader);
+            }
         }
     }
 }
