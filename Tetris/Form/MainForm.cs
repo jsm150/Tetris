@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
+using MetroFramework;
 using MetroFramework.Controls;
 using MetroFramework.Forms;
 using Newtonsoft.Json;
@@ -37,11 +39,35 @@ namespace Tetris
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (File.Exists(@".\Sound\Tetris_BGM.mp3"))
-                _mediaPlayer.URL = @".\Sound\Tetris_BGM.mp3";
+            BgmSetting();
+            KeyboardSetting();
+            GameController.GameEndAction = GameEnd;
+        }
+
+        private void BgmSetting()
+        {
+            string dir = Path.GetDirectoryName(FilePath.Sound);
+            string name = Path.GetFileName(FilePath.Sound);
+            string path = Directory.GetFiles(dir, name).First();
+            if (File.Exists(path))
+                _mediaPlayer.URL = path;
             _mediaPlayer.settings.volume = Settings.Default.Volume;
             _mediaPlayer.controls.stop();
-            GameController.GameEndAction = GameEnd;
+        }
+
+        private void KeyboardSetting()
+        {
+            try
+            {
+                List<Keyboard> list = FileLoad<List<Keyboard>>(FilePath.KeySetting);
+                Keyboard.SetKeyboard(list[0], Keyboard.GetPlayer1);
+                Keyboard.SetKeyboard(list[1], Keyboard.GetPlayer2);
+            }
+            catch
+            {
+                Keyboard.SetDefault();
+                Keyboard.KeySettingFileSave();
+            }
         }
 
         private TetrisPanel NewPanel(PanelValue panelValue)
@@ -63,15 +89,15 @@ namespace Tetris
             try
             {
                 StartSetting(btn_GameStart);
-                Size = new Size(690, 870);
                 Tetris player1 = new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer1()),
                     NewPanel(PanelValue.GetNextBlockPanelToPlayer1()),
-                    lbl_Score, KeyboardPlayer1.GetInstance, 1);
+                    lbl_Score, Keyboard.GetPlayer1, 1);
                 TetrisAI player2 = TetrisAI.GeneralMode(NewPanel(PanelValue.GetTetrisPanelToPlayer2()),
                     NewPanel(PanelValue.GetNextBlockPanelToPlayer2()),
                     lbl_2pScore, 2, FileLoad<Weight>(FilePath.Weight));
                 GameController.PlayerAdd(player1);
                 GameController.PlayerAdd(player2);
+                Size = new Size(690, 870);
                 await GameController.GameStart();
             }
 #pragma warning disable 168
@@ -94,10 +120,10 @@ namespace Tetris
             try
             {
                 StartSetting(btn_AI);
-                Size = new Size(360, 870);
                 GameController.PlayerAdd(TetrisAI.AITestMode(NewPanel(PanelValue.GetTetrisPanelToPlayer1()),
                     NewPanel(PanelValue.GetNextBlockPanelToPlayer1()),
                     lbl_Score, 1, FileLoad<Weight>(FilePath.Weight)));
+                Size = new Size(360, 870);
                 await GameController.GameStart();
             }
 #pragma warning disable 168
@@ -114,10 +140,10 @@ namespace Tetris
             Size = new Size(690, 870);
             GameController.PlayerAdd(new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer1()),
                 NewPanel(PanelValue.GetNextBlockPanelToPlayer1()),
-                lbl_Score, KeyboardPlayer2.GetInstance, 1));
+                lbl_Score, Keyboard.GetPlayer2, 1));
             GameController.PlayerAdd(new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer2()),
                 NewPanel(PanelValue.GetNextBlockPanelToPlayer2()),
-                lbl_2pScore, KeyboardPlayer1.GetInstance, 2));
+                lbl_2pScore, Keyboard.GetPlayer1, 2));
             await GameController.GameStart();
         }
 
@@ -162,7 +188,7 @@ namespace Tetris
 
         private void btn_Setting_Click(object sender, EventArgs e)
         {
-            new SettingForm(_mediaPlayer).ShowDialog();
+            new OptionForm(_mediaPlayer).ShowDialog();
             btn_Setting.Enabled = false;
             btn_Setting.Enabled = true;
         }

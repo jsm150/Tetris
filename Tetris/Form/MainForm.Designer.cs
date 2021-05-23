@@ -185,7 +185,7 @@ namespace Tetris
             this.btn_Setting.UseSelectable = true;
             this.btn_Setting.Click += new System.EventHandler(this.btn_Setting_Click);
             // 
-            // MainMenuForm
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

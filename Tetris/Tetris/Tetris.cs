@@ -16,7 +16,7 @@ namespace Tetris
         protected static readonly Random Random = new Random();
         protected readonly TetrisBlock _block = new TetrisBlock();
         private readonly List<int> _clearLineList = new List<int>();
-        private readonly KeyboardSetting _keyboardSetting;
+        private readonly Keyboard _keyboard;
         protected readonly Label _lblScore;
         private readonly object _locker = new object();
         private readonly MetroPanel _nextBlockPanel;
@@ -30,13 +30,13 @@ namespace Tetris
         public int PlayerId { get; }
         public bool GamePlaying { get; set; } = true;
 
-        public Tetris(TetrisPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, KeyboardSetting key, int id)
+        public Tetris(TetrisPanel tetrisPanel, MetroPanel nextBlockPanel, Label lblScore, Keyboard key, int id)
         {
             PlayerId = id;
             _nextBlockPanel = nextBlockPanel;
             _tetrisPanel = tetrisPanel;
             _lblScore = lblScore;
-            _keyboardSetting = key;
+            _keyboard = key;
             _tetrisPanel.SetValue(_tetrisBoard, _block);
         }
 
@@ -296,17 +296,17 @@ namespace Tetris
 
         public void KeyBoardAction(KeyEventArgs e)
         {
-            if (_keyboardSetting == null) return;
+            if (_keyboard == null) return;
 
-            if (_keyboardSetting.IsKeyDownAction(e))
+            if (_keyboard.IsKeyDownAction(e))
                 MoveDown();
-            if (_keyboardSetting.IsKeyHardDownAction(e))
+            if (_keyboard.IsKeyHardDownAction(e))
                 HardDown();
-            if (_keyboardSetting.IsKeyLeftAction(e))
+            if (_keyboard.IsKeyLeftAction(e))
                 MoveLeft();
-            if (_keyboardSetting.IsKeyRightAction(e))
+            if (_keyboard.IsKeyRightAction(e))
                 MoveRight();
-            if (_keyboardSetting.IsKeyRotationAction(e))
+            if (_keyboard.IsKeyRotationAction(e))
                 RotationBlock();
         }
 
