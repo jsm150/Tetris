@@ -3,7 +3,7 @@ winform으로 만든 테트리스 입니다.
 
 | Player vs AI | Genetic Algorithm |
 | --- | --- |
-| ![Player_vs_AI](./Tetris/Img/Player_vs_AI.gif) | ![Genetic_Algorithm](./Tetris/Img/Genetic_Algorithm.gif) |
+| <img src="./Tetris/Img/Player_vs_AI.gif" height="700px">  | ![Genetic_Algorithm](./Tetris/Img/Genetic_Algorithm.gif) |
 
 ## 기능
 - Genetic Algorithm 을 이용한 AI 학습
@@ -53,6 +53,10 @@ winform으로 만든 테트리스 입니다.
     <td>하드 드롭</td>
   </tr>
 </table>
+
+#### 키보드를 직접 설정할 수 있습니다.
+
+<img src="./Tetris/Img/keySetting_change.gif" height="360px">
 
 ## 클래스 다이어그램
 ![Class_Diagram](./Tetris/Img/Class_Diagram.png)
