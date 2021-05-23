@@ -27,16 +27,16 @@ namespace Tetris
 
         private static void SetWeights()
         {
-            if (File.Exists(@".\WeightList.json"))
+            if (File.Exists(FilePath.WeightList))
             {
-                _weights = WeightLoad<Weight[]>(@".\WeightList.json");
+                _weights = FileLoad<Weight[]>(FilePath.WeightList);
             }
             else
             {
                 for (int i = 0; i < _weights.Length; i++)
                     _weights[i] = GetRandomWeight();
-                if (File.Exists(@".\Weight.json"))
-                    _weights[0] = WeightLoad<Weight>(@".\Weight.json");
+                if (File.Exists(FilePath.Weight))
+                    _weights[0] = FileLoad<Weight>(FilePath.Weight);
             }
         }
 
@@ -94,7 +94,7 @@ namespace Tetris
         private static void MixParents()
         {
             Players.Sort((i, j) => i.Score > j.Score ? -1 : 1);
-            WeightSave(Players[0].Weight, @".\Weight.json");
+            FileSave(Players[0].Weight, FilePath.Weight);
 
             // 상위 개체 6개를 뽑아서 교배
             int cnt = 0;
@@ -133,7 +133,7 @@ namespace Tetris
             for (int j = 0; j < 7; j++)
                 _weights[cnt + i][j] = Players[i].Weight[j];
 
-            WeightSave(_weights, @".\WeightList.json");
+            FileSave(_weights, FilePath.WeightList);
 
             float GetRandom(int k)
             {
@@ -155,16 +155,20 @@ namespace Tetris
             return weight;
         }
 
-        private static void WeightSave<T>(T weight, string path)
+        private static void FileSave<T>(T obj, string path)
         {
+            string di = Path.GetDirectoryName(path);
+            if (!Directory.Exists(di))
+                Directory.CreateDirectory(di);
+
             using (StreamWriter stream = new StreamWriter(path))
             using (JsonTextWriter writer = new JsonTextWriter(stream))
             {
-                new JsonSerializer().Serialize(writer, weight);
+                new JsonSerializer().Serialize(writer, obj);
             }
         }
 
-        public static T WeightLoad<T>(string path)
+        public static T FileLoad<T>(string path)
         {
             using (StreamReader stream = new StreamReader(path))
             using (JsonTextReader reader = new JsonTextReader(stream))

@@ -4,14 +4,13 @@ namespace Tetris
 {
     public class Weight
     {
-        // AI 학습을 안했을때 사용하기 위한 기본값.
-        public float BlockHeightValue { get; set; } = -3.4f;
-        public float BlockedValue { get; set; } = -3;
-        public float HoleValue { get; set; } = -20;
-        public float LineClearValue { get; set; } = 9;
-        public float SideValue { get; set; } = 3.7f;
-        public float BlockValue { get; set; } = 3.7f;
-        public float FloorValue { get; set; } = 4;
+        public float BlockHeightValue { get; set; }
+        public float BlockedValue { get; set; }
+        public float HoleValue { get; set; }
+        public float LineClearValue { get; set; }
+        public float SideValue { get; set; }
+        public float BlockValue { get; set; }
+        public float FloorValue { get; set; }
 
         public float this[int i]
         {
