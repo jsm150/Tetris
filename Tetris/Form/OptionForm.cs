@@ -13,8 +13,8 @@ namespace Tetris
     public sealed partial class OptionForm : MetroForm
     {
         private static readonly List<PropertyInfo> PropertyList = new List<PropertyInfo>();
-        private readonly HashSet<Keys> _registeredKey = new HashSet<Keys>();
         private readonly WindowsMediaPlayer _mediaPlayer;
+        private readonly HashSet<Keys> _registeredKey = new HashSet<Keys>();
         private List<(MetroButton Btn, PropertyInfo Property, Keyboard Player)> _hotkeyList;
         private (MetroButton btn, string str) _selectedButtonMemory;
 
@@ -22,13 +22,13 @@ namespace Tetris
         {
             Keyboard p1 = Keyboard.GetPlayer1;
             Type type = typeof(Keyboard);
-            PropertyList = new List<PropertyInfo>()
+            PropertyList = new List<PropertyInfo>
             {
                 type.GetProperty(nameof(p1.RotationCode)),
                 type.GetProperty(nameof(p1.DownCode)),
                 type.GetProperty(nameof(p1.LeftCode)),
                 type.GetProperty(nameof(p1.RightCode)),
-                type.GetProperty(nameof(p1.HardDownCode)),
+                type.GetProperty(nameof(p1.HardDownCode))
             };
         }
 
@@ -43,7 +43,7 @@ namespace Tetris
         {
             Keyboard p1 = Keyboard.GetPlayer1;
             Keyboard p2 = Keyboard.GetPlayer2;
-            _hotkeyList = new List<(MetroButton, PropertyInfo, Keyboard)>()
+            _hotkeyList = new List<(MetroButton, PropertyInfo, Keyboard)>
             {
                 (btn_RotationRightP1, PropertyList[0], p1),
                 (btn_MoveDownP1, PropertyList[1], p1),
@@ -54,12 +54,12 @@ namespace Tetris
                 (btn_MoveDownP2, PropertyList[1], p2),
                 (btn_MoveLeftP2, PropertyList[2], p2),
                 (btn_MoveRightP2, PropertyList[3], p2),
-                (btn_HardDropP2, PropertyList[4], p2),
+                (btn_HardDropP2, PropertyList[4], p2)
             };
 
-            foreach (var tuple in _hotkeyList)
+            foreach ((MetroButton Btn, PropertyInfo Property, Keyboard Player) tuple in _hotkeyList)
             {
-                Keys key = (Keys)tuple.Property.GetValue(tuple.Player);
+                Keys key = (Keys) tuple.Property.GetValue(tuple.Player);
                 _registeredKey.Add(key);
                 tuple.Btn.Text = GetHotkeyString(key);
             }
@@ -108,9 +108,10 @@ namespace Tetris
                 return;
             }
 
-            var keyData = _hotkeyList.First(t => t.Btn.Text == @". . .");
+            (MetroButton Btn, PropertyInfo Property, Keyboard Player) keyData =
+                _hotkeyList.First(t => t.Btn.Text == @". . .");
 
-            Keys key = (Keys)keyData.Property.GetValue(keyData.Player);
+            Keys key = (Keys) keyData.Property.GetValue(keyData.Player);
             _registeredKey.Remove(key);
             keyData.Property.SetValue(keyData.Player, e.KeyCode);
             _registeredKey.Add(e.KeyCode);
@@ -124,55 +125,55 @@ namespace Tetris
         {
             switch (k)
             {
-                case Keys.Escape:          return "Esc";
-                case Keys.Scroll:          return "Scroll Lock";
-                case Keys.Oemtilde:        return "` ~";
-                case Keys.D1:              return "1 !";
-                case Keys.D2:              return "2 @";
-                case Keys.D3:              return "3 #";
-                case Keys.D4:              return "4 $";
-                case Keys.D5:              return "5 %";
-                case Keys.D6:              return "6 ^";
-                case Keys.D7:              return "7 &&";
-                case Keys.D8:              return "8 *";
-                case Keys.D9:              return "9 (";
-                case Keys.D0:              return "0 )";
-                case Keys.OemMinus:        return "- _";
-                case Keys.Oemplus:         return "= +";
-                case Keys.Back:            return "Backspace";
-                case Keys.NumLock:         return "Num Lock";
-                case Keys.Divide:          return "키패드/";
-                case Keys.Multiply:        return "키패드*";
-                case Keys.Subtract:        return "키패드-";
-                case Keys.Add:             return "키패드+";
-                case Keys.NumPad1:         return "키패드1";
-                case Keys.NumPad2:         return "키패드2";
-                case Keys.NumPad3:         return "키패드3";
-                case Keys.NumPad4:         return "키패드4";
-                case Keys.NumPad5:         return "키패드5";
-                case Keys.NumPad6:         return "키패드6";
-                case Keys.NumPad7:         return "키패드7";
-                case Keys.NumPad8:         return "키패드8";
-                case Keys.NumPad9:         return "키패드9";
-                case Keys.NumPad0:         return "키패드0";
-                case Keys.Decimal:         return "키패드.";
+                case Keys.Escape: return "Esc";
+                case Keys.Scroll: return "Scroll Lock";
+                case Keys.Oemtilde: return "` ~";
+                case Keys.D1: return "1 !";
+                case Keys.D2: return "2 @";
+                case Keys.D3: return "3 #";
+                case Keys.D4: return "4 $";
+                case Keys.D5: return "5 %";
+                case Keys.D6: return "6 ^";
+                case Keys.D7: return "7 &&";
+                case Keys.D8: return "8 *";
+                case Keys.D9: return "9 (";
+                case Keys.D0: return "0 )";
+                case Keys.OemMinus: return "- _";
+                case Keys.Oemplus: return "= +";
+                case Keys.Back: return "Backspace";
+                case Keys.NumLock: return "Num Lock";
+                case Keys.Divide: return "키패드/";
+                case Keys.Multiply: return "키패드*";
+                case Keys.Subtract: return "키패드-";
+                case Keys.Add: return "키패드+";
+                case Keys.NumPad1: return "키패드1";
+                case Keys.NumPad2: return "키패드2";
+                case Keys.NumPad3: return "키패드3";
+                case Keys.NumPad4: return "키패드4";
+                case Keys.NumPad5: return "키패드5";
+                case Keys.NumPad6: return "키패드6";
+                case Keys.NumPad7: return "키패드7";
+                case Keys.NumPad8: return "키패드8";
+                case Keys.NumPad9: return "키패드9";
+                case Keys.NumPad0: return "키패드0";
+                case Keys.Decimal: return "키패드.";
                 case Keys.OemOpenBrackets: return "[ {";
-                case Keys.Oem6:            return "] }";
-                case Keys.Oem5:            return "\\ |";
-                case Keys.Oem1:            return "; :";
-                case Keys.Oem7:            return "' \"";
-                case Keys.Oemcomma:        return ", <";
-                case Keys.OemPeriod:       return ". >";
-                case Keys.OemQuestion:     return "/ ?";
-                case Keys.KanaMode:        return "한/영";
-                case Keys.Apps:            return "메뉴";
-                case Keys.HanjaMode:       return "한자";
-                //case Keys.Left:            return "←";
-                //case Keys.Up:              return "↑";
-                //case Keys.Right:           return "→";
-                //case Keys.Down:            return "↓";
-                case Keys.Capital:         return "Caps Lock";
-                case Keys.Enter:           return "Enter";
+                case Keys.Oem6: return "] }";
+                case Keys.Oem5: return "\\ |";
+                case Keys.Oem1: return "; :";
+                case Keys.Oem7: return "' \"";
+                case Keys.Oemcomma: return ", <";
+                case Keys.OemPeriod: return ". >";
+                case Keys.OemQuestion: return "/ ?";
+                case Keys.KanaMode: return "한/영";
+                case Keys.Apps: return "메뉴";
+                case Keys.HanjaMode: return "한자";
+                case Keys.Left: return "←";
+                case Keys.Up: return "↑";
+                case Keys.Right: return "→";
+                case Keys.Down: return "↓";
+                case Keys.Capital: return "Caps Lock";
+                case Keys.Enter: return "Enter";
             }
 
             return k.ToString();

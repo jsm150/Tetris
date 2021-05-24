@@ -7,8 +7,8 @@ namespace Tetris
 {
     public class Keyboard
     {
-        private static readonly IReadOnlyList<Keyboard> _keyboards = new List<Keyboard>()
-            {new Keyboard(), new Keyboard()};
+        private static readonly IReadOnlyList<Keyboard>
+            _keyboards = new List<Keyboard> {new Keyboard(), new Keyboard()};
 
         public Keys DownCode { get; set; }
         public Keys LeftCode { get; set; }
@@ -16,10 +16,12 @@ namespace Tetris
         public Keys RotationCode { get; set; }
         public Keys HardDownCode { get; set; }
 
-        private Keyboard() { }
-
         public static Keyboard GetPlayer1 => _keyboards[0];
         public static Keyboard GetPlayer2 => _keyboards[1];
+
+        private Keyboard()
+        {
+        }
 
         public static void SetKeyboard(Keyboard source, Keyboard destination)
         {
@@ -87,6 +89,5 @@ namespace Tetris
             e.SuppressKeyPress = true;
             return e.KeyCode == HardDownCode;
         }
-        
     }
 }

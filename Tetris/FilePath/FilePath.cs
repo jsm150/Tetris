@@ -7,4 +7,4 @@
         public const string WeightList = @".\Setting\WeightList.json";
         public const string KeySetting = @".\Setting\KeySetting.json";
     }
-} 
+}
