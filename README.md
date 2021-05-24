@@ -3,7 +3,7 @@ winform으로 만든 테트리스 입니다.
 
 | Player vs AI | Genetic Algorithm |
 | --- | --- |
-| <img src="./Tetris/Img/Player_vs_AI.gif" height="650px">  | ![Genetic_Algorithm](./Tetris/Img/Genetic_Algorithm.gif) |
+| <img src="./Tetris/Img/Player_vs_AI.gif">  | ![Genetic_Algorithm](./Tetris/Img/Genetic_Algorithm.gif) |
 
 ## 기능
 - Genetic Algorithm 을 이용한 AI 학습
