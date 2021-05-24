@@ -30,16 +30,16 @@ namespace Tetris
             Keyboard p2 = Keyboard.GetPlayer2;
             _hotkeyList = new List<(MetroButton, string, Keyboard)>()
             {
-                (btn_RotationRightP1, "RotationCode", p1),
-                (btn_MoveDownP1, "DownCode", p1),
-                (btn_MoveLeftP1, "LeftCode", p1),
-                (btn_MoveRightP1, "RightCode", p1),
-                (btn_HardDropP1, "HardDownCode", p1),
-                (btn_RotationRightP2, "RotationCode", p2),
-                (btn_MoveDownP2, "DownCode", p2),
-                (btn_MoveLeftP2, "LeftCode", p2),
-                (btn_MoveRightP2, "RightCode", p2),
-                (btn_HardDropP2, "HardDownCode", p2),
+                (btn_RotationRightP1, nameof(p1.RotationCode), p1),
+                (btn_MoveDownP1, nameof(p1.DownCode), p1),
+                (btn_MoveLeftP1, nameof(p1.LeftCode), p1),
+                (btn_MoveRightP1, nameof(p1.RightCode), p1),
+                (btn_HardDropP1, nameof(p1.HardDownCode), p1),
+                (btn_RotationRightP2, nameof(p1.RotationCode), p2),
+                (btn_MoveDownP2, nameof(p1.DownCode), p2),
+                (btn_MoveLeftP2, nameof(p1.LeftCode), p2),
+                (btn_MoveRightP2, nameof(p1.RightCode), p2),
+                (btn_HardDropP2, nameof(p1.HardDownCode), p2),
             };
 
             foreach (var tuple in _hotkeyList)

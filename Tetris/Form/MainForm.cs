@@ -106,6 +106,12 @@ namespace Tetris
             {
                 MessageBox.Show(@"학습된 AI가 없습니다!");
             }
+#pragma warning disable 168
+            catch (FileNotFoundException _)
+#pragma warning restore 168
+            {
+                MessageBox.Show(@"학습된 AI가 없습니다!");
+            }
         }
 
         private async void btn_GeneticAlgorithm_Click(object sender, EventArgs e)
@@ -128,6 +134,12 @@ namespace Tetris
             }
 #pragma warning disable 168
             catch (DirectoryNotFoundException _)
+#pragma warning restore 168
+            {
+                MessageBox.Show(@"학습된 AI가 없습니다!");
+            }
+#pragma warning disable 168
+            catch (FileNotFoundException _)
 #pragma warning restore 168
             {
                 MessageBox.Show(@"학습된 AI가 없습니다!");
