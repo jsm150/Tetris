@@ -255,10 +255,12 @@ namespace Tetris
             this.Controls.Add(this.metroLabel2);
             this.Controls.Add(this.metroLabel1);
             this.Controls.Add(this.tBar_Volume);
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.Name = "OptionForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingForm_FormClosing);
             this.Load += new System.EventHandler(this.SettingForm_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OptionForm_KeyDown);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

@@ -178,5 +178,11 @@ namespace Tetris
 
             return k.ToString();
         }
+
+        private void OptionForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+                Close();
+        }
     }
 }

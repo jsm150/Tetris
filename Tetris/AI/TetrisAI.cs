@@ -11,7 +11,7 @@ namespace Tetris
         private static readonly object _labelLocker = new object();
         private readonly Label lbl_BestNum;
 
-        private Func<int, int, Task> DoBlockMoveFunc;
+        private Func<int, int, Task> DoBlockMoveAsyncFunc;
         private Action<int, int> DrawColorAction;
         private Func<Task> LoopDownAsyncFunc;
         private Action ReDrawBlockAction;
@@ -26,7 +26,7 @@ namespace Tetris
         {
             Weight = weight;
             lbl_BestNum = lblBestNum;
-            DoBlockMoveFunc = DoBlockMoveNormal;
+            DoBlockMoveAsyncFunc = DoBlockMoveAsyncNormal;
             SetScoreTextAction = base.SetScoreText;
             DrawColorAction = base.DrawColer;
             ReSetBlockAction = base.ReSetBlock;
@@ -61,14 +61,14 @@ namespace Tetris
 
         private async Task DoBlockMove(int optimalX, int optimalRotation)
         {
-            await DoBlockMoveFunc.Invoke(optimalX, optimalRotation);
+            await DoBlockMoveAsyncFunc.Invoke(optimalX, optimalRotation);
         }
 
         public override async Task GameStart()
         {
-#pragma warning disable 4014
+        #pragma warning disable 4014
             base.GameStart();
-#pragma warning restore 4014
+        #pragma warning restore 4014
             await AutoPlaying();
         }
 
@@ -244,7 +244,7 @@ namespace Tetris
 
         #region SetMode
 
-        private async Task DoBlockMoveNormal(int optimalX, int optimalRotation)
+        private async Task DoBlockMoveAsyncNormal(int optimalX, int optimalRotation)
         {
             int delay = GetDelay(_tetrisBoard);
             Action direction = _currentX < optimalX ? MoveRight : new Action(MoveLeft);
@@ -261,6 +261,7 @@ namespace Tetris
                 direction.Invoke();
             }
 
+            await Task.Delay(delay);
             HardDown();
 
             int GetDelay(int[,] board)
@@ -269,15 +270,15 @@ namespace Tetris
                 for (int x = 0; x < board.GetLength(1); x++)
                     if (board[y, x] > 10)
                     {
-                        int h = Math.Min(board.GetLength(0) - y, 16);
-                        return (16 - h) * 19;
+                        int h = Math.Min(board.GetLength(0) - y, 18);
+                        return (18 - h) * 19;
                     }
 
                 return 0;
             }
         }
 
-        private Task DoBlockMoveAtGenetic(int optimalX, int optimalRotation)
+        private Task DoBlockMoveAsyncAtGenetic(int optimalX, int optimalRotation)
         {
             _block.SetRotationBlock(optimalRotation);
             _currentX = optimalX;
@@ -327,14 +328,14 @@ namespace Tetris
         private void SetAiTestMode()
         {
             ReDrawBlockAction = ReDrawBlockAtGenetic;
-            DoBlockMoveFunc = DoBlockMoveAtGenetic;
+            DoBlockMoveAsyncFunc = DoBlockMoveAsyncAtGenetic;
             LoopDownAsyncFunc = LoopDownAsyncAtGenetic;
         }
 
         private void SetGeneticMode()
         {
             ReDrawBlockAction = ReDrawBlockAtGenetic;
-            DoBlockMoveFunc = DoBlockMoveAtGenetic;
+            DoBlockMoveAsyncFunc = DoBlockMoveAsyncAtGenetic;
             ReSetBlockAction = ReSetBlockAtGenetic;
             LoopDownAsyncFunc = LoopDownAsyncAtGenetic;
             SetScoreTextAction = SetScoreTextAtGenetic;
