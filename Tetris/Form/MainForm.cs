@@ -45,13 +45,22 @@ namespace Tetris
 
         private void BgmSetting()
         {
-            string dir = Path.GetDirectoryName(FilePath.Sound);
-            string name = Path.GetFileName(FilePath.Sound);
-            string path = Directory.GetFiles(dir, name).First();
-            if (File.Exists(path))
+            try
+            {
+                string dir = Path.GetDirectoryName(FilePath.Sound);
+                string name = Path.GetFileName(FilePath.Sound);
+                string path = Directory.GetFiles(dir, name).First();
                 _mediaPlayer.URL = path;
-            _mediaPlayer.settings.volume = Settings.Default.Volume;
-            _mediaPlayer.controls.stop();
+            }
+            catch
+            {
+                MessageBox.Show(@"음악 파일을 찾을수 없습니다!");
+            }
+            finally
+            {
+                _mediaPlayer.settings.volume = Settings.Default.Volume;
+                _mediaPlayer.controls.stop();
+            }
         }
 
         private void KeyboardSetting()
@@ -99,15 +108,15 @@ namespace Tetris
                 Size = new Size(690, 870);
                 await GameController.GameStart();
             }
-#pragma warning disable 168
+        #pragma warning disable 168
             catch (DirectoryNotFoundException _)
-#pragma warning restore 168
+        #pragma warning restore 168
             {
                 MessageBox.Show(@"학습된 AI가 없습니다!");
             }
-#pragma warning disable 168
+        #pragma warning disable 168
             catch (FileNotFoundException _)
-#pragma warning restore 168
+        #pragma warning restore 168
             {
                 MessageBox.Show(@"학습된 AI가 없습니다!");
             }
@@ -131,15 +140,15 @@ namespace Tetris
                 Size = new Size(360, 870);
                 await GameController.GameStart();
             }
-#pragma warning disable 168
+            #pragma warning disable 168
             catch (DirectoryNotFoundException _)
-#pragma warning restore 168
+            #pragma warning restore 168
             {
                 MessageBox.Show(@"학습된 AI가 없습니다!");
             }
-#pragma warning disable 168
+            #pragma warning disable 168
             catch (FileNotFoundException _)
-#pragma warning restore 168
+            #pragma warning restore 168
             {
                 MessageBox.Show(@"학습된 AI가 없습니다!");
             }
