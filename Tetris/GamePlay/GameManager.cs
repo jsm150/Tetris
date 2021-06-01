@@ -1,41 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Tetris
 {
-    public static class GameController
+    public class GameManager
     {
-        private static readonly List<Tetris> Players = new List<Tetris>();
+        private readonly List<Tetris> Players = new List<Tetris>();
+        public static GameManager GetInstance { get; } = new GameManager();
 
-        public static Action<string> GameEndAction { get; set; }
+        public Action<string> GameEndAction { get; set; }
 
-        public static ReadOnlyCollection<Tetris> GetPlayers()
+        private GameManager()
         {
-            return Players.AsReadOnly();
         }
 
-        public static void PlayerAdd(Tetris player)
+        public IReadOnlyList<Tetris> GetPlayers()
+        {
+            return Players;
+        }
+
+        public void PlayerAdd(Tetris player)
         {
             Players.Add(player);
         }
 
-        public static void KeyBoardAction(KeyEventArgs e)
+        public void KeyBoardAction(KeyEventArgs e)
         {
             Players.ForEach(t => t.KeyBoardAction(e));
         }
 
-        public static async Task GameStart()
+        public async Task GameStart()
         {
             Players.ForEach(t => t.LineClearEvent += SendBlockToPlayer);
             await Task.WhenAny(Players.Select(t => Task.Run(t.GameStart)));
             GameEnd();
         }
 
-        public static void GameEnd()
+        public void GameEnd()
         {
             if (Players.Count == 0) return;
 
@@ -45,7 +49,7 @@ namespace Tetris
             GameEndAction.Invoke(mag);
         }
 
-        private static string GameEndAlertMsg()
+        private string GameEndAlertMsg()
         {
             if (Players.Count <= 1)
                 return "Game Over!";
@@ -54,7 +58,7 @@ namespace Tetris
             return id != 0 ? $"플레이어{id} 승리!" : "비겼습니다!";
         }
 
-        private static async void SendBlockToPlayer(object sender, TetrisEventArgs e)
+        private async void SendBlockToPlayer(object sender, TetrisEventArgs e)
         {
             if (Players.Count <= 1) return;
 

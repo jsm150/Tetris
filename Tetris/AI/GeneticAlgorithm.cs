@@ -109,35 +109,36 @@ namespace Tetris
                     continue;
                 }
 
-                for (int k = 0; k < 7; k++)
+                foreach (Weight.Property property in Enum.GetValues(typeof(Weight.Property)))
                     if (Random.NextDouble() < 0.2)
                     {
-                        _weights[cnt][k] = GetRandom(k);
-                        _weights[cnt + 1][k] = GetRandom(k);
+                        _weights[cnt][property] = GetRandom(property);
+                        _weights[cnt + 1][property] = GetRandom(property);
                     }
                     else if (Random.NextDouble() > 0.5)
                     {
-                        _weights[cnt][k] = Players[i].Weight[k];
-                        _weights[cnt + 1][k] = Players[j].Weight[k];
+                        _weights[cnt][property] = Players[i].Weight[property];
+                        _weights[cnt + 1][property] = Players[j].Weight[property];
                     }
                     else
                     {
-                        _weights[cnt][k] = Players[j].Weight[k];
-                        _weights[cnt + 1][k] = Players[i].Weight[k];
+                        _weights[cnt][property] = Players[j].Weight[property];
+                        _weights[cnt + 1][property] = Players[i].Weight[property];
                     }
 
                 cnt += 2;
             }
 
+            // 19 ~ 24번은 상위 개체 6개를 등록
             for (int i = 0; i < 6; i++)
-            for (int j = 0; j < 7; j++)
-                _weights[cnt + i][j] = Players[i].Weight[j];
+                foreach (Weight.Property property in Enum.GetValues(typeof(Weight.Property)))
+                    _weights[cnt + i][property] = Players[i].Weight[property];
 
             MainForm.FileSave(_weights, FilePath.WeightList);
 
-            float GetRandom(int k)
+            float GetRandom(Weight.Property p)
             {
-                float value = k <= 2 ? Random.Next(-100, 0) : Random.Next(0, 100);
+                float value = (int) p <= 2 ? Random.Next(-100, 0) : Random.Next(0, 100);
                 value += (float) Random.NextDouble();
                 return value;
             }
@@ -146,10 +147,10 @@ namespace Tetris
         private static Weight GetRandomWeight()
         {
             Weight weight = new Weight();
-            for (int i = 0; i < 7; i++)
+            foreach (Weight.Property property in Enum.GetValues(typeof(Weight.Property)))
             {
-                weight[i] = i <= 2 ? Random.Next(-100, 0) : Random.Next(0, 100);
-                weight[i] += (float) Random.NextDouble();
+                weight[property] = (int) property <= 2 ? Random.Next(-100, 0) : Random.Next(0, 100);
+                weight[property] += (float) Random.NextDouble();
             }
 
             return weight;

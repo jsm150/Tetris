@@ -12,25 +12,10 @@ namespace Tetris
 {
     public sealed partial class OptionForm : MetroForm
     {
-        private static readonly List<PropertyInfo> PropertyList = new List<PropertyInfo>();
         private readonly WindowsMediaPlayer _mediaPlayer;
         private readonly HashSet<Keys> _registeredKey = new HashSet<Keys>();
-        private List<(MetroButton Btn, PropertyInfo Property, Keyboard Player)> _hotkeyList;
+        private List<(MetroButton Btn, Keyboard.Hotkey hotkey, Keyboard Player)> _hotkeyList;
         private (MetroButton btn, string str) _selectedButtonMemory;
-
-        static OptionForm()
-        {
-            Keyboard p1 = Keyboard.GetPlayer1;
-            Type type = typeof(Keyboard);
-            PropertyList = new List<PropertyInfo>
-            {
-                type.GetProperty(nameof(p1.RotationCode)),
-                type.GetProperty(nameof(p1.DownCode)),
-                type.GetProperty(nameof(p1.LeftCode)),
-                type.GetProperty(nameof(p1.RightCode)),
-                type.GetProperty(nameof(p1.HardDownCode))
-            };
-        }
 
         public OptionForm(WindowsMediaPlayer mediaPlayer)
         {
@@ -43,23 +28,23 @@ namespace Tetris
         {
             Keyboard p1 = Keyboard.GetPlayer1;
             Keyboard p2 = Keyboard.GetPlayer2;
-            _hotkeyList = new List<(MetroButton, PropertyInfo, Keyboard)>
+            _hotkeyList = new List<(MetroButton, Keyboard.Hotkey, Keyboard)>
             {
-                (btn_RotationRightP1, PropertyList[0], p1),
-                (btn_MoveDownP1, PropertyList[1], p1),
-                (btn_MoveLeftP1, PropertyList[2], p1),
-                (btn_MoveRightP1, PropertyList[3], p1),
-                (btn_HardDropP1, PropertyList[4], p1),
-                (btn_RotationRightP2, PropertyList[0], p2),
-                (btn_MoveDownP2, PropertyList[1], p2),
-                (btn_MoveLeftP2, PropertyList[2], p2),
-                (btn_MoveRightP2, PropertyList[3], p2),
-                (btn_HardDropP2, PropertyList[4], p2)
+                (btn_RotationRightP1, Keyboard.Hotkey.RotationCode, p1),
+                (btn_MoveDownP1, Keyboard.Hotkey.DownCode, p1),
+                (btn_MoveLeftP1, Keyboard.Hotkey.LeftCode, p1),
+                (btn_MoveRightP1, Keyboard.Hotkey.RightCode, p1),
+                (btn_HardDropP1, Keyboard.Hotkey.HardDownCode, p1),
+                (btn_RotationRightP2, Keyboard.Hotkey.RotationCode, p2),
+                (btn_MoveDownP2, Keyboard.Hotkey.DownCode, p2),
+                (btn_MoveLeftP2, Keyboard.Hotkey.LeftCode, p2),
+                (btn_MoveRightP2, Keyboard.Hotkey.RightCode, p2),
+                (btn_HardDropP2, Keyboard.Hotkey.HardDownCode, p2)
             };
 
-            foreach ((MetroButton Btn, PropertyInfo Property, Keyboard Player) tuple in _hotkeyList)
+            foreach ((MetroButton Btn, Keyboard.Hotkey hotkey, Keyboard Player) tuple in _hotkeyList)
             {
-                Keys key = (Keys) tuple.Property.GetValue(tuple.Player);
+                Keys key = tuple.Player.Properties[tuple.hotkey];
                 _registeredKey.Add(key);
                 tuple.Btn.Text = GetHotkeyString(key);
             }
@@ -108,12 +93,12 @@ namespace Tetris
                 return;
             }
 
-            (MetroButton Btn, PropertyInfo Property, Keyboard Player) keyData =
+            (MetroButton Btn, Keyboard.Hotkey hotkey, Keyboard Player) keyData =
                 _hotkeyList.First(t => t.Btn.Text == @". . .");
 
-            Keys key = (Keys) keyData.Property.GetValue(keyData.Player);
+            Keys key = keyData.Player.Properties[keyData.hotkey];
             _registeredKey.Remove(key);
-            keyData.Property.SetValue(keyData.Player, e.KeyCode);
+            keyData.Player.Properties[keyData.hotkey] = e.KeyCode;
             _registeredKey.Add(e.KeyCode);
 
             MetroButton btn = sender as MetroButton;

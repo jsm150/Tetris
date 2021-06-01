@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using Newtonsoft.Json;
@@ -7,14 +8,19 @@ namespace Tetris
 {
     public class Keyboard
     {
-        private static readonly IReadOnlyList<Keyboard>
-            _keyboards = new List<Keyboard> {new Keyboard(), new Keyboard()};
+        public enum Hotkey
+        {
+            DownCode,
+            LeftCode,
+            RightCode,
+            RotationCode,
+            HardDownCode
+        }
 
-        public Keys DownCode { get; set; }
-        public Keys LeftCode { get; set; }
-        public Keys RightCode { get; set; }
-        public Keys RotationCode { get; set; }
-        public Keys HardDownCode { get; set; }
+        private static readonly IReadOnlyList<Keyboard>
+            _keyboards = new List<Keyboard> { new Keyboard(), new Keyboard() };
+
+        public Dictionary<Hotkey, Keys> Properties { get; } = new Dictionary<Hotkey, Keys>();
 
         public static Keyboard GetPlayer1 => _keyboards[0];
         public static Keyboard GetPlayer2 => _keyboards[1];
@@ -25,26 +31,25 @@ namespace Tetris
 
         public static void SetKeyboard(Keyboard source, Keyboard destination)
         {
-            destination.DownCode = source.DownCode;
-            destination.LeftCode = source.LeftCode;
-            destination.RightCode = source.RightCode;
-            destination.RotationCode = source.RotationCode;
-            destination.HardDownCode = source.HardDownCode;
+            foreach (Hotkey hotkey in Enum.GetValues(typeof(Hotkey)))
+            {
+                destination.Properties[hotkey] = source.Properties[hotkey];
+            }
         }
 
         public static void SetDefault()
         {
-            _keyboards[0].LeftCode = Keys.Left;
-            _keyboards[0].RightCode = Keys.Right;
-            _keyboards[0].RotationCode = Keys.Up;
-            _keyboards[0].DownCode = Keys.Down;
-            _keyboards[0].HardDownCode = Keys.NumPad0;
+            _keyboards[0].Properties[Hotkey.LeftCode] = Keys.Left;
+            _keyboards[0].Properties[Hotkey.RightCode] = Keys.Right;
+            _keyboards[0].Properties[Hotkey.RotationCode] = Keys.Up;
+            _keyboards[0].Properties[Hotkey.DownCode] = Keys.Down;
+            _keyboards[0].Properties[Hotkey.HardDownCode] = Keys.NumPad0;
 
-            _keyboards[1].LeftCode = Keys.A;
-            _keyboards[1].RightCode = Keys.D;
-            _keyboards[1].RotationCode = Keys.W;
-            _keyboards[1].DownCode = Keys.S;
-            _keyboards[1].HardDownCode = Keys.E;
+            _keyboards[1].Properties[Hotkey.LeftCode] = Keys.A;
+            _keyboards[1].Properties[Hotkey.RightCode] = Keys.D;
+            _keyboards[1].Properties[Hotkey.RotationCode] = Keys.W;
+            _keyboards[1].Properties[Hotkey.DownCode] = Keys.S;
+            _keyboards[1].Properties[Hotkey.HardDownCode] = Keys.E;
         }
 
         public static void KeySettingFileSave()
@@ -63,31 +68,31 @@ namespace Tetris
         public bool IsKeyDownAction(KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
-            return e.KeyCode == DownCode;
+            return e.KeyCode == Properties[Hotkey.DownCode];
         }
 
         public bool IsKeyLeftAction(KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
-            return e.KeyCode == LeftCode;
+            return e.KeyCode == Properties[Hotkey.LeftCode];
         }
 
         public bool IsKeyRightAction(KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
-            return e.KeyCode == RightCode;
+            return e.KeyCode == Properties[Hotkey.RightCode];
         }
 
         public bool IsKeyRotationAction(KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
-            return e.KeyCode == RotationCode;
+            return e.KeyCode == Properties[Hotkey.RotationCode];
         }
 
         public bool IsKeyHardDownAction(KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
-            return e.KeyCode == HardDownCode;
+            return e.KeyCode == Properties[Hotkey.HardDownCode];
         }
     }
 }

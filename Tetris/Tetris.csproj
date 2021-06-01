@@ -69,7 +69,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="KeyBoard\Keyboard.cs" />
-    <Compile Include="GamePlay\GameController.cs" />
+    <Compile Include="GamePlay\GameManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Form\OptionForm.cs">

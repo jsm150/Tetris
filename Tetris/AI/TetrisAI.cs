@@ -66,9 +66,9 @@ namespace Tetris
 
         public override async Task GameStart()
         {
-        #pragma warning disable 4014
+#pragma warning disable 4014
             base.GameStart();
-        #pragma warning restore 4014
+#pragma warning restore 4014
             await AutoPlaying();
         }
 
@@ -218,8 +218,8 @@ namespace Tetris
             int height = board.GetLength(0);
             int width = board.GetLength(1);
 
-            int[] dy = {-1, 0, 1, 0};
-            int[] dx = {0, 1, 0, -1};
+            int[] dy = { -1, 0, 1, 0 };
+            int[] dx = { 0, 1, 0, -1 };
 
             for (int y = 0; y < size; y++)
             for (int x = 0; x < size; x++)

@@ -14,6 +14,7 @@ namespace Tetris
 {
     public sealed partial class MainForm : MetroForm
     {
+        private readonly GameManager _game = GameManager.GetInstance;
         private readonly WindowsMediaPlayer _mediaPlayer = new WindowsMediaPlayer();
         private readonly Stack<TetrisPanel> _panels = new Stack<TetrisPanel>();
 
@@ -40,7 +41,7 @@ namespace Tetris
         {
             BgmSetting();
             KeyboardSetting();
-            GameController.GameEndAction = GameEnd;
+            _game.GameEndAction = GameEnd;
         }
 
         private void BgmSetting()
@@ -103,22 +104,22 @@ namespace Tetris
                 TetrisAI player2 = TetrisAI.GeneralMode(NewPanel(PanelValue.GetTetrisPanelToPlayer2()),
                     NewPanel(PanelValue.GetNextBlockPanelToPlayer2()),
                     lbl_2pScore, 2, FileLoad<Weight>(FilePath.Weight));
-                GameController.PlayerAdd(player1);
-                GameController.PlayerAdd(player2);
+                _game.PlayerAdd(player1);
+                _game.PlayerAdd(player2);
                 Size = new Size(690, 870);
-                await GameController.GameStart();
+                await _game.GameStart();
             }
-        #pragma warning disable 168
+#pragma warning disable 168
             catch (DirectoryNotFoundException _)
-        #pragma warning restore 168
+#pragma warning restore 168
             {
-                MessageBox.Show(@"학습된 AI가 없습니다!");
+                AiNotFound();
             }
-        #pragma warning disable 168
+#pragma warning disable 168
             catch (FileNotFoundException _)
-        #pragma warning restore 168
+#pragma warning restore 168
             {
-                MessageBox.Show(@"학습된 AI가 없습니다!");
+                AiNotFound();
             }
         }
 
@@ -134,23 +135,23 @@ namespace Tetris
             try
             {
                 StartSetting(btn_AI);
-                GameController.PlayerAdd(TetrisAI.AITestMode(NewPanel(PanelValue.GetTetrisPanelToPlayer1()),
+                _game.PlayerAdd(TetrisAI.AITestMode(NewPanel(PanelValue.GetTetrisPanelToPlayer1()),
                     NewPanel(PanelValue.GetNextBlockPanelToPlayer1()),
                     lbl_Score, 1, FileLoad<Weight>(FilePath.Weight)));
                 Size = new Size(360, 870);
-                await GameController.GameStart();
+                await _game.GameStart();
             }
-            #pragma warning disable 168
+#pragma warning disable 168
             catch (DirectoryNotFoundException _)
-            #pragma warning restore 168
+#pragma warning restore 168
             {
-                MessageBox.Show(@"학습된 AI가 없습니다!");
+                AiNotFound();
             }
-            #pragma warning disable 168
+#pragma warning disable 168
             catch (FileNotFoundException _)
-            #pragma warning restore 168
+#pragma warning restore 168
             {
-                MessageBox.Show(@"학습된 AI가 없습니다!");
+                AiNotFound();
             }
         }
 
@@ -158,20 +159,26 @@ namespace Tetris
         {
             StartSetting(btn_1vs1);
             Size = new Size(690, 870);
-            GameController.PlayerAdd(new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer1()),
+            _game.PlayerAdd(new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer1()),
                 NewPanel(PanelValue.GetNextBlockPanelToPlayer1()),
                 lbl_Score, Keyboard.GetPlayer2, 1));
-            GameController.PlayerAdd(new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer2()),
+            _game.PlayerAdd(new Tetris(NewPanel(PanelValue.GetTetrisPanelToPlayer2()),
                 NewPanel(PanelValue.GetNextBlockPanelToPlayer2()),
                 lbl_2pScore, Keyboard.GetPlayer1, 2));
-            await GameController.GameStart();
+            await _game.GameStart();
         }
 
+        private void AiNotFound()
+        {
+            timer1.Enabled = false;
+            _mediaPlayer.controls.stop();
+            MessageBox.Show(@"학습된 AI가 없습니다!");
+        }
 
         private void StartSetting(MetroButton button)
         {
-            if (GameController.GetPlayers().Count > 0)
-                GameController.GameEnd();
+            if (_game.GetPlayers().Count > 0)
+                _game.GameEnd();
 
             while (_panels.Count > 0)
                 Controls.Remove(_panels.Pop());
@@ -198,7 +205,7 @@ namespace Tetris
         {
             if (e.KeyCode == Keys.Escape)
                 Close();
-            GameController.KeyBoardAction(e);
+            _game.KeyBoardAction(e);
         }
 
         private void timer1_Tick(object sender, EventArgs e)

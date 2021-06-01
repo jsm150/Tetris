@@ -1,9 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Tetris
 {
     public class Weight
     {
+        public enum Property
+        {
+            BlockHeightValue,
+            BlockedValue,
+            HoleValue,
+            LineClearValue,
+            SideValue,
+            BlockValue,
+            FloorValue
+        }
+
+        private static readonly
+            IReadOnlyDictionary<Property, (Func<Weight, float> Getter, Action<Weight, float> Setter)> _propertyList;
+
         public float BlockHeightValue { get; set; }
         public float BlockedValue { get; set; }
         public float HoleValue { get; set; }
@@ -12,59 +29,27 @@ namespace Tetris
         public float BlockValue { get; set; }
         public float FloorValue { get; set; }
 
-        public float this[int i]
+        public float this[Property p]
         {
-            get
-            {
-                switch (i)
-                {
-                    case 0:
-                        return BlockHeightValue;
-                    case 1:
-                        return BlockedValue;
-                    case 2:
-                        return HoleValue;
-                    case 3:
-                        return LineClearValue;
-                    case 4:
-                        return SideValue;
-                    case 5:
-                        return BlockValue;
-                    case 6:
-                        return FloorValue;
-                    default:
-                        throw new NotImplementedException();
-                }
-            }
-            set
-            {
-                switch (i)
-                {
-                    case 0:
-                        BlockHeightValue = value;
-                        break;
-                    case 1:
-                        BlockedValue = value;
-                        break;
-                    case 2:
-                        HoleValue = value;
-                        break;
-                    case 3:
-                        LineClearValue = value;
-                        break;
-                    case 4:
-                        SideValue = value;
-                        break;
-                    case 5:
-                        BlockValue = value;
-                        break;
-                    case 6:
-                        FloorValue = value;
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-            }
+            get => _propertyList[p].Getter(this);
+            set => _propertyList[p].Setter(this, value);
+        }
+
+        static Weight()
+        {
+            Type type = typeof(Weight);
+            List<(string name, PropertyInfo)> propertyList = Enum.GetNames(typeof(Property))
+                .Select(name => (name, type.GetProperty(name)))
+                .ToList();
+
+            _propertyList = propertyList.ToDictionary(
+                t => (Property) Enum.Parse(typeof(Property), t.name),
+                t => (
+                    (Func<Weight, float>) Delegate.CreateDelegate(typeof(Func<Weight, float>), t.Item2.GetGetMethod()),
+                    (Action<Weight, float>) Delegate.CreateDelegate(typeof(Action<Weight, float>),
+                        t.Item2.GetSetMethod())
+                )
+            );
         }
     }
 }
